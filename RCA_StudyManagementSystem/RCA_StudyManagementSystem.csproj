@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RCA_StudyManagementSystem.Client\RCA_StudyManagementSystem.Client.csproj" />
+    <ProjectReference Include="..\RCA_StudyManager.Shared\RCA_StudyManager.Shared.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.3" />
