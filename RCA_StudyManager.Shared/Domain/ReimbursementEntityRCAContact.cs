@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RCA_StudyManager.Shared.Domain
+{
+    [Table("ReimbursementEntityRCAContact")]
+
+    public class ReimbursementEntityRCAContact
+    {
+        public Guid ReimbursementEntityRCAContactId { get; set; }
+        public Guid ReimbursementEntityId { get; set; }
+        public ReimbursementEntity? ReimbursementEntity { get; set; }
+        public Guid RCAContactId { get; set; }
+        public RCAContact? RCAContact { get; set; }
+        public bool IsPrimaryContact { get; set; } = false;
+
+    }
+}

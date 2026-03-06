@@ -1,92 +1,469 @@
-﻿@implements IDisposable
+﻿@using MudBlazor
+@inject IJSRuntime JSRuntime
 
-@inject NavigationManager NavigationManager
 
-<div class="top-row ps-3 navbar navbar-dark">
+<div class="top-row pt-3 navbar" style="background-color: white;">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">RCA_StudyManagementSystem</a>
+        <img src="rca_logo.png" class="rca-logo" style="background-color: white; width: 100%;" />
+        @* <a class="navbar-brand" href="">RCA Study Management System</a> *@
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+@* <input type="checkbox" title="Navigation menu" class="navbar-toggler" /> *@
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
+@* <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+ *@    <div class="nav-scrollable" onclick="" style="background-color: #65aac6bb;">
+    <nav class="flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All" style="color: white;">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+
+            <NavLink class="nav-link mr-80" @onclick="HandleCasesClick" style="color: white;">
+                <MudIcon Icon="@Icons.Material.Filled.Note" Class="nav-icon mr-2" />
+                <span aria-hidden="true"></span> Cases
             </NavLink>
         </div>
+
+
+        @if (expandCases)
+        {
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="cases/create" style="color: white;">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Case
+                    </NavLink>
+                </div>
+            </NavLink>
+            @*             <NavLink class="" href="">
+                <div class="nav-item ml-10 mr-60 mt-n8 mb-n3">
+                    <NavLink class="nav-link" href="cases/list">
+                        <MudIcon Icon="@Icons.Material.Filled.Note" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Manage Cases
+                    </NavLink>
+                </div>
+            </NavLink> *@
+            <NavLink class="" href="">
+                <div class="nav-item ml-10 mr-60 mt-n8 mb-n3">
+                    <NavLink class="nav-link" href="cases/list" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.Note" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Manage Cases
+                    </NavLink>
+                </div>
+            </NavLink>
+
+        }
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+
+            <NavLink class="nav-link mr-80" @onclick="HandleStudiesClick" style="color: white;">
+                <MudIcon Icon="@Icons.Material.Filled.Hive" Class="nav-icon mr-2" />
+                <span aria-hidden="true"></span> Studies
             </NavLink>
         </div>
+
+
+        @if (expandStudies)
+        {
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="studies/create" style="color: white;">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Study
+                    </NavLink>
+                </div>
+            </NavLink>
+            <NavLink class="" href="">
+                <div class="nav-item ml-10 mr-60 mt-n8 mb-n3">
+                    <NavLink class="nav-link" href="studies/list" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.Hive" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Manage Studies
+                    </NavLink>
+                </div>
+            </NavLink>
+        }
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
+
+            <NavLink class="nav-link mr-80" @onclick="HandleExportsClick" style="color: white;">
+                <MudIcon Icon="@Icons.Material.Filled.CloudDownload" Class="nav-icon mr-2" />
+                <span aria-hidden="true"></span> Exports
             </NavLink>
         </div>
 
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
+
+        @if (expandExports)
+        {
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="exports/list" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.CloudDownload" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Current Exports
                     </NavLink>
                 </div>
-                <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                        </button>
-                    </form>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
+            </NavLink>
+            <NavLink class="" href="">
+                <div class="nav-item ml-10 mr-60 mt-n8 mb-n3">
+                    <NavLink class="nav-link" href="exports/pastlist" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.CloudDownload" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Past Exports
                     </NavLink>
                 </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
+            </NavLink>
+        }
+
+        <div class="nav-item px-3">
+
+            <NavLink class="nav-link mr-80" @onclick="HandleListingsClick" style="color: white;">
+                <MudIcon Icon="@Icons.Material.Filled.ListAlt" Class="nav-icon mr-2" />
+                <span aria-hidden="true"></span> Lists
+            </NavLink>
+        </div>
+
+
+        @if (expandListings)
+        {
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="lookups/list" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.ListAlt" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Manage Lookups
                     </NavLink>
                 </div>
-            </NotAuthorized>
-        </AuthorizeView>
+            </NavLink>
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 mb-n3">
+                    <NavLink class="nav-link" href="histologies/list" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.ListAlt" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Manage Histologies
+                    </NavLink>
+                </div>
+            </NavLink>
+        }
+
+        <div class="nav-item px-3">
+
+            <NavLink class="nav-link mr-80" @onclick="HandleHospitalsClick" style="color: white;">
+                <MudIcon Icon="@Icons.Material.Filled.LocalHospital" Class="nav-icon mr-2" />
+                <span aria-hidden="true"></span> Hospitals
+            </NavLink>
+        </div>
+
+
+        @if (expandHospitals)
+        {
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="hospitals/create" style="color: white;">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Hospital
+                    </NavLink>
+                </div>
+            </NavLink>
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 mb-n3">
+                    <NavLink class="nav-link" href="hospitals/list" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.LocalHospital" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Manage Hospitals
+                    </NavLink>
+                </div>
+            </NavLink>
+        }
+
+        <div class="nav-item px-3">
+
+            <NavLink class="nav-link mr-80" @onclick="HandleDoctorsClick" style="color: white;">
+                <MudIcon Icon="@Icons.Material.Filled.MedicalServices" Class="nav-icon mr-2" />
+                <span aria-hidden="true"></span> Doctors
+            </NavLink>
+        </div>
+
+
+        @if (expandDoctors)
+        {
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="doctors/create" style="color: white;">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Doctor
+                    </NavLink>
+                </div>
+            </NavLink>
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 mb-n3">
+                    <NavLink class="nav-link" href="doctors/list" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.MedicalServices" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Manage Doctors
+                    </NavLink>
+                </div>
+            </NavLink>
+        }
+
+
+        <div class="nav-item px-3">
+
+            <NavLink class="nav-link mr-80" @onclick="HandleReimbursementEntitiesClick" style="color: white;">
+                <MudIcon Icon="@Icons.Material.Filled.AccountBalance" Class="nav-icon mr-2" />
+                <span aria-hidden="true"></span> Reimbursement Entities
+            </NavLink>
+        </div>
+
+
+        @if (expandReimbursementEntities)
+        {
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="reimbursemententities/create" style="color: white;">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Reimb. Entity
+                    </NavLink>
+                </div>
+            </NavLink>
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 mb-n3">
+                    <NavLink class="nav-link" href="reimbursemententities/list" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.AccountBalance" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Manage Reimb. Entities
+                    </NavLink>
+                </div>
+            </NavLink>
+        }
+
+        <div class="nav-item px-3">
+
+            <NavLink class="nav-link mr-80" @onclick="HandleRCAContactsClick" style="color: white;">
+                <MudIcon Icon="@Icons.Material.Filled.Contacts" Class="nav-icon mr-2" />
+                <span aria-hidden="true"></span> RCA Contacts
+            </NavLink>
+        </div>
+
+
+        @if (expandRCAContacts)
+        {
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="rcacontacts/create" style="color: white;">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create RCA Contact
+                    </NavLink>
+                </div>
+            </NavLink>
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 mb-n3">
+                    <NavLink class="nav-link" href="rcacontacts/list" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.Contacts" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Manage RCA Contacts
+                    </NavLink>
+                </div>
+            </NavLink>
+        }
+
+        <div class="nav-item px-3">
+
+            <NavLink class="nav-link mr-80" @onclick="HandleReportsClick" style="color: white;">
+                <MudIcon Icon="@Icons.Material.Filled.LibraryBooks" Class="nav-icon mr-2" />
+                <span aria-hidden="true"></span> Reports
+            </NavLink>
+        </div>
+
+
+        @if (expandReports)
+        {
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="reports/pathsbystudybydate" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.LibraryBooks" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Path Counts
+                    </NavLink>
+                </div>
+            </NavLink>
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="reports/cecspathcaserace" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.LibraryBooks" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> CECS Path Case Race
+                    </NavLink>
+                </div>
+            </NavLink>
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 mb-n8">
+                    <NavLink class="nav-link" href="reports/pathsubmissions" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.LibraryBooks" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Path Submission Entry
+                    </NavLink>
+                </div>
+            </NavLink>
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 mb-n3">
+                    <NavLink class="nav-link" href="reports/participantstatus" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.LibraryBooks" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Participant Status
+                    </NavLink>
+                </div>
+            </NavLink>
+        }
+
+
+        <div class="nav-item px-3">
+
+            <NavLink class="nav-link mr-80" @onclick="HandleInvoicesClick" style="color: white;">
+                <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Class="nav-icon mr-2" />
+                <span aria-hidden="true"></span> Invoices
+            </NavLink>
+        </div>
+
+
+        @if (expandInvoices)
+        {
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="invoices/list" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Current Invoices
+                    </NavLink>
+                </div>
+            </NavLink>
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 mb-n8">
+                    <NavLink class="nav-link" href="invoices/pastlist" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Past Invoices
+                    </NavLink>
+                </div>
+            </NavLink>
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 mb-n3">
+                    <NavLink class="nav-link" href="invoices/tracking" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Tracking
+                    </NavLink>
+                </div>
+            </NavLink>
+        }
+        <div class="nav-item px-3">
+
+            <NavLink class="nav-link mr-80" @onclick="HandleDoNotContactsClick" style="color: white;">
+                <MudIcon Icon="@Icons.Material.Filled.DoNotDisturbAlt" Class="nav-icon mr-2" />
+                <span aria-hidden="true"></span> Do Not Contact
+            </NavLink>
+        </div>
+
+
+        @if (expandDoNotContacts)
+        {
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="donotcontact/create" style="color: white;">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Do Not Contact
+                    </NavLink>
+                </div>
+            </NavLink>
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 mb-n3">
+                    <NavLink class="nav-link" href="donotcontact/list" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.DoNotDisturbAlt" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Manage Do Not Contact
+                    </NavLink>
+                </div>
+            </NavLink>
+        }
+
+
+        <div class="nav-item px-3">
+
+            <NavLink class="nav-link mr-80" @onclick="HandleArchivesClick" style="color: white;">
+                <MudIcon Icon="@Icons.Material.Filled.Archive" Class="nav-icon mr-2" />
+                <span aria-hidden="true"></span> Archives
+            </NavLink>
+        </div>
+
+
+        @if (expandArchives)
+        {
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 my-n8">
+                    <NavLink class="nav-link" href="archives/studies" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.Archive" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Archived Studies
+                    </NavLink>
+                </div>
+            </NavLink>
+            <NavLink class="expand-menu" href="">
+                <div class="nav-item ml-10 mr-60 mb-n3">
+                    <NavLink class="nav-link" href="archives/cases" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.Archive" Class="nav-icon mr-2" />
+                        <span aria-hidden="true"></span> Archived Cases
+                    </NavLink>
+                </div>
+            </NavLink>
+        }
+
     </nav>
 </div>
 
 @code {
-    private string? currentUrl;
+    private bool expandCases;
+    private bool expandStudies;
+    private bool expandListings;
+    private bool expandHospitals;
+    private bool expandDoctors;
+    private bool expandExports;
+    private bool expandDoNotContacts;
+    private bool expandArchives;
+    private bool expandReimbursementEntities;
+    private bool expandRCAContacts;
+    private bool expandInvoices;
+    private bool expandReports;
 
-    protected override void OnInitialized()
+    private void HandleCasesClick()
     {
-        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        NavigationManager.LocationChanged += OnLocationChanged;
+        expandCases = !expandCases;
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    private void HandleStudiesClick()
     {
-        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
-        StateHasChanged();
+        expandStudies = !expandStudies;
     }
 
-    public void Dispose()
+    private void HandleExportsClick()
     {
-        NavigationManager.LocationChanged -= OnLocationChanged;
+        expandExports = !expandExports;
+    }
+
+    private void HandleListingsClick()
+    {
+        expandListings = !expandListings;
+    }
+
+    private void HandleHospitalsClick()
+    {
+        expandHospitals = !expandHospitals;
+    }
+
+    private void HandleDoctorsClick()
+    {
+        expandDoctors = !expandDoctors;
+    }
+    private void HandleDoNotContactsClick()
+    {
+        expandDoNotContacts = !expandDoNotContacts;
+    }
+    private void HandleArchivesClick()
+    {
+        expandArchives = !expandArchives;
+    }
+    private void HandleReimbursementEntitiesClick()
+    {
+        expandReimbursementEntities = !expandReimbursementEntities;
+    }
+    private void HandleRCAContactsClick()
+    {
+        expandRCAContacts = !expandRCAContacts;
+    }
+    private void HandleInvoicesClick()
+    {
+        expandInvoices = !expandInvoices;
+    }
+    private void HandleReportsClick()
+    {
+        expandReports = !expandReports;
     }
 }
-
