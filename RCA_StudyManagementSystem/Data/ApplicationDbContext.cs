@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using RCA_StudyManager.Shared.Domain;
+using RCA_StudyManagementSystem.Shared.Domain;
 
 namespace RCA_StudyManagementSystem.Data
 {

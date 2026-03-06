@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RCA_StudyManager.Shared\RCA_StudyManager.Shared.csproj" />
+    <ProjectReference Include="..\RCA_StudyManager.Shared\RCA_StudyManagementSystem.Shared.csproj" />
   </ItemGroup>
 
 </Project>
