@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -10,13 +10,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
+    <PackageReference Include="ExcelDataReader" Version="3.8.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.3" />
     <PackageReference Include="MudBlazor" Version="9.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RCA_StudyManager.Shared\RCA_StudyManagementSystem.Shared.csproj" />
+    <ProjectReference Include="..\RCA_StudyManagementSystem.Shared\RCA_StudyManagementSystem.Shared.csproj" />
+    <ProjectReference Include="..\RCA_StudyManagementSystem.Shared\RCA_StudyManagementSystem.Shared.csproj" />
   </ItemGroup>
 
 </Project>

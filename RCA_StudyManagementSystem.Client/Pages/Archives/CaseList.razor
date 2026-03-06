@@ -1,0 +1,101 @@
+﻿@page "/archives/cases"
+
+@using Blazored.LocalStorage
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.ViewModels
+@using MudBlazor
+@using System.Linq
+
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject PathReportData PathReportData
+@inject PatientData PatientData
+@inject StudyData StudyData
+@inject DoNotContactData DoNotContactData
+@inject GridStateView<PathReportView> PathGridStateView
+@inject ILocalStorageService LocalStorage
+
+@implements IDisposable
+
+@rendermode InteractiveWebAssembly
+
+
+<MudDataGrid T="PathReportView" @ref="pathGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
+             ColumnResizeMode="ResizeMode.Column"
+             QuickFilter="@_quickFilter" Dense
+             FilterDefinitions="@PathGridStateView.FilterDefinitions"
+             SortDefinitions="@PathGridStateView.SortDefinitions"
+             CurrentPage="@PathGridStateView.CurrentPage"
+             CurrentPageChanged=@((currentPage) => OnCurrentPageChanged(currentPage))
+             FilterMode="DataGridFilterMode.ColumnFilterRow" AllowUnsorted="false" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Archived Cases by Path Report</MudText>
+        <MudSpacer />
+        <MudButton Class="mr-2" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="() => ClearStateItems()">Reset Filters</MudButton>
+        <MudTextField @bind-Value="SearchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable="true"></MudTextField>
+    </ToolBarContent>
+    <Columns>
+
+        <PropertyColumn Property="x => x.CaseNumber" Title="Case Number" Filterable="false" />
+        <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="false" />
+        <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="false" />
+        <PropertyColumn Property="x => x.MiddleName" Title="Middle Name" Filterable="false" />
+        <PropertyColumn Property="x => x.DateOfBirth" Title="Date of Birth" Filterable="false" />
+
+        <PropertyColumn Property="x => x.ExportStatus" Title="Export Status" Filterable="false" />
+        <PropertyColumn Property="x => x.SocialSecurityNumber" Title="Social Security Number" Hidden Filterable="false" />
+        <PropertyColumn Property="x => x.SubmittingHospitalPathReportNumber" Title="Sub. Hosp. Path Report Number" Hidden Filterable="false" />
+        <PropertyColumn Property="x => x.SubmittingHospital" Title="Submitting Hospital" Hidden Filterable="false" />
+        <PropertyColumn Property="x => x.HospShortName" Title="Hospital Short Name" Hidden Filterable="false" />
+        <PropertyColumn Property="x => x.DisplayName" Title="Display Name" Hidden Filterable="false" />
+        <TemplateColumn Tag="@("ExportDate")" Title="Export Date" SortBy="x => x.RcaExportDate" Context="dateContext" Sortable="true">
+            <CellTemplate>
+                <MudText Typo="Typo.body2">@dateContext.Item.RcaExportDate?.ToShortDateString()</MudText>
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Age of Path" SortBy="x => x.MaxAgeDiff" Context="ageContext" Sortable="true">
+            <CellTemplate>
+                @if (ageContext.Item.MaxAgeDiff > 0)
+                {
+                    <MudText Color="Color.Error" Typo="Typo.body2">@ageContext.Item.MaxAgeDiff</MudText>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2">N/A</MudText>
+                }
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.StudyName" Title="Study" Filterable="true" Hidden CellStyle="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+            <FilterHeaderCell>
+                <FilterOptions>
+                    <MudDataGridFilterOperator Operator="FilterOperator.String.Contains" />
+                </FilterOptions>
+            </FilterHeaderCell>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.StudyPrefix" Title="Study Prefix" Filterable="true">
+            <FilterHeaderCell>
+                <FilterOptions>
+                    <MudDataGridFilterOperator Operator="FilterOperator.String.Contains" />
+                </FilterOptions>
+            </FilterHeaderCell>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.IsOnHold" Title="On Hold" Sortable="true" SortBy="@_sortByHold" HeaderStyle="width: 15em;">
+            <CellTemplate>
+                <MudCheckBox T="bool" @bind-Value="context.Item.IsOnHold" ReadOnly="true" />
+            </CellTemplate>
+        </PropertyColumn>
+        <TemplateColumn HeaderText="Actions">
+            <CellTemplate>
+                @*                 <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item)) Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+ *@                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item.Patient, context.Item)) Variant="Variant.Text" Color="Color.Primary">View</MudIconButton>
+@*                 <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Href="@($"/cases/edit/{context.Item.PatientId}/Cases")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+ *@            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="PathReportView" />
+    </PagerContent>
+</MudDataGrid>

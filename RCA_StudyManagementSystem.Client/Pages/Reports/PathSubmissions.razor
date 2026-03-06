@@ -1,0 +1,115 @@
+﻿@page "/reports/pathsubmissions"
+
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.ViewModels
+@using MudBlazor
+@using System.Linq
+
+@inject IJSRuntime JSRuntime
+@inject StudyData StudyData
+@inject DailyPathSubmissionData DailyPathSubmissionData
+@inject HospitalData HospitalData
+
+
+@rendermode InteractiveWebAssembly
+
+<style>
+    /* Removes the default underline/border until focused */
+    /*     .daily-input .mud-input {
+            border: 1px solid transparent;
+            padding: 4px;
+        } */
+
+    /* Shows a border only when the user clicks/tabs into the cell */
+    /*         .daily-input .mud-input:focus-within {
+                border: 1px solid var(--mud-palette-primary);
+                background-color: var(--mud-palette-background-grey);
+            } */
+
+    /* Keep the columns tight since there are 30+ */
+    /*     .mud-table-cell {
+            padding: 2px !important;
+        } */
+
+    .my-custom-grid .mud-table-toolbar {
+        background-color: @StudyColor !important;
+        /* Ensure it still behaves like a flex container */
+        display: flex;
+    }
+
+</style>
+
+<MudDataGrid Items="@Rows" T="MonthlyPathSubmissionView" SortMode="SortMode.Single" Filterable="true" Class="my-custom-grid"
+             Dense EditMode="@DataGridEditMode.Cell" ReadOnly="true" RowStyleFunc="@SelectedRowStyleFunc"
+             QuickFilter="@_quickFilter">
+    <ToolBarContent>
+            <MudText Typo="Typo.h6">Path Submission Entry</MudText>
+            <div style="width: 200px;" class="ml-8">
+
+                <MudSelect id="studySelect" T="Study" @bind-Value="studySelectValue" @bind-Text="studySelectText" Typo="Typo.subtitle1" Margin="Margin.Dense"
+                           Label="Study" HelperText="" Placeholder="Select Study" Dense="true"
+                           SelectedValuesChanged="@((value) => OnStudySelectChanged(value.First<Study>()))"
+                           aria-hidden="false">
+                    @foreach (var option in StudyList)
+                    {
+                        <MudSelectItem T="Study" Value="@option">@option.Prefix</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            <div style="width: 100px;" class="ml-3">
+                <MudSelect T="int" Value="SelectedYear" Label="Year" Dense="true" Class="ml-4" ValueChanged="YearChanged">
+
+                    <MudSelectItem T="int" Value="(DateTime.Now.Year) - 1">@(DateTime.Now.Year - 1)</MudSelectItem>
+                    <MudSelectItem T="int" Value="(DateTime.Now.Year)">@(DateTime.Now.Year)</MudSelectItem>
+
+                </MudSelect>
+            </div>
+            <div style="width: 200px;" class="ml-3">
+                <MudSelect T="string" Label="Month" Value="SelectedMonth" ValueChanged="MonthChanged">
+                    @foreach (var month in months)
+                    {
+                        <MudSelectItem Value="@month">@month</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            <MudSpacer />
+            @* <MudButton Class="mr-2" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="() => ClearStateItems()">Reset Filters</MudButton> *@
+            <MudTextField @bind-Value="SearchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0 ml-15" Clearable="true"></MudTextField>
+    </ToolBarContent>
+    <Columns>
+        <!-- Static Column -->
+        <PropertyColumn Property="x => x.HospitalShortName" Title="Hospital" StickyLeft="true" >
+            <CellTemplate>
+                <div @onclick="@(() => SelectRow(context.Item))"
+                     style="cursor: pointer; width: 100%; height: 100%; min-height: 2rem; display: flex; align-items: center;">
+                    @context.Item.HospitalShortName
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+
+        @foreach (var day in DaysInMonth)
+        {
+            var d = day.Day;
+            <TemplateColumn T="MonthlyPathSubmissionView" Title="@day.ToString("dd")">
+                <CellTemplate>
+                    @{
+                        var item = context.Item;
+                    }
+                    <MudTextField T="string"
+                                  Value="@item.DailyValues.GetValueOrDefault(d)"
+                                  ValueChanged="@(val => OnCellValueChanged(item, d, val))"
+                                  Underline="true"
+                                  Margin="Margin.Dense"
+                                  Style="text-align: center; padding: 0;"
+                                  Class="daily-input" />
+                </CellTemplate>
+            </TemplateColumn>
+        }
+
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="MonthlyPathSubmissionView" />
+    </PagerContent>
+</MudDataGrid>

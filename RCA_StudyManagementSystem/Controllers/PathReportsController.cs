@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using RCA_StudyManagementSystem.Api.Data;
+using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;

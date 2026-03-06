@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
-using RCA_StudyManagementSystem.Api.Data;
+using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Shared.Domain;
 using System;
 using System.Collections.Generic;

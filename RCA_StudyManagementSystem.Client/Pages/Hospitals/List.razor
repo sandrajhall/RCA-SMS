@@ -1,0 +1,63 @@
+﻿@page "/hospitals/list"
+
+@using Blazored.LocalStorage
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.ViewModels
+@using MudBlazor
+@using System.Linq
+
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject HospitalData HospitalData
+@inject GridStateView<Hospital> HospGridStateView
+@inject ILocalStorageService LocalStorage
+
+@implements IDisposable
+
+@rendermode InteractiveWebAssembly
+
+
+<MudDataGrid T="Hospital" @ref="hospGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
+             QuickFilter="@_quickFilter" Dense
+             FilterDefinitions="@HospGridStateView.FilterDefinitions"
+             SortDefinitions="@HospGridStateView.SortDefinitions"
+             CurrentPage="@HospGridStateView.CurrentPage"
+             CurrentPageChanged=@((currentPage) => OnCurrentPageChanged(currentPage))
+             FilterMode="DataGridFilterMode.ColumnFilterRow" AllowUnsorted="false" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Hospitals</MudText>
+        <MudSpacer />
+        <MudButton Class="mr-2" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="() => ClearStateItems()">Reset Filters</MudButton>
+        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable="true"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <Col Width="15em" />
+       
+    </ColGroup>
+    <Columns>
+
+        <PropertyColumn Property="x => x.HospitalCode" Title="Hospital Code" Filterable="false" />
+        <PropertyColumn Property="x => x.HospitalShortName" Title="Short Name" Filterable="false" />
+        <PropertyColumn Property="x => x.HospitalName" Title="Full Name" Filterable="false" />
+        <PropertyColumn Property="x => x.City" Title="City" Filterable="false" />
+        <TemplateColumn Title="Hospital Phone" Filterable="false">
+            <CellTemplate>
+                <MudText>@FormatPhoneNumber(context.Item.PhoneNumber)</MudText>
+            </CellTemplate>
+        </TemplateColumn>
+               
+        <TemplateColumn HeaderText="Actions">
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item, context.Item)) Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Href="@($"/hospitals/edit/{context.Item.HospitalId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="Hospital"/>
+    </PagerContent>
+</MudDataGrid>
+@* <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"  OnClick="OnImport">Import Hospitals</MudButton>
+ *@

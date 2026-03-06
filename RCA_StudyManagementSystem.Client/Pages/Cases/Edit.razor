@@ -1,0 +1,91 @@
+﻿@page "/cases/edit/{PatientId:guid}"
+@page "/cases/edit/{PatientId:guid}/{IsSaved:bool?}"
+@page "/cases/edit/{PatientId:guid}/{List}"
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.Domain
+@using System.ComponentModel.DataAnnotations
+@using System.Net.Http
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject PatientData PatientData
+@inject StudyData StudyData
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject ILogger<Edit> Logger
+
+
+
+
+@rendermode InteractiveWebAssembly
+
+@* This style does not get picked up in the css file, so it has to go here.
+ *@
+<style>
+    .mud-toolbar {
+        --mud-internal-toolbar-height: 15px !important;
+        z-index: 10000 !important;
+    }
+</style>
+
+
+<MudPaper Class="d-flex pa-2 rca-case-header">
+    <h3 class="mt-2 mr-5">Case Number:  @Patient.CaseNumber</h3>
+
+
+    <style>
+        .rca-case-header {
+            background-color: @StudyColor !important;
+        }
+    </style>
+
+
+    <MudSpacer />
+    <div class="mt-1">
+        <MudButton Class="ml-1" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnSubmit">Save</MudButton>
+        <MudButton Class="ml-1" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnSaveAndClose">Save and Close</MudButton>
+        @if(Patient.PathReports != null && Patient.PathReports.Count > 0)
+        {
+            var exported = false;
+            foreach (var pr in Patient.PathReports)
+            {
+                if (pr.RcaExportDate != null)
+                {
+                    exported = true;
+                    break;
+                }
+            }
+            if(!exported)
+            {
+                <MudButton Class="ml-1" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnDelete">Delete </MudButton>
+            }
+        }
+        <MudButton Class="ml-1" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Warning" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnCancel">Cancel </MudButton>
+        @*             <button type="submit" class="btn btn-outline-primary ms-1">Submit</button>
+        *@
+    </div>
+</MudPaper>
+<br />
+
+
+<EditForm Enhance OnSubmit="OnSubmit" FormName="EditCase" EditContext=EditContext>
+    <ObjectGraphDataAnnotationsValidator />
+    <ValidationSummary />
+
+
+    @if (HasErrors)
+    {
+        @* <MudAlert Severity=@severity>@SaveMessage</MudAlert> *@
+        Snackbar.Add(@SaveMessage, severity);
+
+    }
+    @if (StudyId != Guid.Empty)
+    {
+        <div class="@(ShowFields ? "" : "d-none")">
+
+            <Fields Patient="@Patient" IsSaved=@IsSaved StudyId=@StudyId />
+        </div>
+    }
+
+</EditForm>

@@ -1,0 +1,222 @@
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.JSInterop;
+using MudBlazor;
+using RCA_StudyManagementSystem.Client.Services;
+using RCA_StudyManagementSystem.Shared.Domain;
+using RCA_StudyManagementSystem.Shared.ViewModels;
+using System.Net.Http.Json;
+using System.Text.Json;
+
+
+namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
+{
+    public partial class Fields : Microsoft.AspNetCore.Components.ComponentBase
+    {
+
+        [Parameter]
+        public Hospital Hospital { get; set; } = new Hospital();
+
+        [CascadingParameter]
+        public EditContext? EditContext { get; set; }
+
+
+        [Parameter]
+        public bool IsSaved { get; set; }
+
+        public CancellationToken CancellationToken { get; set; } = new CancellationToken();
+        private GeoapifySuggestion? SelectedValue { get; set; }
+
+
+
+
+        private CancellationToken cancellationToken { get; set; } = new CancellationToken();
+        private List<GeoapifySuggestion> Suggestions = new();
+        private string SelectedAddress = "";
+        private string GeoapifyApiKey = String.Empty; // Securely obtain API key in production
+
+        private List<ReimbursementEntity> reimbursementEntities = new();
+
+
+
+
+        protected override async Task OnInitializedAsync()
+        {
+            GeoapifyApiKey = Configuration["Geoapify:ApiKey"]!;
+
+            EditContext!.OnFieldChanged += HandleFieldChanged; // Subscribe to field change events
+            reimbursementEntities = (await ReimbursementEntityData.ListReimbursementEntitiesAsync(cancellationToken)).ToList();
+
+        }
+
+
+        private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
+        {
+
+            IsSaved = false;
+            // Logic to execute when a field changes
+            // e.FieldIdentifier provides information about the changed field
+            //Console.WriteLine($"Field in child '{e.FieldIdentifier.FieldName}' changed.");
+
+        }
+
+        private async Task HandleInternalNavigation(LocationChangingContext context)
+        {
+            if (EditContext!.IsModified())
+            {
+                var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "You have unsaved changes. Do you want to leave?");
+                if (!confirmed)
+                {
+                    context.PreventNavigation();
+                }
+            }
+        }
+
+
+        private string GetDisplayText(Guid? id)
+        {
+            return reimbursementEntities.FirstOrDefault(item => item.ReimbursementEntityId == id)?.Name ?? "Unknown";
+        }
+
+
+        private async Task<IEnumerable<GeoapifySuggestion>> Search(string text, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(text) || text.Length < 3)
+            {
+                Suggestions.Clear();
+                return null!;
+            }
+
+            try
+            {
+                var url = $"https://api.geoapify.com/v1/geocode/autocomplete?text={text}&apiKey={GeoapifyApiKey}";
+                var client = ClientFactory.CreateClient("Geoapify");
+                var response = await client.GetFromJsonAsync<GeoapifyAutocompleteResponse>(url);
+                if (response == null)
+                {
+                    Console.WriteLine("No response received.");
+                    Suggestions.Clear();
+                    return null!;
+                }
+                if (response?.Features != null)
+                {
+                    Suggestions = response.Features
+                                          .Select(f => new GeoapifySuggestion
+                                          {
+                                              FormattedAddress = f.Properties.Formatted,
+                                              City = f.Properties.City,
+                                              State_Code = f.Properties.State_Code,
+                                              Postcode = f.Properties.Postcode,
+                                              Address_line1 = f.Properties.Address_line1,
+                                              Address_line2 = f.Properties.Address_line2,
+                                              County = f.Properties.County
+                                          })
+                                          .ToList();
+                    return Suggestions;
+
+                }
+                else
+                {
+                    Suggestions.Clear();
+                    return null!;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"Error fetching suggestions: {ex.Message}");
+                Suggestions.Clear();
+                return null!;
+
+            }
+            catch (NotSupportedException) // When content type is not valid
+            {
+                Console.WriteLine("The content type is not supported.");
+                Suggestions.Clear();
+                return null!;
+
+            }
+            catch (JsonException) // Invalid JSON
+            {
+                Console.WriteLine("Invalid JSON.");
+                Suggestions.Clear();
+                return null!;
+
+            }
+        }
+
+        private async Task HandleSelection(GeoapifySuggestion newValue)
+        {
+            SelectedValue = newValue; // Update the component's value
+            await SelectAddress(newValue);
+        }
+
+        private async Task SelectAddress(GeoapifySuggestion suggestion)
+        {
+
+            //SelectedAddress = suggestion.FormattedAddress;
+            //SearchText = suggestion.FormattedAddress; // Update the input field with the selected address
+            Hospital.City = suggestion.City;
+            Hospital.State = suggestion.State_Code;
+            Hospital.ZipCode = suggestion.Postcode;
+            Hospital.Address1 = suggestion.Address_line1;
+            Hospital.County = suggestion.County;
+            //Hospital.Address2 = suggestion.Address_line2; // Assuming Address2 is part of the suggestion
+            Suggestions.Clear(); // Clear the suggestions after selection
+
+            var fieldIdentifierCity = new FieldIdentifier(Hospital, nameof(Hospital.City));
+            var fieldIdentifierState = new FieldIdentifier(Hospital, nameof(Hospital.State));
+            var fieldIdentifierZip = new FieldIdentifier(Hospital, nameof(Hospital.ZipCode));
+            var fieldIdentifierAddress1 = new FieldIdentifier(Hospital, nameof(Hospital.Address1));
+            var fieldIdentifierCounty = new FieldIdentifier(Hospital, nameof(Hospital.County));
+            //var fieldIdentifierAddress2 = new FieldIdentifier(Hospital, nameof(Hospital.Address2));
+
+            EditContext.NotifyFieldChanged(fieldIdentifierCity); // Refresh the UI to reflect the changes
+            EditContext.NotifyFieldChanged(fieldIdentifierState); // Refresh the UI to reflect the changes
+            EditContext.NotifyFieldChanged(fieldIdentifierZip); // Refresh the UI to reflect the changes
+            EditContext.NotifyFieldChanged(fieldIdentifierAddress1); // Refresh the UI to reflect the changes
+            //EditContext.NotifyFieldChanged(fieldIdentifierAddress2); // Refresh the UI to reflect the changes
+            await InvokeAsync(StateHasChanged);
+        }
+
+        // You would define these classes based on the Geoapify API response structure
+        public class GeoapifyAutocompleteResponse
+        {
+            public List<Feature> Features { get; set; } = new();
+        }
+
+        public class Feature
+        {
+            public Properties Properties { get; set; } = new();
+        }
+
+        public class Properties
+        {
+            public string Formatted { get; set; } = "";
+
+            // Add other properties like street, city, postcode, etc. as needed
+            public string City { get; set; } = "";
+            public string Postcode { get; set; } = "";
+            public string State_Code { get; set; } = "";
+            public string Address_line1 { get; set; } = "";
+            public string Address_line2 { get; set; } = "";
+            public string County { get; set; } = "";
+        }
+
+        public class GeoapifySuggestion
+        {
+            public string FormattedAddress { get; set; } = "";
+
+
+            // You might want to store other properties from the Geoapify response here
+
+            public string City { get; set; } = "";
+            public string Postcode { get; set; } = "";
+            public string State_Code { get; set; } = "";
+            public string Address_line1 { get; set; } = "";
+            public string Address_line2 { get; set; } = "";
+            public string County { get; set; } = "";
+        }
+    }
+
+}

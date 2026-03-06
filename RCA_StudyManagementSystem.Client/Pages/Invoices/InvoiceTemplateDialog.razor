@@ -1,0 +1,208 @@
+﻿@using MudBlazor
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Pages.Cases
+
+@rendermode InteractiveWebAssembly
+
+@inject IDialogService DialogService
+@inject StudyData StudyData
+@inject HospitalData HospitalData
+
+<MudDialog>
+    <DialogContent>
+
+        <MudPagination Color="Color.Primary" ShowFirstButton="true" ShowLastButton="true"
+                       Count="@totalPages"
+                       Selected="@currPage"
+                       SelectedChanged="OnPageChanged"
+                       Class="mt-4 d-flex justify-end" Style="position: fixed; top: 20px; right: 40px; z-index: 1500" />
+
+        <div style=" height:900px; ">
+
+            <MudCard>
+
+                <div class="d-flex mb-10 mt-5">
+                    <MudContainer Class="pa-2">
+                        <MudImage Src="RCA_Logo_large.png" Alt="RCA Logo" Width="500" />
+                    </MudContainer>
+
+                    <MudContainer Class="pa-2">
+                        <div class="d-flex flex-row justify-end">
+                            <span class="mr-3">
+                                <MudText Typo="Typo.h4">INVOICE</MudText>
+                            </span>
+                        </div>
+                        <div class="d-flex flex-row justify-end">
+                            <span class="mr-3">
+                                <MudText Typo="Typo.body1">Date: @Invoice.InvoiceDate.ToShortDateString()</MudText>
+                            </span>
+                        </div>
+                        <div class="d-flex flex-row justify-end">
+                            <span class="mr-3">
+                                <MudText Typo="Typo.body1">@Invoice.InvoiceNumber</MudText>
+                            </span>
+                        </div>
+                    </MudContainer>
+                </div>
+                <div class="mx-10">
+                    <MudContainer>
+                        <MudText Typo="Typo.body1">
+                            <div class="d-flex flex-row">
+                                <b>To:</b>
+                            </div>
+                            <div class="d-flex flex-row">
+                                Heather J Tipaldos, MS, CRA
+                            </div>
+                            <div class="d-flex flex-row">
+                                Facility Director, Rapid Case Ascertainment
+                            </div>
+                            <div class="d-flex flex-row">
+                                UNC‐Chapel Hill Lineberger Comprehensive Cancer Center‐North
+                            </div>
+                            <div class="d-flex flex-row">
+                                1700 Martin Luther King Jr. Blvd, Rm 312
+                            </div>
+                            <div class="d-flex flex-row">
+                                CB 7294
+                            </div>
+                            <div class="d-flex flex-row">
+                                Chapel Hill NC 27599‐7294
+                            </div>
+                            <div class="d-flex flex-row">
+                                Office: 919‐966‐9438
+                            </div>
+                            <div class="d-flex flex-row">
+                                Email: heather_tipaldos@unc.edu
+                            </div>
+                        </MudText>
+
+                        <MudText Inline="true">
+                            <div class="mt-4">
+                                Please find enclosed the <b>@Invoice.InvoiceQuarter</b> Reimbursement Invoice for <b>@Invoice?.ReimbursementEntity?.Name</b> for accepted eligible path reports processed from
+                                <b>@StartDate.ToShortDateString() - @EndDate.ToShortDateString()</b>.  Eligible path reports are reimbursed at $15.00 per report.
+                            </div>
+                        </MudText>
+                    </MudContainer>
+
+                    <div class="d-flex mx-10">
+                        <MudContainer>
+                            <MudText Typo="Typo.body1">
+                                <div class="d-flex flex-row mb-3 mt-5">
+                                    <b>RCA Contact(s):</b>
+                                </div>
+
+                                @foreach (var contact in Invoice.ReimbursementEntity.ReimbursementEntityRCAContacts)
+                                {
+                                    if (!string.IsNullOrEmpty(contact.RCAContact.Credentials))
+                                    {
+                                        <div class="d-flex flex-row">
+                                            @contact.RCAContact.FirstName @contact.RCAContact.LastName, @contact.RCAContact.Credentials
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex flex-row">
+                                            @contact.RCAContact.FirstName @contact.RCAContact.LastName
+                                        </div>
+                                    }
+                                    if (!string.IsNullOrEmpty(contact.RCAContact.Title))
+                                    {
+                                        <div class="d-flex flex-row">
+                                            @contact.RCAContact.Title
+                                        </div>
+                                    }
+                                    <div class="d-flex flex-row">
+                                        @contact.RCAContact.Email
+                                    </div>
+                                    if (!string.IsNullOrEmpty(contact.RCAContact.PhoneNumber) && !string.IsNullOrEmpty(contact.RCAContact.PhoneExtension))
+                                    {
+                                        <div class="d-flex flex-row">
+                                            @contact.RCAContact.PhoneNumber ext. @contact.RCAContact.PhoneExtension
+                                        </div>
+                                    }
+                                    else if (!string.IsNullOrEmpty(contact.RCAContact.PhoneNumber))
+                                    {
+                                        <div class="d-flex flex-row">
+                                            @contact.RCAContact.PhoneNumber
+                                        </div>
+                                    }
+                                    <div class="d-flex flex-row mb-3"></div>
+                                }
+                            </MudText>
+                        </MudContainer>
+                        <MudContainer>
+                            <MudText Typo="Typo.body1">
+                                <div class="d-flex flex-row mb-3 mt-5">
+                                    <b>Make Check Payable to/Mail To:</b>
+                                </div>
+
+
+                                <div class="d-flex flex-row">
+                                    <b>@Invoice.ReimbursementEntity.Name</b>
+                                </div>
+                                @if (!string.IsNullOrEmpty(@Invoice.ReimbursementEntity.AttentionTo))
+                                {
+                                    <div class="d-flex flex-row">
+                                        Attn: @Invoice.ReimbursementEntity.AttentionTo
+                                    </div>
+                                }
+                                <div class="d-flex flex-row">
+                                    @Invoice.ReimbursementEntity.AddressLine1
+                                </div>
+                                @if (!string.IsNullOrEmpty(@Invoice.ReimbursementEntity.AddressLine2))
+                                {
+                                    <div class="d-flex flex-row">
+                                        @Invoice.ReimbursementEntity.AddressLine2
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(@Invoice.ReimbursementEntity.AddressLine3))
+                                {
+                                    <div class="d-flex flex-row">
+                                        @Invoice.ReimbursementEntity.AddressLine3
+                                    </div>
+                                }
+                                <div class="d-flex flex-row">
+                                    @Invoice.ReimbursementEntity.City, @Invoice.ReimbursementEntity.State @Invoice.ReimbursementEntity.ZipCode
+                                </div>
+                            </MudText>
+                        </MudContainer>
+                    </div>
+                </div>
+                <div class="d-flex mx-10">
+                    <MudContainer>
+                        <div class="d-flex flex-row mt-8 mb-3">
+                            <MudText><b>Facility</b></MudText><MudSpacer /><MudText><b>Study - Num Path Reports - Amount</b></MudText>
+                        </div>
+                        <MudText Typo="Typo.body1">
+
+                            @foreach (var group in GroupedItems)
+                            {
+                                <div class="d-flex flex-row ml-10">
+                                    @group.HospitalName
+                                </div>
+
+                                @foreach (var item in group.Items)
+                                {
+                                    <div class="d-flex flex-row justify-end">
+                                        @item.Study.InvoiceDesignation - @item.NumPathReports path report(s) - $@(item.NumPathReports * 15.00).00
+                                    </div>
+                                }
+                                <br />
+                                <br />
+                            }
+
+                        </MudText>
+                        <div class="d-flex flex-row mt-8 mb-3">
+                            <MudText><b></b></MudText><MudSpacer /><MudText><b>Total Amount: $@Invoice.TotalAmount</b></MudText>
+                        </div>
+                        <div class="d-flex flex-row mt-10 mb-5">Signed: ____________________________________________________________________</div>
+                        <div class="d-flex flex-row mb-5">Title: ______________________________________________________________________</div>
+                        <div class="d-flex flex-row mb-5">Date: ______________________________________________________________________</div>
+                    </MudContainer>
+                </div>
+            </MudCard>
+        </div>
+    </DialogContent>
+
+</MudDialog>

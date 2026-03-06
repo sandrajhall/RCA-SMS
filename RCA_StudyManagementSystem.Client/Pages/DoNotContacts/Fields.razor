@@ -1,0 +1,143 @@
+﻿@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Text.Json;
+@inject IHttpClientFactory ClientFactory
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IConfiguration Configuration
+@inject DoNotContactData DoNotContactData
+@inject StudyData StudyData
+
+
+
+
+
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@* This style does not get picked up in the css file, so it has to go here.
+ *@
+<style>
+    .mud-toolbar {
+        --mud-internal-toolbar-height: 15px !important;
+        z-index: 10000 !important;
+    }
+
+    .mud-popover {
+        z-index: 20000 !important;
+    }
+
+    .mud-input > textarea.mud-input-root.mud-input-root-margin-dense {
+        padding-left: 8px !important;
+    }
+
+    .mud-input {
+        background-color: white !important;
+    }
+
+    .mud-input-control.mud-input-control-margin-normal.mud-input-outlined-with-label {
+        font: caption;
+        font-weight: bolder !important;
+    }
+
+    .mud-grid {
+        background-color: #dadfe096 !important;
+        padding-right: 24px;
+        padding-bottom: 24px;
+    }
+
+    .mud-checkbox-false {
+        background-color: white !important;
+    }
+
+</style>
+
+<NavigationLock OnBeforeInternalNavigation="HandleInternalNavigation" ConfirmExternalNavigation="EditContext.IsModified()" />
+
+
+@if (IsSaved)
+{
+
+    Snackbar.Add("Do Not Contact has been saved.", Severity.Success);
+    IsSaved = false;
+
+}
+<br />
+<br />
+<MudContainer>
+    <MudGrid>
+
+        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+            <MudTextField T="string" Mask="@(new PatternMask("000-00-0000"))" Label="SSN" Variant="Variant.Outlined"
+                          @bind-Value="@DoNotContact.SocialSecurityNumber" Margin="Margin.Normal"
+                          For="@(() => DoNotContact.SocialSecurityNumber)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+            <MudTextField T="DateTime?"
+                          Mask="@(new DateMask("MM/dd/yyyy"))"
+                          HelperText="MM/dd/yyyy"
+                          Label="Date of Birth"
+                          Variant="@Variant.Outlined"
+                          @bind-Value="@DoNotContact.DateOfBirth"
+                          Margin="Margin.Normal"
+                          For="@(() => DoNotContact.DateOfBirth)"
+                          OnlyValidateIfDirty="true">
+            </MudTextField>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4" Class="my-n3" />
+        <MudItem xs="12" sm="4" md="3" Class="my-n3">
+            <MudTextField Label="First Name" Variant="Variant.Outlined"
+                          @bind-Value="@DoNotContact.FirstName" Margin="Margin.Normal"
+                          For="@(() => DoNotContact.FirstName)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="4" md="3" Class="my-n3">
+            <MudTextField Label="Middle Name" Variant="Variant.Outlined"
+                          @bind-Value="@DoNotContact.MiddleName" Margin="Margin.Normal"
+                          For="@(() => DoNotContact.MiddleName)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="4" md="3" Class="my-n3">
+            <MudTextField Label="Last Name" Variant="Variant.Outlined"
+                          @bind-Value="@DoNotContact.LastName" Margin="Margin.Normal"
+                          For="@(() => DoNotContact.LastName)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3" Class="my-n3" />
+
+       
+        <MudItem xs="12" sm="4" md="4" Class="my-n3">
+            <MudTextField Label="Phone Number" @bind-Value="DoNotContact.PhoneNumber"
+                          Variant="Variant.Outlined"
+                          Mask="@(new PatternMask("000-000-0000"))" Margin="Margin.Normal"
+                          For="@(() => DoNotContact.PhoneNumber)"></MudTextField>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="8" Class="my-n3" />
+        <MudItem xs="4" sm="3" md="2">
+            <MudSelect id="studySelect" T="Study" @bind-Value="studySelectValue" Typo="Typo.subtitle1" Margin="Margin.Dense"
+                       Label="Study" HelperText="" Placeholder="Select Study" Variant="Variant.Outlined" Dense="true"
+                       SelectedValuesChanged="@((value) => OnStudySelectChanged(value.First<Study>()))"
+                       aria-hidden="false">
+                @foreach (var option in StudyList)
+                {
+                    <MudSelectItem T="Study" Value="@option">@option.Prefix</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="9" Class="my-n3" />
+        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+            <MudTextField T="DateTime?" Mask="@(new DateMask("MM/dd/yyyy"))" HelperText="MM/dd/yyyy" Label="Date of Last Contact" Variant="Variant.Outlined"
+                          @bind-Value="@DoNotContact.DateLastContact" Margin="Margin.Normal"
+                          For="@(() => DoNotContact.DateLastContact)"
+                          OnlyValidateIfDirty="true"></MudTextField>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@* <pre>
+    @(JsonSerializer.Serialize(DoNotContact, new JsonSerializerOptions { WriteIndented = true }))
+</pre> *@

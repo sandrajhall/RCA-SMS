@@ -1,0 +1,94 @@
+﻿@page "/studies/edit/{StudyId:guid}"
+@page "/studies/edit/{StudyId:guid}/{IsSaved:bool?}"
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.Domain
+@using System.ComponentModel.DataAnnotations
+@using System.Net.Http
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject StudyData StudyData
+@inject StudyLookupData StudyLookupData
+@inject StudyHistologyData StudyHistologyData
+@inject PathReportData PathReportData
+@inject StudyHeaderData StudyHeaderData
+@inject StudyReportHeaderData StudyReportHeaderData
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject ILogger<Edit> Logger
+
+
+
+
+@rendermode InteractiveWebAssembly
+
+@* This style does not get picked up in the css file, so it has to go here.
+ *@
+<style>
+    .mud-toolbar {
+        --mud-internal-toolbar-height: 15px !important;
+        z-index: 10000 !important;
+    }
+</style>
+
+
+<MudPaper Class="d-flex pa-2 rca-study-header">
+
+    <style>
+        .rca-study-header {
+            background-color: @Study.ColorLight !important;
+        }
+    </style>
+
+
+    <MudSpacer />
+    <div class="col-4 mt-1">
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnSubmit">Save</MudButton>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnSaveAndClose">Save and Close</MudButton>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnDeactivate">Deactivate </MudButton>
+        @if(Study.DaysSinceLastEnrollment > 365)
+        {
+            <MudButton Variant="Variant.Filled" class="mx-1" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnArchive">Archive </MudButton>
+
+        }
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Warning" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnCancel">Cancel </MudButton>
+
+    </div>
+</MudPaper>
+<br />
+
+
+<EditForm Enhance OnSubmit="OnSubmit" FormName="EditStudy" EditContext=EditContext>
+    <ObjectGraphDataAnnotationsValidator />
+    <ValidationSummary />
+
+    @if (IsSaved)
+    {
+        Snackbar.Add(@SaveMessage, severity);
+        IsSaved = false;
+    }
+
+    @if (HasErrors)
+    {
+        @* <MudAlert Severity=@severity>@SaveMessage</MudAlert> *@
+        Snackbar.Add(@SaveMessage, severity);
+
+    }
+
+ 
+        <Fields FormType="Edit" Study="@Study" IsSaved=@IsSaved
+                @bind-StudyLookupViewsRace="StudyLookupViewsRace"
+                @bind-StudyLookupViewsGender="StudyLookupViewsGender"
+                @bind-StudyLookupViewsEthnicity="StudyLookupViewsEthnicity"
+                @bind-StudyLookupViewsProcedure="StudyLookupViewsProcedure"
+                @bind-StudyLookupViewsSite="StudyLookupViewsSite"
+                @bind-StudyLookupViewsCounty="StudyLookupViewsCounty"
+                @bind-StudyHistologyViews="StudyHistologyViews"
+                @bind-StudyHeaderViews="StudyHeaderViews"
+                @bind-StudyReportHeaderViews="StudyReportHeaderViews" />
+
+
+  
+
+</EditForm>

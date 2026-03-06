@@ -1,4 +1,4 @@
-﻿using RCA_StudyManager.Shared.Domain;
+﻿using RCA_StudyManagementSystem.Shared.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;

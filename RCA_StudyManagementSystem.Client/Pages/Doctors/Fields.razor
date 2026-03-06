@@ -1,0 +1,217 @@
+﻿@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Text.Json;
+@inject IHttpClientFactory ClientFactory
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IConfiguration Configuration
+@inject DoctorData DoctorData
+
+
+
+
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@* This style does not get picked up in the css file, so it has to go here.
+ *@
+<style>
+    .mud-toolbar {
+        --mud-internal-toolbar-height: 15px !important;
+        z-index: 10000 !important;
+    }
+
+    .mud-popover {
+        z-index: 20000 !important;
+    }
+
+    .mud-input > textarea.mud-input-root.mud-input-root-margin-dense {
+        padding-left: 8px !important;
+    }
+
+    .mud-input {
+        background-color: white !important;
+    }
+
+    .mud-input-control.mud-input-control-margin-normal.mud-input-outlined-with-label {
+        font: caption;
+        font-weight: bolder !important;
+    }
+
+    .mud-grid {
+        background-color: #dadfe096 !important;
+        padding-right: 24px;
+        padding-bottom: 24px;
+    }
+
+    .mud-checkbox-false {
+        background-color: white !important;
+    }
+
+</style>
+
+<NavigationLock OnBeforeInternalNavigation="HandleInternalNavigation" ConfirmExternalNavigation="EditContext.IsModified()" />
+
+
+@if (IsSaved)
+{
+
+    Snackbar.Add("Doctor has been saved.", Severity.Success);
+    IsSaved = false;
+
+}
+<br />
+<br />
+<MudContainer>
+    <MudGrid>
+
+        <MudItem xs="12" sm="4" md="3" Class="my-n3">
+            <MudTextField Label="First Name" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.FirstName" Margin="Margin.Normal"
+                          For="@(() => Doctor.FirstName)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="4" md="3" Class="my-n3">
+            <MudTextField Label="Middle Name" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.MiddleName" Margin="Margin.Normal"
+                          For="@(() => Doctor.MiddleName)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="4" md="3" Class="my-n3">
+            <MudTextField Label="Last Name" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.LastName" Margin="Margin.Normal"
+                          For="@(() => Doctor.LastName)"></MudTextField>
+        </MudItem>
+        <MudItem xs="4" sm="3" md="2" Class="my-n3">
+            <MudSelect @bind-Value="Doctor.Suffix" Label="Suffix" HelperText="" Placeholder="Select Suffix"
+                       Variant="Variant.Outlined" Margin="Margin.Normal"
+                       For="@(() => Doctor.Suffix)">
+                <MudSelectItem Value="@("Jr.")">Jr.</MudSelectItem>
+                <MudSelectItem Value="@("Sr.")">Sr.</MudSelectItem>
+                <MudSelectItem Value="@("III")">III</MudSelectItem>
+                <MudSelectItem Value="@("IV")">IV</MudSelectItem>
+                <MudSelectItem Value="@("V")">V</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex justify-end">
+            <MudCheckBox T=bool Label="Verified" Dense 
+                Value="Doctor.IsVerified" ValueChanged="(value) => OnVerifiedChanged(value)"
+                For="@(() => Doctor.IsVerified)" />
+        </MudItem>
+
+        <MudItem xs="12" sm="4" md="3" Class="my-n3">
+            <MudSelect @bind-Value="@Doctor.LicenseType" Label="License Type" HelperText="" Placeholder=""
+                       Variant="Variant.Outlined" Margin="Margin.Normal"
+                       For="@(() => Doctor.LicenseType)">
+                <MudSelectItem Value="@("MD")">MD</MudSelectItem>
+                <MudSelectItem Value="@("DO")">DO</MudSelectItem>
+                <MudSelectItem Value="@("NP")">NP</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+
+        <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex justify-end">
+            <MudCheckBox T=bool Label="Pathologist" Dense 
+                @bind-Value="Doctor.IsPathologist" 
+                For="@(() => Doctor.IsPathologist)" />
+        </MudItem>
+
+        <MudItem xs="12" sm="8" md="7" Class="my-n3" />
+        <MudItem xs="12" sm="8" md="1" Class="mt-n12">
+            <MudText Typo="Typo.caption" Class="mt-4">Verified Date: @Doctor.VerifiedDate?.ToShortDateString()</MudText>
+        </MudItem>
+
+
+        <MudItem xs="12" sm="8" md="8" Class="my-n3">
+            <MudTextField Label="Primary Specialty" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.PrimarySpecialty" Margin="Margin.Normal"
+                          For="@(() => Doctor.PrimarySpecialty)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="8" md="8" Class="my-n3">
+            <MudTextField Label="Secondary Specialty" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.SecondarySpecialty" Margin="Margin.Normal"
+                          For="@(() => Doctor.SecondarySpecialty)"></MudTextField>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="6" Class="mt-n3">
+            <MudAutocomplete T="GeoapifySuggestion" Label="Search Address" Clearable Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                             SearchFunc="@Search" Variant="Variant.Outlined" Margin="Margin.Normal"
+                             ShowProgressIndicator="true" ProgressIndicatorColor="Color.Inherit"
+                             ToStringFunc="@((GeoapifySuggestion e)=> e==null?null : $"{e.FormattedAddress}")"
+                             Value="@SelectedValue" ValueChanged="@SelectAddress">
+                <ItemDisabledTemplate>
+                    <MudText>Not available: @context.ToString()</MudText>
+                </ItemDisabledTemplate>
+            </MudAutocomplete>
+        </MudItem>
+        <MudItem xs="12" sm="8" md="6" Class="my-n3" />
+
+        <MudItem xs="12" sm="8" md="8" Class="my-n3">
+            <MudTextField Label="Address 1" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.Address1" Margin="Margin.Normal"
+                          For="@(() => Doctor.Address1)"></MudTextField>
+        </MudItem>
+
+        <MudItem xs="12" sm="8" md="8" Class="my-n3">
+            <MudTextField Label="Address 2" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.Address2" Margin="Margin.Normal"
+                          For="@(() => Doctor.Address2)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="8" md="8" Class="my-n3">
+            <MudTextField Label="Address 3" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.Address3" Margin="Margin.Normal"
+                          For="@(() => Doctor.Address3)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3" Class="my-n3"/>
+            <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                <MudTextField Label="City" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.City" Margin="Margin.Normal"
+                          For="@(() => Doctor.City)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+            <MudTextField Label="State" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.State" Margin="Margin.Normal"
+                          For="@(() => Doctor.State)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="2" Class="my-n3">
+            <MudTextField Label="Zip Code" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.ZipCode" Margin="Margin.Normal"
+                          For="@(() => Doctor.ZipCode)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+            <MudTextField Label="County" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.County" Margin="Margin.Normal"
+                          For="@(() => Doctor.County)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="4" md="4" Class="my-n3">
+            <MudTextField Label="Phone Number1" @bind-Value="Doctor.PhoneNumber1"
+                          Variant="Variant.Outlined"
+                          Mask="@(new PatternMask("000-000-0000"))" Margin="Margin.Normal"
+                          For="@(() => Doctor.PhoneNumber1)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="4" md="4" Class="my-n3">
+            <MudTextField Label="Phone Number2" @bind-Value="Doctor.PhoneNumber2"
+                          Variant="Variant.Outlined"
+                          Mask="@(new PatternMask("000-000-0000"))" Margin="Margin.Normal"
+                          For="@(() => Doctor.PhoneNumber2)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="4" md="4" Class="my-n3">
+            <MudTextField Label="FAX Number" @bind-Value="Doctor.FaxNumber"
+                          Variant="Variant.Outlined"
+                          Mask="@(new PatternMask("000-000-0000"))" Margin="Margin.Normal"
+                          For="@(() => Doctor.FaxNumber)"></MudTextField>
+        </MudItem>
+        <MudItem xs="12" sm="4" md="6" Class="my-n3">
+            <MudTextField Label="Email Address" Variant="Variant.Outlined"
+                          @bind-Value="@Doctor.Email" Margin="Margin.Normal"
+                          For="@(() => Doctor.Email)"></MudTextField>
+        </MudItem>
+
+    </MudGrid>
+</MudContainer>
+
+@* <pre>
+    @(JsonSerializer.Serialize(Doctor, new JsonSerializerOptions { WriteIndented = true }))
+</pre> *@

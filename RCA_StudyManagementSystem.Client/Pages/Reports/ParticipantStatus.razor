@@ -1,0 +1,114 @@
+﻿@page "/reports/participantstatus"
+
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.ViewModels
+@using MudBlazor
+@using System.Linq
+
+@inject IJSRuntime JSRuntime
+@inject StudyData StudyData
+@inject DailyPathSubmissionData DailyPathSubmissionData
+@inject HospitalData HospitalData
+@inject LookupData LookupData
+@inject PatientData PatientData
+@inject PatientStatusData PatientStatusData
+@inject ISnackbar Snackbar
+
+@rendermode InteractiveWebAssembly
+
+<style>
+
+    .my-custom-grid .mud-table-toolbar {
+        background-color: @StudyColor !important;
+        /* Ensure it still behaves like a flex container */
+        display: flex;    
+    }
+</style>
+
+<MudDataGrid Items="@Rows" T="PatientStatusView" SortMode="SortMode.Single" Filterable="true" Class="my-custom-grid"
+             Dense EditMode="@DataGridEditMode.Cell" CommittedItemChanges="@SaveCommentsAsync" ReadOnly="false">
+    <ToolBarContent>
+            <MudText Typo="Typo.h6">Participant Status</MudText>
+            <div style="width: 200px;" class="ml-8">
+
+                <MudSelect id="studySelect" T="Study" @bind-Value="studySelectValue" @bind-Text="studySelectText" Typo="Typo.subtitle1" Margin="Margin.Dense"
+                           Label="Study" HelperText="" Placeholder="Select Study" Dense="true"
+                           SelectedValuesChanged="@((value) => OnStudySelectChanged(value.First<Study>()))"
+                           aria-hidden="false">
+                    @foreach (var option in StudyList)
+                    {
+                        <MudSelectItem T="Study" Value="@option">@option.Prefix</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        <MudSpacer />
+
+        <MudItem xs="4" sm="3" md="2">
+            <MudDatePicker @bind-Date="startDate" Label="Start Date" Variant="Variant.Text" Margin="Margin.Dense" Dense="true" />
+        </MudItem>
+        <MudItem xs="4" sm="3" md="2">
+            <MudDatePicker @bind-Date="endDate" Label="End Date" Variant="Variant.Text" Margin="Margin.Dense" Dense="true" Class="ml-2"/>
+        </MudItem>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Success" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="Generate">Generate Report</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Info" Class="ml-2" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnExport">Download Report</MudButton>
+        <!-- Custom Styled Label acting as a button -->
+@*         <label for="fileInput" class="btn btn-primary">
+            <i class="oi oi-file"></i>  Upload Status Report
+        </label> *@
+        <InputFile id="fileInput" OnChange="OnInputFileChange" hidden />
+
+        <label for="fileInput"
+               class="mud-button-root mud-button mud-button-filled mud-button-filled-primary mud-button-filled-size-small mud-ripple ml-2"
+               style="display: inline-flex; align-items: center; cursor: pointer;">
+            Upload Status Report
+        </label>
+        <br />
+    </ToolBarContent>
+    <Columns>
+        <!-- Static Column -->
+        <PropertyColumn Property="x => x.Date.ToShortDateString()" Title="Date" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.CaseNumber" Title="Case Number" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.DateOfBirth" Format="d" Title="Date of Birth" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.NoContact" Title="Requested No Contact" Filterable="false" Editable="false">
+            <CellTemplate>
+                <MudCheckBox T="bool" @bind-Value="context.Item.NoContact" ReadOnly="true" />
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Status" Title="Status" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.DateOfDeath" Format="d" Title="Date of Death" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.DateLastContact" Format="d" Title="Date of Last Contact" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.InformedOfCancerDiagnosis" Title="Informed of Cancer Diagnosis" Filterable="false" Editable="false">
+            <CellTemplate>
+                <MudCheckBox T="bool" @bind-Value="context.Item.InformedOfCancerDiagnosis" ReadOnly="true" />
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.StatedNoCancerDiagnosis" Title="Stated No Cancer Diagnosis" Filterable="false" Editable="false">
+            <CellTemplate>
+                <MudCheckBox T="bool" @bind-Value="context.Item.StatedNoCancerDiagnosis" ReadOnly="true"/>
+            </CellTemplate>
+        </PropertyColumn>
+        <TemplateColumn Title="Comments" CellStyle="min-width: 400px;">
+            <CellTemplate>
+                @context.Item.Comments
+            </CellTemplate>
+            <EditTemplate>
+                <!-- Lines="0" allows the textfield to expand -->
+                <MudTextField @bind-Value="context.Item.Comments" @bind-Value:after="() => SaveCommentsAsync(context.Item)"
+                              Immediate="true" AutoGrow="true" Variant="Variant.Text" />
+            </EditTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="PatientStatusView" />
+    </PagerContent>
+</MudDataGrid>
+<br />
+<br />
+<!-- Hidden InputFile -->
+<InputFile id="fileInput" OnChange="@OnInputFileChange" style="display:none" />
+
+

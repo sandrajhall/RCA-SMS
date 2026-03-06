@@ -1,0 +1,810 @@
+﻿@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.ViewModels
+@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+@using MudBlazor.Utilities
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Text.Json;
+@inject IHttpClientFactory ClientFactory
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject StudyData StudyData
+@inject StudyLookupData StudyLookupData
+@inject LookupData LookupData
+@inject HistologyData HistologyData
+@inject StudyHistologyData StudyHistologyData
+@inject PathReportData PathReportData
+@inject IDialogService DialogService
+
+
+
+
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@* This style does not get picked up in the css file, so it has to go here.
+ *@
+<style>
+
+    .mud-input {
+        background-color: white !important;
+    }
+
+    .mud-input-control.mud-input-control-margin-normal.mud-input-outlined-with-label {
+        font: caption;
+        font-weight: bolder !important;
+    }
+
+    .mud-grid {
+        background-color: @Study.ColorLight !important;
+        padding-right: 24px;
+        padding-bottom: 24px;
+    }
+
+    .mud-checkbox-false {
+        background-color: white !important;
+    }
+</style>
+
+<NavigationLock OnBeforeInternalNavigation="HandleInternalNavigation" ConfirmExternalNavigation="EditContext.IsModified()" />
+
+
+@if (IsSaved)
+{
+
+    Snackbar.Add("Study has been saved.", Severity.Success);
+    IsSaved = false;
+
+}
+@if (IsLoading)
+{
+    <div class="loader-container">
+        <div class="loader"></div>
+    </div>
+    <MudStack Justify="Justify.Center" Row="true">
+        <MudText Typo="Typo.h3">Loading...</MudText>
+    </MudStack>
+}
+else
+{
+    <MudTabs KeepPanelsAlive="true" Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="Study" Icon="@Icons.Material.Filled.Hive">
+            <MudGrid>
+
+                <MudItem xs="12" sm="4" md="3" Class="my-n3">
+                    <MudTextField Label="Study Name" Variant="Variant.Outlined"
+                                  @bind-Value="@Study.Name" Margin="Margin.Normal"
+                                  For="@(() => Study.Name)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="4" md="2" Class="my-n3">
+                    <MudTextField Label="Prefix" Variant="Variant.Outlined"
+                                  @bind-Value="@Study.Prefix" Margin="Margin.Normal"
+                                  For="@(() => Study.Prefix)"></MudTextField>
+                </MudItem>
+                <MudItem xs="4" sm="3" md="2" Class="my-n3">
+                    <MudSelect @bind-Value="Study.StudySite" Label="Site" HelperText="" Placeholder="Select Site"
+                               Variant="Variant.Outlined" Margin="Margin.Normal"
+                               For="@(() => Study.StudySite)">
+                        @foreach (var site in StudySiteList)
+                        {
+                            <MudSelectItem Value="@site">@site</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" sm="12" md="4" Class="my-n3">
+                    <MudTextField Label="Invoice Designation" Variant="Variant.Outlined"
+                                  @bind-Value="@Study.InvoiceDesignation" Margin="Margin.Normal"
+                                  For="@(() => Study.InvoiceDesignation)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="4" md="4" Class="my-n3">
+                    <MudTextField Label="Principal Investigator" Variant="Variant.Outlined"
+                                  @bind-Value="@Study.PrincipalInvestigator" Margin="Margin.Normal"
+                                  For="@(() => Study.PrincipalInvestigator)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="4" md="4" Class="my-n3">
+                    <MudTextField Label="Project Manager" Variant="Variant.Outlined"
+                                  @bind-Value="@Study.ProjectManager" Margin="Margin.Normal"
+                                  For="@(() => Study.ProjectManager)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="4" Class="my-n3">
+                </MudItem>
+
+
+                <MudItem xs="12" sm="6" md="2" Class="mb-n3">
+                    <MudDatePicker Label="Start Date" Editable="true" Placeholder="Select Date"
+                                   Variant="Variant.Outlined" Margin="Margin.Normal" Mask="@(new DateMask("MM/dd/yyyy"))" DateFormat="MM/dd/yyyy"
+                                   Date="@Study.StartDate"
+                                   MinDate="@(new DateTime(2000, 1, 1))"
+                                   MaxDate="@(new DateTime(2050, 12, 31))"
+                                   DateChanged="@((date) => OnStartDateChanged(date))"
+                                   For="@(() => Study.StartDate)" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="2" Class="mb-n3">
+                    <MudDatePicker Label="Stop Date" Editable="true" Placeholder="Select Date"
+                                   Variant="Variant.Outlined" Margin="Margin.Normal" Mask="@(new DateMask("MM/dd/yyyy"))" DateFormat="MM/dd/yyyy"
+                                   Date="@Study.EndDate"
+                                   MinDate="@(new DateTime(2000, 1, 1))"
+                                   MaxDate="@(new DateTime(2050, 12, 31))"
+                                   DateChanged="@((date) => OnEndDateChanged(date))"
+                                   For="@(() => Study.EndDate)" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="2" Class="mb-n3">
+                    <MudDatePicker Label="CCR F14 Approval Date" Editable="true" Placeholder="Select Date"
+                                   Variant="Variant.Outlined" Margin="Margin.Normal" Mask="@(new DateMask("MM/dd/yyyy"))" DateFormat="MM/dd/yyyy"
+                                   @bind-Date="@Study.CCR_F14_ApprovalDate"
+                                   For="@(() => Study.CCR_F14_ApprovalDate)" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="2" Class="mb-n3">
+                    <MudDatePicker Label="Last Enrolled Date" Editable="true" Placeholder="Select Date"
+                                   Variant="Variant.Outlined" Margin="Margin.Normal" Mask="@(new DateMask("MM/dd/yyyy"))" DateFormat="MM/dd/yyyy"
+                                   @bind-Date="@Study.LastEnrolledDate"
+                                   For="@(() => Study.LastEnrolledDate)" />
+                </MudItem>
+                <MudItem xs="12" sm="12" md="4" Class="my-n3">
+                </MudItem>
+                <MudItem xs="12" sm="4" md="2" Class="my-n3">
+                    <MudTextField Label="Minimum Age" Variant="Variant.Outlined"
+                                  @bind-Value="@Study.MinAge" Margin="Margin.Normal"
+                                  For="@(() => Study.MinAge)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="4" md="2" Class="my-n3">
+                    <MudTextField Label="Maximum Age" Variant="Variant.Outlined"
+                                  @bind-Value="@Study.MaxAge" Margin="Margin.Normal"
+                                  For="@(() => Study.MaxAge)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="8" Class="my-n3">
+                </MudItem>
+                <MudItem xs="12" sm="4" md="2" Class="my-n3">
+                    <MudTextField Label="Min Age of Path Report" Variant="Variant.Outlined"
+                                  @bind-Value="@Study.PathMinAge" Margin="Margin.Normal"
+                                  For="@(() => Study.PathMinAge)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="4" md="2" Class="my-n3">
+                    <MudTextField Label="Max Age of Path Report" Variant="Variant.Outlined"
+                                  @bind-Value="@Study.PathMaxAge" Margin="Margin.Normal"
+                                  For="@(() => Study.PathMaxAge)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="4" md="2" Class="my-n3">
+                    <MudTextField Label="Max Num of Path Reports" Variant="Variant.Outlined"
+                                  @bind-Value="@Study.PathMaxNum" Margin="Margin.Normal"
+                                  For="@(() => Study.PathMaxNum)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="6" Class="my-n3">
+                </MudItem>
+                <MudItem xs="12" sm="12" md="6" Class="my-n3">
+                    <MudTextField AutoGrow Label="Design" Variant="Variant.Outlined"
+                                  @bind-Value="@Study.Design" Margin="Margin.Normal"
+                                  Style="min-height: 55px !important"
+                                  For="@(() => Study.Design)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="6" Class="my-n3">
+                    <MudTextField AutoGrow Label="Comments" Variant="Variant.Outlined"
+                                  @bind-Value="@Study.Comments" Margin="Margin.Normal"
+                                  Style="min-height: 55px !important"
+                                  For="@(() => Study.Comments)"></MudTextField>
+                </MudItem>
+            </MudGrid>
+            <br />
+            <br />
+            <MudItem xs="12" sm="12" md="12" Class="my-n3">
+                <MudDataGrid Dense="true" @ref="contactGrid" T="StudyContact" Items="@Study.StudyContacts" EditMode="@DataGridEditMode.Cell" ReadOnly="false">
+                    <ToolBarContent>
+                        <MudText>Contacts</MudText>
+                        <MudItem xs="12" sm="12" md="12" Class="d-flex justify-end mr-3">
+
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Size="Size.Small" OnClick="AddNewContact">Add Contact</MudButton>
+                        </MudItem>
+                    </ToolBarContent>
+                    <Columns>
+                        <PropertyColumn Property="x => x.FirstName" Required="false" Title="First Name" Sortable="false" Filterable="false">
+                            <EditTemplate Context="firstContext">
+                                <MudTextField T="string" class="mud-text-field-input" @bind-Value="firstContext.Item.FirstName"
+                                              Margin="Margin.Normal" Variant="Variant.Text"
+                                              Style="border: 1px solid #ccc; border-radius: 4px; min-height: 55px !important"
+                                              For="@(() => firstContext.Item.FirstName)">
+                                </MudTextField>
+                            </EditTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.LastName" Required="false" Title="Last Name" Sortable="false" Filterable="false">
+                            <EditTemplate Context="lastContext">
+                                <MudTextField T="string" class="mud-text-field-input" @bind-Value="lastContext.Item.LastName"
+                                              Margin="Margin.Normal" Variant="Variant.Text"
+                                              Style="border: 1px solid #ccc; border-radius: 4px; min-height: 55px !important"
+                                              For="@(() => lastContext.Item.LastName)">
+                                </MudTextField>
+                            </EditTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Role" Required="false" Title="Role" Sortable="false" Filterable="false">
+                            <EditTemplate Context="roleContext">
+                                <MudTextField T="string" class="mud-text-field-input" @bind-Value="roleContext.Item.Role"
+                                              Margin="Margin.Normal" Variant="Variant.Text"
+                                              Style="border: 1px solid #ccc; border-radius: 4px; min-height: 55px !important"
+                                              For="@(() => roleContext.Item.Role)">
+                                </MudTextField>
+                            </EditTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.PhoneNumber" Title="Phone Number" Sortable="false" Filterable="false" Editable>
+                            <EditTemplate Context="phoneContext">
+                                <MudTextField T="string" class="mud-text-field-input" @bind-Value="phoneContext.Item.PhoneNumber"
+                                              Variant="Variant.Outlined"
+                                              Mask="@(new PatternMask("000-000-0000"))" Margin="Margin.Normal"
+                                              For="@(() => phoneContext.Item.PhoneNumber)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                            </EditTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Email" Required="false" Title="Email" Sortable="false" Filterable="false">
+                            <EditTemplate Context="emailContext">
+                                <MudTextField T="string" class="mud-text-field-input" @bind-Value="emailContext.Item.Email"
+                                              Margin="Margin.Normal" Variant="Variant.Text"
+                                              Style="border: 1px solid #ccc; border-radius: 4px; min-height: 55px !important"
+                                              For="@(() => emailContext.Item.Email)">
+                                </MudTextField>
+                            </EditTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Comments" Required="false" Title="Comments" Sortable="false" Filterable="false">
+                            <EditTemplate Context="commentsContext">
+                                <MudTextField T="string" AutoGrow class="mud-text-field-input" @bind-Value="commentsContext.Item.Comments"
+                                              Margin="Margin.Normal" Variant="Variant.Text"
+                                              Style="border: 1px solid #ccc; border-radius: 4px; min-height: 55px !important"
+                                              For="@(() => commentsContext.Item.Comments)">
+                                </MudTextField>
+                            </EditTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.IsActive" Title="Active" Sortable="false" Filterable="false">
+                            <EditTemplate Context="activeContext">
+                                <MudCheckBox T=bool @bind-Value="activeContext.Item.IsActive"
+                                             For="@(() => activeContext.Item.IsActive)" />
+                            </EditTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.IsConfidentialAgreementSigned" Title="Conf. Agreement Signed" Sortable="false" Filterable="false">
+                            <EditTemplate Context="confContext">
+                                <MudCheckBox T=bool @bind-Value="confContext.Item.IsConfidentialAgreementSigned"
+                                             For="@(() => confContext.Item.IsConfidentialAgreementSigned)" />
+                            </EditTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.IsOnTeamsChannel" Title="On Teams Channel" Sortable="false" Filterable="false">
+                            <EditTemplate Context="teamsContext">
+                                <MudCheckBox T=bool @bind-Value="teamsContext.Item.IsOnTeamsChannel"
+                                             For="@(() => teamsContext.Item.IsOnTeamsChannel)" />
+                            </EditTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.IsExportEmailReceived" Title="Receives Export Email" Sortable="false" Filterable="false">
+                            <EditTemplate Context="expemailContext">
+                                <MudCheckBox T=bool @bind-Value="expemailContext.Item.IsExportEmailReceived"
+                                             For="@(() => expemailContext.Item.IsExportEmailReceived)" />
+                            </EditTemplate>
+                        </PropertyColumn>
+                        <TemplateColumn>
+                            <EditTemplate Context="deleteContext">
+                                <MudStack Row>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(async () => await DeleteContact(deleteContext.Item))" />
+                                </MudStack>
+                            </EditTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                </MudDataGrid>
+            </MudItem>
+
+        </MudTabPanel>
+
+        <MudTabPanel Text="Color" Icon="@Icons.Material.Filled.ColorLens">
+            <MudGrid>
+                <MudItem>
+                    <MudText Typo="Typo.subtitle1" Class="mt-3 d-flex justify-center">Select your color, then set opacity (60-70% is good). </MudText>
+                </MudItem>
+                <MudItem md="12" Class="d-flex justify-start">
+                    <MudColorPicker Label="Study Color" Value="Study.MudColorLight" ValueChanged="@((color) => SetColor(color.ToString()))" Style="@($"color: {Study.MudColorLight};")" Placeholder="Select Color"
+                                    ColorPickerMode="ColorPickerMode.HEX" PickerVariant="PickerVariant.Static" ShowToolbar="true" Editable />
+                </MudItem>
+            </MudGrid>
+        </MudTabPanel>
+
+        @if (FormType == "Edit")
+        {
+
+            <MudTabPanel Text="Options" Icon="@Icons.Material.Filled.ListAlt">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12" Class="my-n3">
+                        <MudExpansionPanels MultiExpansion="true">
+                            <MudExpansionPanel Text="Gender Options" Expanded="false">
+                                <br />
+                                <br />
+                                <MudGrid>
+                                    <MudDataGrid T="StudyLookupView" Virtualize
+                                                 Items="@luGender"
+                                                 EditMode="DataGridEditMode.Cell" ReadOnly="false"
+                                                 MultiSelection="true" Dense SelectOnRowClick="false"
+                                                 @bind-SelectedItems="SelectedGender"
+                                                 @bind-SelectedItems:after="OnSelectAllGenderChanged"
+                                                 SelectedItemChanged="SelectedItemGenderChanged">
+                                        <ColGroup>
+                                            <col style="width: 10%;" />
+                                            <col style="width: 20%;" />
+                                            <col style="width: 70%;" />
+                                            <col />
+                                        </ColGroup>
+                                        <Columns>
+                                            <SelectColumn T="StudyLookupView" />
+                                            <PropertyColumn Property="x => x.Order" Title="Order" Sortable="false" Filterable="false" Editable>
+                                                <EditTemplate Context="orderContext">
+                                                    <MudTextField T="int" class="mud-text-field-input" @bind-Value="orderContext.Item.Order"
+                                                                  Variant="Variant.Outlined" @bind-Value:after="@(() => OnOrderGenderChanged(orderContext.Item))"
+                                                                  Margin="Margin.Dense"
+                                                                  For="@(() => orderContext.Item.Order)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                                </EditTemplate>
+                                            </PropertyColumn>
+                                            <PropertyColumn Property="x => x.LookupName" Title="Name" Sortable="false" Filterable="false" Editable="false">
+                                                <EditTemplate Context="nameContext">
+                                                    <MudTextField T="string" class="mud-text-field-input" @bind-Value="nameContext.Item.LookupName"
+                                                                  Variant="Variant.Outlined"
+                                                                  Margin="Margin.Dense"
+                                                                  For="@(() => nameContext.Item.LookupName)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                                </EditTemplate>
+                                            </PropertyColumn>
+                                        </Columns>
+                                    </MudDataGrid>
+                                </MudGrid>
+                            </MudExpansionPanel>
+                            <MudExpansionPanel Text="Race Options" Expanded="false">
+                                <br />
+                                <br />
+                                <MudGrid>
+                                    <MudDataGrid T="StudyLookupView" Virtualize
+                                                 Items="@luRace"
+                                                 EditMode="DataGridEditMode.Cell" ReadOnly="false"
+                                                 MultiSelection="true" Dense SelectOnRowClick="false"
+                                                 @bind-SelectedItems="SelectedRace"
+                                                 @bind-SelectedItems:after="OnSelectAllRaceChanged"
+                                                 SelectedItemChanged="SelectedItemRaceChanged">
+                                        <ColGroup>
+                                            <col style="width: 10%;" />
+                                            <col style="width: 20%;" />
+                                            <col style="width: 70%;" />
+                                            <col />
+                                        </ColGroup>
+                                        <Columns>
+                                            <SelectColumn T="StudyLookupView" />
+                                            <PropertyColumn Property="x => x.Order" Title="Order" Sortable="false" Filterable="false" Editable>
+                                                <EditTemplate Context="orderContext">
+                                                    <MudTextField T="int" class="mud-text-field-input" @bind-Value="orderContext.Item.Order"
+                                                                  Variant="Variant.Outlined" @bind-Value:after="@(() => OnOrderRaceChanged(orderContext.Item))"
+                                                                  Margin="Margin.Dense"
+                                                                  For="@(() => orderContext.Item.Order)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                                </EditTemplate>
+                                            </PropertyColumn>
+                                            <PropertyColumn Property="x => x.LookupName" Title="Name" Sortable="false" Filterable="false" Editable="false">
+                                                <EditTemplate Context="nameContext">
+                                                    <MudTextField T="string" class="mud-text-field-input" @bind-Value="nameContext.Item.LookupName"
+                                                                  Variant="Variant.Outlined"
+                                                                  Margin="Margin.Dense"
+                                                                  For="@(() => nameContext.Item.LookupName)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                                </EditTemplate>
+                                            </PropertyColumn>
+                                        </Columns>
+                                    </MudDataGrid>
+                                </MudGrid>
+                            </MudExpansionPanel>
+
+                            <MudExpansionPanel Text="Ethnicity Options" Expanded="false">
+                                <br />
+                                <br />
+                                <MudGrid>
+                                    <MudDataGrid T="StudyLookupView" Virtualize
+                                                 Items="@luEthnicity"
+                                                 EditMode="DataGridEditMode.Cell" ReadOnly="false"
+                                                 MultiSelection="true" Dense SelectOnRowClick="false"
+                                                 @bind-SelectedItems="SelectedEthnicity"
+                                                 @bind-SelectedItems:after="OnSelectAllEthnicityChanged"
+                                                 SelectedItemChanged="SelectedItemEthnicityChanged">
+                                        <ColGroup>
+                                            <col style="width: 10%;" />
+                                            <col style="width: 20%;" />
+                                            <col style="width: 70%;" />
+                                            <col />
+                                        </ColGroup>
+                                        <Columns>
+                                            <SelectColumn T="StudyLookupView" />
+                                            <PropertyColumn Property="x => x.Order" Title="Order" Sortable="false" Filterable="false" Editable>
+                                                <EditTemplate Context="orderContext">
+                                                    <MudTextField T="int" class="mud-text-field-input" @bind-Value="orderContext.Item.Order"
+                                                                  Variant="Variant.Outlined" @bind-Value:after="@(() => OnOrderEthnicityChanged(orderContext.Item))"
+                                                                  Margin="Margin.Dense"
+                                                                  For="@(() => orderContext.Item.Order)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                                </EditTemplate>
+                                            </PropertyColumn>
+                                            <PropertyColumn Property="x => x.LookupName" Title="Name" Sortable="false" Filterable="false" Editable="false">
+                                                <EditTemplate Context="nameContext">
+                                                    <MudTextField T="string" class="mud-text-field-input" @bind-Value="nameContext.Item.LookupName"
+                                                                  Variant="Variant.Outlined"
+                                                                  Margin="Margin.Dense"
+                                                                  For="@(() => nameContext.Item.LookupName)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                                </EditTemplate>
+                                            </PropertyColumn>
+                                        </Columns>
+                                    </MudDataGrid>
+                                </MudGrid>
+                            </MudExpansionPanel>
+                            <MudExpansionPanel Text="Procedure Options" Expanded="false">
+                                <br />
+                                <br />
+                                <MudGrid>
+                                    <MudDataGrid T="StudyLookupView" Virtualize
+                                                 Items="@luProcedure"
+                                                 EditMode="DataGridEditMode.Cell" ReadOnly="false"
+                                                 MultiSelection="true" Dense SelectOnRowClick="false"
+                                                 @bind-SelectedItems="SelectedProcedure"
+                                                 @bind-SelectedItems:after="OnSelectAllProcedureChanged"
+                                                 SelectedItemChanged="SelectedItemProcedureChanged">
+                                        <ColGroup>
+                                            <col style="width: 10%;" />
+                                            <col style="width: 30%;" />
+                                            <col style="width: 60%;" />
+                                            <col />
+                                        </ColGroup>
+                                        <Columns>
+                                            <SelectColumn T="StudyLookupView" />
+                                            <PropertyColumn Property="x => x.Order" Title="Order" Sortable="false" Filterable="false" Editable>
+                                                <EditTemplate Context="orderContext">
+                                                    <MudTextField T="int" class="mud-text-field-input" @bind-Value="orderContext.Item.Order"
+                                                                  Variant="Variant.Outlined" @bind-Value:after="@(() => OnOrderProcedureChanged(orderContext.Item))"
+                                                                  Margin="Margin.Dense"
+                                                                  For="@(() => orderContext.Item.Order)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                                </EditTemplate>
+                                            </PropertyColumn>
+                                            <PropertyColumn Property="x => x.LookupName" Title="Name" Sortable="false" Filterable="false" Editable="false">
+                                                <EditTemplate Context="nameContext">
+                                                    <MudTextField T="string" class="mud-text-field-input" @bind-Value="nameContext.Item.LookupName"
+                                                                  Variant="Variant.Outlined"
+                                                                  Margin="Margin.Dense"
+                                                                  For="@(() => nameContext.Item.LookupName)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                                </EditTemplate>
+                                            </PropertyColumn>
+                                        </Columns>
+                                    </MudDataGrid>
+                                </MudGrid>
+                            </MudExpansionPanel>
+                            <MudExpansionPanel Text="Site Options" Expanded="false">
+                                <br />
+                                <br />
+                                <MudGrid>
+                                    <MudDataGrid T="StudyLookupView" Virtualize
+                                                 Items="@luSite"
+                                                 EditMode="DataGridEditMode.Cell" ReadOnly="false"
+                                                 MultiSelection="true" Dense SelectOnRowClick="false"
+                                                 @bind-SelectedItems="SelectedSite"
+                                                 @bind-SelectedItems:after="OnSelectAllSiteChanged"
+                                                 SelectedItemChanged="SelectedItemSiteChanged">
+                                        <ColGroup>
+                                            <col style="width: 10%;" />
+                                            <col style="width: 20%;" />
+                                            <col style="width: 20%;" />
+                                            <col style="width: 50%;" />
+                                            <col />
+                                        </ColGroup>
+                                        <Columns>
+                                            <SelectColumn T="StudyLookupView" />
+                                            <PropertyColumn Property="x => x.Order" Title="Order" Sortable="false" Filterable="false" Editable>
+                                                <EditTemplate Context="orderContext">
+                                                    <MudTextField T="int" class="mud-text-field-input" @bind-Value="orderContext.Item.Order"
+                                                                  Variant="Variant.Outlined" @bind-Value:after="@(() => OnOrderSiteChanged(orderContext.Item))"
+                                                                  Margin="Margin.Dense"
+                                                                  For="@(() => orderContext.Item.Order)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                                </EditTemplate>
+                                            </PropertyColumn>
+                                            <PropertyColumn Property="x => x.LookupCode" Title="Code" Sortable="false" Filterable="false" Editable="false">
+                                                <EditTemplate Context="codeContext">
+                                                    <MudTextField T="string" class="mud-text-field-input" @bind-Value="codeContext.Item.LookupCode"
+                                                                  Variant="Variant.Outlined"
+                                                                  Margin="Margin.Dense"
+                                                                  For="@(() => codeContext.Item.LookupCode)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                                </EditTemplate>
+                                            </PropertyColumn>
+                                            <PropertyColumn Property="x => x.LookupName" Title="Name" Sortable="false" Filterable="false" Editable="false">
+                                                <EditTemplate Context="nameContext">
+                                                    <MudTextField T="string" class="mud-text-field-input" @bind-Value="nameContext.Item.LookupName"
+                                                                  Variant="Variant.Outlined"
+                                                                  Margin="Margin.Dense"
+                                                                  For="@(() => nameContext.Item.LookupName)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                                </EditTemplate>
+                                            </PropertyColumn>
+                                        </Columns>
+                                    </MudDataGrid>
+                                </MudGrid>
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                    </MudItem>
+                </MudGrid>
+            </MudTabPanel>
+            <MudTabPanel Text="Counties" Icon="@Icons.Material.Filled.ListAlt">
+                <br />
+                <br />
+                <MudGrid>
+                    <MudDataGrid T="StudyLookupView" Virtualize
+                                 Items="@luCounty"
+                                 EditMode="DataGridEditMode.Cell" ReadOnly="false"
+                                 MultiSelection="true" Dense SelectOnRowClick="false"
+                                 @bind-SelectedItems="SelectedCounty"
+                                 @bind-SelectedItems:after="OnSelectAllCountyChanged"
+                                 SelectedItemChanged="SelectedItemCountyChanged">
+                        <ColGroup>
+                            <col style="width: 10%;" />
+                            <col style="width: 30%;" />
+                            <col style="width: 60%;" />
+                            <col />
+                        </ColGroup>
+                        <Columns>
+                            <SelectColumn T="StudyLookupView" />
+                            <PropertyColumn Property="x => x.Order" Title="Order" Sortable="false" Filterable="false" Editable>
+                                <EditTemplate Context="orderContext">
+                                    <MudTextField T="int" class="mud-text-field-input" @bind-Value="orderContext.Item.Order"
+                                                  Variant="Variant.Outlined" @bind-Value:after="@(() => OnOrderCountyChanged(orderContext.Item))"
+                                                  Margin="Margin.Dense"
+                                                  For="@(() => orderContext.Item.Order)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                </EditTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Property="x => x.LookupName" Title="Name" Sortable="false" Filterable="false" Editable="false">
+                                <EditTemplate Context="nameContext">
+                                    <MudTextField T="string" class="mud-text-field-input" @bind-Value="nameContext.Item.LookupName"
+                                                  Variant="Variant.Outlined"
+                                                  Margin="Margin.Dense"
+                                                  For="@(() => nameContext.Item.LookupName)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                </EditTemplate>
+                            </PropertyColumn>
+                        </Columns>
+                    </MudDataGrid>
+                </MudGrid>
+            </MudTabPanel>
+            <MudTabPanel Text="Histologies" Icon="@Icons.Material.Filled.ListAlt">
+                <br />
+                <br />
+                <MudStack xs="12" sm="12" md="8" Class="my-n3" Row=true Wrap=Wrap.NoWrap>
+                    <div class="mud-width-60">
+                        <MudGrid>
+                            <MudDataGrid T="StudyHistologyView" @ref="dataHistology" Virtualize
+                                         Items="@luHistology" QuickFilter="@_quickFilter"
+                                         EditMode="DataGridEditMode.Cell" ReadOnly="false"
+                                         MultiSelection="true" Dense SelectOnRowClick="false"
+                                         @bind-SelectedItems="SelectedHistology"
+                                         @bind-SelectedItems:after="OnSelectAllHistologyChanged"
+                                         SelectedItemChanged="SelectedItemHistologyChanged">
+                                <ToolBarContent>
+                                    <MudText Typo="Typo.h6"></MudText>
+                                    <MudItem xs="12" sm="12" md="8" Class="d-flex justify-start mr-3 mt-n2">
+                                    </MudItem>
+                                    <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
+                                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable="true"></MudTextField>
+                                </ToolBarContent>
+                                <ColGroup>
+                                    <col style="width: 5%;" />
+                                    <col style="width: 15%;" />
+                                    <col style="width: 1%;" />
+                                    <col style="width: 1%;" />
+                                    <col style="width: 65%;" />
+                                    <col style="width: 5%;" />
+                                    <col />
+                                </ColGroup>
+                                <Columns>
+                                    @* <SelectColumn T="StudyHistologyView" /> *@
+                                    <PropertyColumn Property="x => x.IsSelected" Title="Select" Sortable="false" HeaderStyle="width: 15em;" Editable>
+                                        <EditTemplate>
+                                            <MudCheckBox T="bool" Value="context.Item.IsSelected" ValueChanged="@((newValue) => OnIsSelectedChanged(newValue, context.Item))" />
+                                        </EditTemplate>
+                                    </PropertyColumn>
+                                    <PropertyColumn Property="x => x.Order" Title="Order" Sortable="false" Filterable="false" HeaderStyle="width: 20em;" Editable>
+                                        <EditTemplate Context="orderContext">
+                                            <MudTextField T="int" class="mud-text-field-input" @bind-Value="orderContext.Item.Order"
+                                                          Variant="Variant.Outlined" @bind-Value:after="@(() => OnOrderHistologyChanged(orderContext.Item))"
+                                                          Margin="Margin.Dense"
+                                                          For="@(() => orderContext.Item.Order)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                        </EditTemplate>
+                                    </PropertyColumn>
+                                    <PropertyColumn Property="x => x.HistologyCode" Title="Code" Sortable="true" Filterable="false" HeaderStyle="width: 15em;" Editable="false">
+                                        <EditTemplate Context="codeContext">
+                                            <MudTextField T="string" class="mud-text-field-input" @bind-Value="codeContext.Item.HistologyCode"
+                                                          Variant="Variant.Outlined"
+                                                          Margin="Margin.Dense"
+                                                          For="@(() => codeContext.Item.HistologyCode)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                        </EditTemplate>
+                                    </PropertyColumn>
+                                    <PropertyColumn Property="x => x.HistologyBehavior" Title="Behavior" Sortable="false" Filterable="false" HeaderStyle="width: 15em;" Editable="false">
+                                        <EditTemplate Context="behaviorContext">
+                                            <MudTextField T="string" class="mud-text-field-input" @bind-Value="behaviorContext.Item.HistologyBehavior"
+                                                          Variant="Variant.Outlined"
+                                                          Margin="Margin.Dense"
+                                                          For="@(() => behaviorContext.Item.HistologyBehavior)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                        </EditTemplate>
+                                    </PropertyColumn>
+                                    <PropertyColumn Property="x => x.HistologyName" Title="Name" Sortable="true" Filterable="false" CellStyle="width: 250em; white-space: wrap;" Editable="false">
+                                        <EditTemplate Context="nameContext">
+                                            <MudTextField T="string" class="mud-text-field-input" @bind-Value="nameContext.Item.HistologyName"
+                                                          Variant="Variant.Outlined"
+                                                          Margin="Margin.Dense"
+                                                          For="@(() => nameContext.Item.HistologyName)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                        </EditTemplate>
+                                    </PropertyColumn>
+                                    <PropertyColumn Property="x => x.IsPreferred" Title="Preferred" Sortable="false" HeaderStyle="width: 15em;">
+                                        <EditTemplate>
+                                            <MudCheckBox T="bool" Value="context.Item.IsPreferred" />
+                                        </EditTemplate>
+                                    </PropertyColumn>
+                                </Columns>
+
+                                <PagerContent>
+                                    <MudDataGridPager T="StudyHistologyView" />
+                                </PagerContent>
+                            </MudDataGrid>
+                        </MudGrid>
+                    </div>
+                    <MudContainer Style="flex-grow: 1; flex-direction: row">
+
+                        @foreach (var histology in SelectedHistology)
+                        {
+                            @if (histology.IsPreferred)
+                            {
+                                <MudItem xs="12" sm="12" md="12" Class="my-2" Style="@($"color: {Colors.Green.Default}")">
+                                    @histology.HistologyCode/@histology.HistologyBehavior - @histology.HistologyName
+                                </MudItem>
+                            }
+                            else
+                            {
+                                <MudItem xs="12" sm="12" md="12" Class="my-2">
+                                    @histology.HistologyCode/@histology.HistologyBehavior - @histology.HistologyName
+                                </MudItem>
+                            }
+                        }
+                    </MudContainer>
+                </MudStack>
+            </MudTabPanel>
+            <MudTabPanel Text="Export Fields" Icon="@Icons.Material.Filled.ListAlt">
+                @*                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Download" OnClick="@(() => OnExportFields(Study))">Export Fields</MudButton>
+ *@<MudText Typo="Typo.h6">Export Fields
+                <MudTooltip Placement="Placement.Right" Text="Primary" Color="Color.Info">
+                    @* ChildContent is the element that triggers the tooltip on hover *@
+                    <ChildContent>
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Info" Size="Size.Small" Class="mt-n2" />
+                    </ChildContent>
+
+                    @* TooltipContent is the custom content displayed inside the tooltip *@
+                    <TooltipContent>
+                        <MudText Typo="Typo.h6">Export Fields Info</MudText>
+                        <MudText Typo="Typo.body2" Style="text-align: left">
+                            If you want the exported header to be different than the field name, you can set it in Header Text.
+                            <br />
+                            In the Order column, some of the default numbers are skipped because those fields were hidden.  You can always set the order manually.
+                            <br />
+                            The phone number fields must always be checked.  This happens automatically so that you cannot uncheck the fields.
+                        </MudText>
+                        <MudIcon Icon="@Icons.Material.Filled.Lightbulb" Color="Color.Warning" />
+                    </TooltipContent>
+                </MudTooltip>
+                </MudText>
+                <br />
+                <br />
+                <MudGrid>
+                    <MudDataGrid T="StudyHeaderView" Virtualize
+                                 Items="@luHeaderOption"
+                                 EditMode="DataGridEditMode.Cell" ReadOnly="false"
+                                 MultiSelection="true" Dense SelectOnRowClick="false"
+                                 @bind-SelectedItems="SelectedHeaderOption"
+                                 @bind-SelectedItems:after="OnSelectAllHeaderOptionChanged"
+                                 SelectedItemChanged="SelectedItemHeaderOptionChanged">
+                        <ColGroup>
+                            <col style="width: 10%;" />
+                            <col style="width: 15%;" />
+                            <col style="width: 40%;" />
+                            <col style="width: 30%;" />
+                            <col />
+                        </ColGroup>
+                        <Columns>
+                            <SelectColumn T="StudyHeaderView" />
+                            <PropertyColumn Property="x => x.Order" Title="Order" Sortable="false" Filterable="false" Editable>
+                                <EditTemplate Context="orderContext">
+                                    <MudTextField T="int" class="mud-text-field-input" @bind-Value="orderContext.Item.Order"
+                                                  Variant="Variant.Outlined" @bind-Value:after="@(() => OnOrderHeaderOptionChanged(orderContext.Item))"
+                                                  Margin="Margin.Dense"
+                                                  For="@(() => orderContext.Item.Order)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                </EditTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Property="x => x.HeaderName" Title="Name" Sortable="false" Filterable="false" Editable="false">
+                                <EditTemplate Context="nameContext">
+                                    <MudTextField T="string" class="mud-text-field-input" @bind-Value="nameContext.Item.HeaderName"
+                                                  Variant="Variant.Outlined"
+                                                  Margin="Margin.Dense"
+                                                  For="@(() => nameContext.Item.HeaderName)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                </EditTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Property="x => x.ExportTitle" Title="Header Text" Sortable="false" Filterable="false" Editable="true">
+                                <EditTemplate Context="titleContext">
+                                    <MudTextField T="string" class="mud-text-field-input" @bind-Value="titleContext.Item.ExportTitle"
+                                                  Variant="Variant.Outlined"
+                                                  Margin="Margin.Dense"
+                                                  For="@(() => titleContext.Item.ExportTitle)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                </EditTemplate>
+                            </PropertyColumn>
+                        </Columns>
+                    </MudDataGrid>
+                </MudGrid>
+            </MudTabPanel>
+            @if (Study.Prefix == "CBCS4") // Breast Study
+            {
+                <MudTabPanel Text="Report Fields" Icon="@Icons.Material.Filled.ListAlt">
+                    @*                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Download" OnClick="@(() => OnExportFields(Study))">Export Fields</MudButton>
+ *@<MudText Typo="Typo.h6">
+                    Export Fields
+                    <MudTooltip Placement="Placement.Right" Text="Primary" Color="Color.Info">
+                        @* ChildContent is the element that triggers the tooltip on hover *@
+                        <ChildContent>
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Info" Size="Size.Small" Class="mt-n2" />
+                        </ChildContent>
+
+                        @* TooltipContent is the custom content displayed inside the tooltip *@
+                        <TooltipContent>
+                            <MudText Typo="Typo.h6">Export Fields Info</MudText>
+                            <MudText Typo="Typo.body2" Style="text-align: left">
+                                If you want the report header to be different than the field name, you can set it in Header Text.
+                                <br />
+                                In the Order column, some of the default numbers are skipped because those fields were hidden.  You can always set the order manually.
+                                <br />
+                                The phone number fields must always be checked.  This happens automatically so that you cannot uncheck the fields.
+                            </MudText>
+                            <MudIcon Icon="@Icons.Material.Filled.Lightbulb" Color="Color.Warning" />
+                        </TooltipContent>
+                    </MudTooltip>
+                </MudText>
+                <br />
+                <br />
+                <MudGrid>
+                    <MudDataGrid T="StudyReportHeaderView" Virtualize
+                                 Items="@luReportHeaderOption"
+                                 EditMode="DataGridEditMode.Cell" ReadOnly="false"
+                                 MultiSelection="true" Dense SelectOnRowClick="false"
+                                 @bind-SelectedItems="SelectedReportHeaderOption"
+                                 @bind-SelectedItems:after="OnSelectAllReportHeaderOptionChanged"
+                                 SelectedItemChanged="SelectedItemReportHeaderOptionChanged">
+                        <ColGroup>
+                            <col style="width: 10%;" />
+                            <col style="width: 15%;" />
+                            <col style="width: 40%;" />
+                            <col style="width: 30%;" />
+                            <col />
+                        </ColGroup>
+                        <Columns>
+                            <SelectColumn T="StudyReportHeaderView" />
+                            <PropertyColumn Property="x => x.Order" Title="Order" Sortable="false" Filterable="false" Editable>
+                                <EditTemplate Context="orderContext">
+                                    <MudTextField T="int" class="mud-text-field-input" @bind-Value="orderContext.Item.Order"
+                                                  Variant="Variant.Outlined" @bind-Value:after="@(() => OnOrderReportHeaderOptionChanged(orderContext.Item))"
+                                                  Margin="Margin.Dense"
+                                                  For="@(() => orderContext.Item.Order)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                </EditTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Property="x => x.HeaderName" Title="Name" Sortable="false" Filterable="false" Editable="false">
+                                <EditTemplate Context="nameContext">
+                                    <MudTextField T="string" class="mud-text-field-input" @bind-Value="nameContext.Item.HeaderName"
+                                                  Variant="Variant.Outlined"
+                                                  Margin="Margin.Dense"
+                                                  For="@(() => nameContext.Item.HeaderName)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                </EditTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Property="x => x.ExportTitle" Title="Header Text" Sortable="false" Filterable="false" Editable="true">
+                                <EditTemplate Context="titleContext">
+                                    <MudTextField T="string" class="mud-text-field-input" @bind-Value="titleContext.Item.ExportTitle"
+                                                  Variant="Variant.Outlined"
+                                                  Margin="Margin.Dense"
+                                                  For="@(() => titleContext.Item.ExportTitle)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+                                </EditTemplate>
+                            </PropertyColumn>
+                        </Columns>
+                    </MudDataGrid>
+                </MudGrid>
+            </MudTabPanel>
+            }
+        }
+    </MudTabs>
+}
+@* <pre>
+    @(JsonSerializer.Serialize(Study, new JsonSerializerOptions { WriteIndented = true }))
+</pre> *@
+

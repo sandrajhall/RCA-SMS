@@ -1,0 +1,83 @@
+﻿@page "/invoices/pastlist"
+
+@using Blazored.LocalStorage
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.ViewModels
+@using MudBlazor
+@using System.Linq
+@using System.IO
+
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject InvoiceData InvoiceData
+@inject GridStateView<Invoice> InvGridStateView
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
+
+@implements IDisposable
+
+@rendermode InteractiveWebAssembly
+
+
+<MudPaper Class="d-flex pa-2 rca-case-header">
+    <h3 class="mt-2 mr-5"></h3>
+    <MudItem xs="4" sm="3" md="2">
+
+    </MudItem>
+   
+    <MudSpacer />
+    <div class="mt-3">
+        @if (IsNewQuarter)
+        {
+@*             <MudButton Class="ml-1" Variant="Variant.Filled" Color="Color.Tertiary" Size="Size.Small" OnClick="() => GenerateInvoices()">Generate Invoices</MudButton>
+ *@
+        }
+
+@*         <MudButton Class="ml-1" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="() => OnSend()">Send Invoices</MudButton>
+ *@    </div>
+</MudPaper>
+<br />
+
+<MudDataGrid T="Invoice" @ref="invGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
+             QuickFilter="@_quickFilter" Dense
+             FilterDefinitions="@InvGridStateView.FilterDefinitions"
+             SortDefinitions="@InvGridStateView.SortDefinitions"
+             CurrentPage="@InvGridStateView.CurrentPage"
+             CurrentPageChanged=@((currentPage) => OnCurrentPageChanged(currentPage))
+             FilterMode="DataGridFilterMode.ColumnFilterRow" AllowUnsorted="false" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Invoices</MudText>
+        <MudSpacer />
+@*         <MudButton Class="mr-2" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="() => ClearStateItems()">Reset Filters</MudButton>
+ *@        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable="true"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+       
+    </ColGroup>
+    <Columns>
+
+        <PropertyColumn Property="x => x.InvoiceNumber" Title="Invoice Number" Filterable="false" />
+        <PropertyColumn Property="x => x.InvoiceDate.ToShortDateString()" Title="Invoice Date" Filterable="false" />
+        <PropertyColumn Property="x => x.InvoiceQuarter" Title="Invoice Quarter" Filterable="false" />
+        <PropertyColumn Property="x => x.ReimbursementEntity.Name" Title="Reimbursement Entity Name" Filterable="false" />
+        <TemplateColumn Title="Total Amount" SortBy="x => x.TotalAmount" Context="totalContext" Sortable="true">
+            <CellTemplate>
+                    <MudText Typo="Typo.body2">$@totalContext.Item.TotalAmount</MudText>
+            </CellTemplate>
+        </TemplateColumn>
+               
+        <TemplateColumn Title="Actions">
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item, context.Item)) Variant="Variant.Text" Color="Color.Primary">View</MudIconButton>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.PictureAsPdf" Href="@($"/invoices/invoicepdf/{context.Item.InvoiceId}")" Target="_blank" Variant="Variant.Text" Color="Color.Primary" @onclick:stopPropagation>PDF</MudIconButton>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="Invoice" />
+    </PagerContent>
+</MudDataGrid>
+@* <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"  OnClick="OnImport">Import Hospitals</MudButton>
+ *@

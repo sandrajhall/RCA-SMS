@@ -1,0 +1,116 @@
+﻿@page "/histologies/list"
+
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using MudBlazor
+@using System.Linq
+
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject HistologyData HistologyData
+@inject IJSRuntime JSRuntime
+
+
+@rendermode InteractiveWebAssembly
+
+<style>
+
+    .mud-datagrid-modified-row {
+        background-color: #ffe0b2; /* Light orange */
+    }
+</style>
+<NavigationLock OnBeforeInternalNavigation="HandleInternalNavigation" ConfirmExternalNavigation="HasChanges" />
+
+
+<MudPaper Class="d-flex pa-2 rca-case-header">
+    <MudText Typo="Typo.h6">Histologies</MudText>
+
+
+    <MudSpacer />
+    <div class="col-2">
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnSubmitAsync">Save</MudButton>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Warning" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnCancel">Cancel</MudButton>
+
+    </div>
+</MudPaper>
+<br />
+
+<MudDataGrid T="Histology" Items="@Histologies" SortMode="SortMode.Single" Filterable="true" QuickFilter="@_quickFilter" Dense Virtualize
+             ReadOnly="false" EditMode="DataGridEditMode.Cell" RowClassFunc="@GetRowClass" CommittedItemChanges="HandleCommittedChanges"
+             FilterMode="DataGridFilterMode.ColumnFilterRow" AllowUnsorted="false" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6"></MudText>
+        <MudItem xs="12" sm="12" md="8" Class="d-flex justify-start mr-3 mt-n2">
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Size="Size.Small" OnClick="AddNewHistology">Add Histology</MudButton>
+        </MudItem>
+        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable="true"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="width: 5%;" />
+        <col style="width: 10%;" />
+        <col style="width: 5%;" />
+        <col style="width: 30%;" />
+        <col style="width: 20%;" />
+        <col style="width: 5%;" />
+        <col style="width: 5%;" />
+        <col />
+    </ColGroup>
+    <Columns>
+        <PropertyColumn Property="x => x.SortOrder" Title="Sort Order" Filterable="false" Sortable="true" Editable>
+            <EditTemplate Context="orderContext">
+                <MudTextField T="int" class="mud-text-field-input" Value="orderContext.Item.SortOrder" ValueChanged="(newValue) => OnSortOrderChanged(newValue, orderContext.Item)"
+                              Variant="Variant.Outlined" 
+                              Margin="Margin.Dense"
+                              For="@(() => orderContext.Item.SortOrder)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+            </EditTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.HistologyCode" Title="Code" Filterable="true" Sortable="true" Editable>
+            <EditTemplate Context="codeContext">
+                <MudTextField T="string" class="mud-text-field-input" Value="codeContext.Item.HistologyCode" ValueChanged="(newValue) => OnHistologyCodeChanged(newValue, codeContext.Item)"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              For="@(() => codeContext.Item.HistologyCode)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+            </EditTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.HistologyBehavior" Title="Behavior" Filterable="false" Sortable="true" Editable>
+            <EditTemplate Context="behaviorContext">
+                <MudTextField T="string" class="mud-text-field-input" Value="behaviorContext.Item.HistologyBehavior" ValueChanged="(newValue) => OnHistologyBehaviorChanged(newValue, behaviorContext.Item)"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              For="@(() => behaviorContext.Item.HistologyBehavior)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+            </EditTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.HistologyName" Title="Name" Filterable="true" Sortable="true" Editable>
+            <EditTemplate Context="nameContext">
+                <MudTextField T="string" class="mud-text-field-input" Value="nameContext.Item.HistologyName" ValueChanged="(newValue) => OnHistologyNameChanged(newValue, nameContext.Item)"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              For="@(() => nameContext.Item.HistologyName)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+            </EditTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Comments" Title="Comments" Filterable="false" Editable>
+            <EditTemplate Context="commentContext">
+                <MudTextField T="string" class="mud-text-field-input" Value="commentContext.Item.Comments" ValueChanged="(newValue) => OnCommentsChanged(newValue, commentContext.Item)"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              For="@(() => commentContext.Item.Comments)" Style="border: 1px solid #ccc; border-radius: 4px;"></MudTextField>
+            </EditTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.IsPreferred" Title="Preferred" Sortable="true" SortBy="@_sortByPreferred" HeaderStyle="width: 15em;">
+            <EditTemplate>
+                <MudCheckBox T="bool" Value="context.Item.IsPreferred" ValueChanged="@((newValue) => OnIsPreferredChanged(newValue, context.Item))" />
+            </EditTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.IsActive" Title="Active" Sortable="true" SortBy="@_sortByActive" HeaderStyle="width: 15em;">
+            <EditTemplate>
+                <MudCheckBox T="bool" Value="context.Item.IsActive" ValueChanged="@((newValue) => OnIsActiveChanged(newValue, context.Item))" />
+            </EditTemplate>
+        </PropertyColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="Histology" />
+    </PagerContent>
+</MudDataGrid>
+@* <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"  OnClick="OnImportHistologies">Import Histologies</MudButton> *@
+

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RCA_StudyManagementSystem.Api.Data;
+using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Shared.Domain;
 using Microsoft.Extensions.Logging;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;

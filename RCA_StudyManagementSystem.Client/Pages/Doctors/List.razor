@@ -1,0 +1,83 @@
+﻿@page "/doctors/list"
+
+@using Blazored.LocalStorage
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.ViewModels
+@using MudBlazor
+@using System.Linq
+
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject DoctorData DoctorData
+@inject LookupData LookupData
+@inject GridStateView<Doctor> DocGridStateView
+@inject ILocalStorageService LocalStorage
+
+@implements IDisposable
+
+@rendermode InteractiveWebAssembly
+
+
+<MudDataGrid T="Doctor" @ref="docGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
+             QuickFilter="@_quickFilter" Dense
+             FilterDefinitions="@DocGridStateView.FilterDefinitions"
+             SortDefinitions="@DocGridStateView.SortDefinitions"
+             CurrentPage="@DocGridStateView.CurrentPage"
+             CurrentPageChanged=@((currentPage) => OnCurrentPageChanged(currentPage))
+             FilterMode="DataGridFilterMode.ColumnFilterRow" AllowUnsorted="false" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Doctors</MudText>
+        <MudSpacer />
+        <MudButton Class="mr-2" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="() => ClearStateItems()">Reset Filters</MudButton>
+        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable="true"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <Col Width="15em" />
+       
+    </ColGroup>
+    <Columns>
+
+        <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="false" />
+        <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="false" />
+        <PropertyColumn Property="x => x.MiddleName" Title="Middle Name" Filterable="false" />
+        <PropertyColumn Property="x => x.DisplayName" Title="Last Name" Filterable="false" Hidden />
+        <PropertyColumn Property="x => x.MigratedDoctorId" Title="Migrated Doctor Id" Filterable="false" Hidden />
+        <PropertyColumn Property="x => x.PrimarySpecialty" Title="Primary Specialty" Filterable="false"/>
+        <PropertyColumn Property="x => x.Address1" Title="Location" Filterable="false" />
+        <PropertyColumn Property="x => x.City" Title="City" Filterable="false" />
+        <TemplateColumn Title="Doctor Phone" Filterable="false">
+            <CellTemplate>
+                <MudText>@FormatPhoneNumber(context.Item.PhoneNumber1)</MudText>
+            </CellTemplate>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Verified Date" SortBy="x => x.VerifiedDate" Context="dateContext" Sortable="true">
+            <CellTemplate>
+                <MudText Typo="Typo.body2">@dateContext.Item.VerifiedDate?.ToShortDateString()</MudText>
+            </CellTemplate>
+        </TemplateColumn>           
+        <PropertyColumn Property="x => x.IsVerified" Title="Verified" Sortable="true" SortBy="@_sortByVerified" HeaderStyle="width: 15em;">
+            <CellTemplate>
+                <MudCheckBox T="bool" @bind-Value="context.Item.IsVerified" ReadOnly="true" />
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.IsPathologist" Title="Pathologist" Sortable="true" SortBy="@_sortByPathologist" HeaderStyle="width: 15em;">
+            <CellTemplate>
+                <MudCheckBox T="bool" @bind-Value="context.Item.IsPathologist" ReadOnly="true" />
+            </CellTemplate>
+        </PropertyColumn>
+        <TemplateColumn HeaderText="Actions">
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item, context.Item)) Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Href="@($"/doctors/edit/{context.Item.DoctorId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="Doctor"/>
+    </PagerContent>
+</MudDataGrid>
+@* <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"  OnClick="OnImport">Import Doctors</MudButton>
+ *@

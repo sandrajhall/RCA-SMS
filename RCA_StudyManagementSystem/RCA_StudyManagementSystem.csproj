@@ -10,7 +10,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RCA_StudyManagementSystem.Client\RCA_StudyManagementSystem.Client.csproj" />
-    <ProjectReference Include="..\RCA_StudyManager.Shared\RCA_StudyManagementSystem.Shared.csproj" />
+    <ProjectReference Include="..\RCA_StudyManagementSystem.Shared\RCA_StudyManagementSystem.Shared.csproj" />
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
+    <PackageReference Include="MailKit" Version="4.15.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.3" />

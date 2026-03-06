@@ -1,4 +1,4 @@
-﻿using RCA_StudyManager.Shared.Interfaces;
+﻿using RCA_StudyManagementSystem.Shared.Interfaces;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

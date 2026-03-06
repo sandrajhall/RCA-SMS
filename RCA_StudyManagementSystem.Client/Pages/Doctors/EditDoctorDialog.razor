@@ -1,0 +1,24 @@
+﻿@using MudBlazor
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.Domain
+
+@rendermode InteractiveWebAssembly
+
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+
+        @if (Doctor == null)
+        {
+            <Create IsDialog=true />
+        }
+        else
+        {
+            <Edit Doctor="@Doctor" IsSaved=@IsSaved IsDialog=true />
+        }
+
+        
+    </DialogContent>
+
+</MudDialog>

@@ -1,0 +1,230 @@
+﻿@using MudBlazor
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Pages.Cases
+
+@rendermode InteractiveWebAssembly
+
+@inject IDialogService DialogService
+@inject StudyData StudyData
+@inject HospitalData HospitalData
+@inject RCAContactData RCAContactData
+@inject InvoiceData InvoiceData
+
+<MudDialog>
+    <DialogContent>
+
+        <MudPagination Color="Color.Primary" ShowFirstButton="true" ShowLastButton="true"
+                       Count="@totalPages"
+                       Selected="@currPage"
+                       SelectedChanged="OnPageChanged"
+                       Class="mt-4 d-flex justify-end" Style="position: fixed; top: 20px; right: 40px; z-index: 1500" />
+
+        <div style=" height:1200px; ">
+            <MudPaper Class="d-flex pa-2" Style="@($"background-color: lightsteelblue !important;")">
+                <MudContainer Class="ml-2 mt-2">
+                    <MudText Typo="Typo.h4">@ReimbursementEntity.Name </MudText>
+                    <div class="mt-n12 d-flex justify-end">
+                        <MudIconButton Size="@Size.Large" Icon="@Icons.Material.Outlined.Edit" Href="@($"/reimbursemententities/edit/{ReimbursementEntity.ReimbursementEntityId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+                    </div>
+                </MudContainer>
+            </MudPaper>
+            <br />
+
+            <MudCard Style="@($"background-color:{Colors.BlueGray.Lighten5};")">
+
+                <div class="d-flex">
+
+
+                    <MudContainer Class="pa-2">
+                        <div class="ml-n20">
+                        <div class="d-flex flex-row">
+                            <span style="width: 55%" class="mr-3 d-flex justify-end">
+                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Payable To:</MudText>
+                            </span>
+                            <span style="width: 65%">
+                                <MudText Typo="Typo.body1"> @ReimbursementEntity.PayableTo</MudText>
+                            </span>
+                        </div>
+                        <div class="d-flex flex-row">
+                            <span style="width: 55%" class="mr-3 d-flex justify-end">
+                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Attention To:</MudText>
+                            </span>
+                            <span style="width: 65%">
+                                <MudText Typo="Typo.body1"> @ReimbursementEntity.AttentionTo</MudText>
+                            </span>
+                        </div>
+                        <div class="d-flex flex-row">
+                            <span style="width: 55%" class="mr-3 d-flex justify-end">
+                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Address:</MudText>
+                            </span>
+                            <span style="width: 65%">
+                                <MudText Typo="Typo.body1"> @ReimbursementEntity.AddressLine1</MudText>
+                            </span>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(ReimbursementEntity.AddressLine2))
+                        {
+                            <div class="d-flex flex-row">
+                                <span style="width: 55%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @ReimbursementEntity.AddressLine2</MudText>
+                                </span>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(ReimbursementEntity.AddressLine3))
+                        {
+                            <div class="d-flex flex-row">
+                                <span style="width: 55%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @ReimbursementEntity.AddressLine3</MudText>
+                                </span>
+                            </div>
+                        }
+                        <div class="d-flex flex-row">
+                            <span style="width: 55%" class="mr-3 d-flex justify-end">
+                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
+                            </span>
+                            <span style="width: 65%">
+                                <MudText Typo="Typo.body1">@ReimbursementEntity.City, @ReimbursementEntity.State @ReimbursementEntity.ZipCode</MudText>
+                            </span>
+                        </div>
+                        <div class="d-flex flex-row">
+                            <span style="width: 55%" class="mr-3 d-flex justify-end">
+                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Invoice Prefix:</MudText>
+                            </span>
+                            <span style="width: 65%">
+                                <MudText Typo="Typo.body1"> @ReimbursementEntity.InvoicePrefix</MudText>
+                            </span>
+                        </div>
+
+                        <br />
+
+                        <div class="d-flex flex-row">
+                            <span style="width: 55%" class="mr-3 d-flex justify-end">
+                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Comments:</MudText>
+                            </span>
+                            <span style="width: 65%">
+                                <MudText Typo="Typo.body1"> @ReimbursementEntity.Comments</MudText>
+                            </span>
+                        </div>
+
+                        <br />
+                        <br />
+
+                        <div class="pl-20">
+                        <MudText Typo="Typo.h4" Class="mb-3 ml-10">Associated Hospitals </MudText>
+                        @foreach (var hospital in associatedHospitals)
+                        {
+                            <div class="d-flex flex-row ml-20">
+                                    <MudText Typo="Typo.body1"> @hospital.HospitalName</MudText>
+                            </div>
+                        }
+                        </div>
+                        </div>
+                    </MudContainer>
+
+                    <MudContainer Class="pa-2">
+
+                        <MudText Typo="Typo.h4" Class="mb-3 ml-10">Contacts </MudText>
+                        @foreach (var contact in RCAContacts)
+                        {
+                            if(contact.Credentials.Length > 0)
+                            {
+                                <div class="d-flex flex-row ml-20">
+                                    <MudText Typo="Typo.body1"> @contact.FirstName @contact.LastName, @contact.Credentials</MudText>
+                                </div>
+                            }
+                            else
+                            {
+
+                                <div class="d-flex flex-row ml-20">
+                                    <MudText Typo="Typo.body1"> @contact.FirstName @contact.LastName</MudText>
+                                </div>
+                            }
+                            <div class="d-flex flex-row ml-20">
+                                <MudText Typo="Typo.body1"> @contact.Title</MudText>
+                            </div>
+                            <div class="d-flex flex-row ml-20">
+                                <MudText Typo="Typo.body1"> @contact.Email</MudText>
+                            </div>
+                            if(contact.PhoneExtension != null && contact.PhoneExtension.Length > 0)
+                            {
+                                <div class="d-flex flex-row mb-3 ml-20">
+                                    <MudText Typo="Typo.body1"> @contact.PhoneNumber ext. @contact.PhoneExtension</MudText>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="d-flex flex-row mb-3 ml-20">
+                                    <MudText Typo="Typo.body1">@contact.PhoneNumber</MudText>
+                                </div>
+                            }
+                        }
+
+                    </MudContainer>
+
+                </div>
+
+                <MudDataGrid T="Invoice" @ref="invGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="false">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Invoices</MudText>
+                        <MudSpacer />
+                    </ToolBarContent>
+                    <ColGroup>
+                        <col style="width:200px" />
+                    </ColGroup>
+                    <Columns>
+
+                        <PropertyColumn Property="x => x.InvoiceNumber" Title="Invoice Number" Filterable="false" />
+                        <PropertyColumn Property="x => x.InvoiceDate.ToShortDateString()" Title="Invoice Date" Filterable="false" />
+                        <PropertyColumn Property="x => x.DateEmailed.Value.ToShortDateString()" Title="Date Emailed" Filterable="false" />
+                        <TemplateColumn Title="Date Reminder Sent" SortBy="x => x.DateReminderSent" Filterable="false">
+                            <EditTemplate>
+                                <MudDatePicker @bind-Date="context.Item.DateReminderSent"
+                                               DateFormat="MM/dd/yyyy"
+                                               Editable="true" />
+                            </EditTemplate>
+                        </TemplateColumn>
+                        <TemplateColumn Title="Date Signed Invoice Returned" SortBy="x => x.DateSignedInvoiceReturned" Filterable="false">
+                            <EditTemplate>
+                                <MudDatePicker @bind-Date="context.Item.DateSignedInvoiceReturned"
+                                               DateFormat="MM/dd/yyyy"
+                                               Editable="true" />
+                            </EditTemplate>
+                        </TemplateColumn>
+                        <PropertyColumn Property="x => x.RASRId" Title="RASR ID" Filterable="false" Editable Required="false" />
+                        <TemplateColumn Title="RASR Submit Date" SortBy="x => x.RASRSubmitDate" Filterable="false">
+                            <EditTemplate>
+                                <MudDatePicker @bind-Date="context.Item.RASRSubmitDate"
+                                               DateFormat="MM/dd/yyyy"
+                                               Editable="true" />
+                            </EditTemplate>
+                        </TemplateColumn>
+                        <TemplateColumn Title="RASR Complete Date" SortBy="x => x.RASRCompleteDate" Filterable="false">
+                            <EditTemplate>
+                                <MudDatePicker @bind-Date="context.Item.RASRCompleteDate"
+                                               DateFormat="MM/dd/yyyy"
+                                               Editable="true" />
+                            </EditTemplate>
+                        </TemplateColumn>
+                        <PropertyColumn Property="x => x.IsComplete" Title="Complete" Sortable="true" Filterable="true" Editable>
+                            <EditTemplate Context="completeContext">
+                                <MudCheckBox T=bool @bind-Value="completeContext.Item.IsComplete"
+                                             For="@(() => completeContext.Item.IsComplete)" />
+                            </EditTemplate>
+                        </PropertyColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="Invoice" />
+                    </PagerContent>
+                </MudDataGrid>
+            </MudCard>
+        </div>
+    </DialogContent>
+
+</MudDialog>

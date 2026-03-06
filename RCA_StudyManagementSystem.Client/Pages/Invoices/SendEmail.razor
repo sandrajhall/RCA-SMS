@@ -1,0 +1,55 @@
+﻿@page "/send-email"
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.DTOs
+@using RCA_StudyManagementSystem.Shared.Domain
+sing RCA_StudyManagementSystem.Shared.Domain
+@inject EmailData EmailData
+
+<h3>Send an Email</h3>
+
+<EditForm Model="@emailRequest" OnValidSubmit="@HandleValidSubmit">
+    <div class="form-group">
+        <label>To:</label>
+        <InputText @bind-Value="emailRequest.To" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Subject:</label>
+        <InputText @bind-Value="emailRequest.Subject" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Body:</label>
+        <InputTextArea @bind-Value="emailRequest.Body" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Send</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(statusMessage))
+{
+    <div class="alert alert-info mt-3">@statusMessage</div>
+}
+
+@code {
+    private EmailRequest emailRequest = new EmailRequest();
+    private string statusMessage;
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            var response = await EmailData.SendAsync(emailRequest);
+
+            if (response)
+            {
+                statusMessage = "Email sent successfully!";
+            }
+            else
+            {
+                statusMessage = $"Error: There was a problem sending the email.";
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+}

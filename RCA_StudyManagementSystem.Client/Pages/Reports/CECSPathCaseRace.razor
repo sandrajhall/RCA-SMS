@@ -1,0 +1,107 @@
+﻿@page "/reports/cecspathcaserace"
+
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.ViewModels
+@using MudBlazor
+@using System.Linq
+
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject ReportData ReportData
+@inject StudyData StudyData
+@inject HistologyData HistologyData
+@inject IJSRuntime JSRuntime
+
+
+@rendermode InteractiveWebAssembly
+
+<style>
+
+    .mud-datagrid-modified-row {
+        background-color: #ffe0b2; /* Light orange */
+    }
+</style>
+
+
+<MudPaper Class="d-flex pa-2 rca-case-header">
+    <h3 class="mr-5"></h3>
+
+    <style>
+        .rca-case-header {
+            background-color: @StudyColor;
+        }
+    </style>
+
+    <MudItem xs="4" sm="3" md="2">
+        <MudDatePicker @bind-Date="startDate" Label="Start Date" Variant="Variant.Text" Margin="Margin.Dense" Dense="true" />
+    </MudItem>
+    <MudItem xs="4" sm="3" md="2">
+        <MudDatePicker @bind-Date="endDate" Label="End Date" Variant="Variant.Text" Margin="Margin.Dense" Dense="true" Class="ml-2" />
+    </MudItem>
+    <MudSpacer />
+    <div class="col-2 mt-8">
+        <MudButton Variant="Variant.Filled" Class="mt-n5" Color="Color.Success" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="Generate">Generate Report</MudButton>
+
+    </div>
+</MudPaper>
+<br />
+
+<MudDataGrid T="PathCountByStudyByDate" Items="@PathReports" SortMode="SortMode.Single" Filterable="true" Dense Virtualize
+             ReadOnly="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">CECS Path Counts</MudText>
+
+    </ToolBarContent>
+    <ColGroup>
+        <col style="width: 20%;" />
+        <col style="width: 10%;" />
+        <col style="width: 50%;" />
+    </ColGroup>
+    <Columns>
+        <PropertyColumn Property="x => x.HospitalName" Title="Hospital Name" Filterable="false" Sortable="true">
+            <EditTemplate Context="hospContext">
+                <MudTextField T="string" @bind-Value="hospContext.Item.HospitalName"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              For="@(() => hospContext.Item.HospitalName)"></MudTextField>
+            </EditTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.EligiblePathCount" Title="# Eligible Paths" Filterable="false" Sortable="true">
+            <EditTemplate Context="countContext">
+                <MudTextField T="int" @bind-Value="countContext.Item.EligiblePathCount"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              For="@(() => countContext.Item.EligiblePathCount)"></MudTextField>
+            </EditTemplate>
+            <FooterTemplate>
+                Total Eligible Paths: @context.Items.Sum(x => x.EligiblePathCount)
+            </FooterTemplate>
+        </PropertyColumn>
+    </Columns>
+
+</MudDataGrid>
+<MudItem class="mt-5 mb-5">
+    <MudText Typo="Typo.h6">CECS Case Count: @CECSCaseTotal</MudText>
+</MudItem>
+<MudItem class="mt-5 mb-5">
+
+    <MudText Typo="Typo.h6">CECS Race Counts</MudText>
+
+    @foreach(var race in RaceCounts)
+    {
+        <MudText Typo="Typo.body1">@race.RaceName: @race.PathCount</MudText>
+    }
+
+</MudItem>
+
+<MudItem class="mt-5 mb-5">
+
+    <MudText Typo="Typo.h6">CECS Ethnicity Counts</MudText>
+
+    @foreach (var ethnicity in EthnicityCounts)
+    {
+        <MudText Typo="Typo.body1">@ethnicity.EthnicityName: @ethnicity.PathCount</MudText>
+    }
+
+</MudItem>

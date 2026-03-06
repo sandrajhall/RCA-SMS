@@ -1,0 +1,30 @@
+﻿@inherits MudCarouselItem
+@using Microsoft.AspNetCore.Components.Rendering
+@using MudBlazor
+
+<!-- CustomCarouselItem.razor -->
+@* You are essentially saying: "Render what MudCarouselItem normally renders,
+   and any content passed into CustomCarouselItem should be the ChildContent of the inherited MudCarouselItem." *@
+@((RenderTreeBuilder __builder) => base.BuildRenderTree(__builder))
+
+@code {
+    // MyTransition remains a parameter of CustomCarouselItem,
+    // and you'll assign this to the inherited Transition property
+    // in the parent component where you use CustomCarouselItem.
+    [Parameter]
+    public Transition MyTransition { get; set; } = Transition.Fade; 
+
+    // No need for MyCustomContent here if you're directly rendering the inherited ChildContent
+    // The content placed inside <CustomCarouselItem> will be the ChildContent of the base component.
+
+    // This method is called by Blazor when the component initializes or parameters change
+    protected override void OnInitialized()
+    {
+        // Set the inherited Transition property of MudCarouselItem
+        // using the value from your CustomCarouselItem's MyTransition parameter.
+        Transition = MyTransition;
+        base.OnInitialized();
+    }
+}
+
+

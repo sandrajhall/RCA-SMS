@@ -1,0 +1,118 @@
+﻿@using MudBlazor
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Pages.Cases
+
+@rendermode InteractiveWebAssembly
+
+@inject IDialogService DialogService
+@inject StudyData StudyData
+@inject RCAContactData RCAContactData
+
+<MudDialog>
+    <DialogContent>
+
+        <MudPagination Color="Color.Primary" ShowFirstButton="true" ShowLastButton="true"
+                       Count="@totalPages"
+                       Selected="@currPage"
+                       SelectedChanged="OnPageChanged"
+                       Class="mt-4 d-flex justify-end" Style="position: fixed; top: 20px; right: 40px; z-index: 1500" />
+
+        <div style=" height:900px; ">
+            <MudPaper Class="d-flex pa-2" Style="@($"background-color: lightsteelblue !important;")">
+                <MudContainer Class="ml-2 mt-2">
+                    @if (RCAContact.Credentials.Length > 0)
+                    {
+                        <MudText Typo="Typo.h4">@RCAContact.FirstName @RCAContact.LastName, @RCAContact.Credentials</MudText>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.h4">@RCAContact.FirstName @RCAContact.LastName</MudText>
+
+                    }
+                    <div class="mt-n12 d-flex justify-end">
+                        <MudIconButton Size="@Size.Large" Icon="@Icons.Material.Outlined.Edit" Href="@($"/rcacontacts/edit/{RCAContact.RCAContactId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+                    </div>
+                </MudContainer>
+            </MudPaper>
+            <br />
+
+            <MudCard Style="@($"background-color:{Colors.BlueGray.Lighten5};")">
+
+                <div class="d-flex mx-10">
+
+
+                    <MudContainer Class="pa-2">
+                        <div class="d-flex flex-row">
+                            <span style="width: 55%" class="mr-3 d-flex justify-end">
+                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Title:</MudText>
+                            </span>
+                            <span style="width: 65%">
+                                <MudText Typo="Typo.body1"> @RCAContact.Title</MudText>
+                            </span>
+                        </div>
+                        <div class="d-flex flex-row">
+                            <span style="width: 55%" class="mr-3 d-flex justify-end">
+                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Email:</MudText>
+                            </span>
+                            <span style="width: 65%">
+                                <MudText Typo="Typo.body1"> @RCAContact.Email</MudText>
+                            </span>
+                        </div>
+                        <div class="d-flex flex-row">
+                            <span style="width: 55%" class="mr-3 d-flex justify-end">
+                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Phone Number:</MudText>
+                            </span>
+                            <span style="width: 65%">
+                                @if (RCAContact.PhoneExtension.Length > 0)
+                                {
+                                    <MudText Typo="Typo.body1"> @RCAContact.PhoneNumber ext. @RCAContact.PhoneExtension</MudText>
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.body1"> @RCAContact.PhoneNumber</MudText>
+                                }
+                            </span>
+                        </div>
+                        <div class="d-flex flex-row">
+                            <span style="width: 55%" class="mr-3 d-flex justify-end">
+                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Comments:</MudText>
+                            </span>
+                            <span style="width: 65%">
+                                <MudText Typo="Typo.body1"> @RCAContact.Comments</MudText>
+                            </span>
+                        </div>
+
+                    </MudContainer>
+
+
+
+                </div>
+                <MudContainer Class="pa-2">
+
+                    <div class="pl-20">
+                        <MudText Typo="Typo.h4" Class="mb-3 ml-10">Associated Reimbursement Entities </MudText>
+                        @if(RCAContact?.ReimbursementEntities == null || RCAContact.ReimbursementEntities.Count == 0)
+                        {
+                            <div class="d-flex flex-row ml-20">
+                                <MudText Typo="Typo.body1"> No Associated Reimbursement Entities</MudText>
+                            </div>
+                        }
+                        else
+                        {
+                            @foreach (var reimbEntity in RCAContact?.ReimbursementEntities!)
+                            {
+                                <div class="d-flex flex-row ml-20">
+                                    <MudText Typo="Typo.body1"> @reimbEntity.Name</MudText>
+                                </div>
+                            }
+                        }
+
+                    </div>
+
+                </MudContainer>
+            </MudCard>
+        </div>
+    </DialogContent>
+
+</MudDialog>

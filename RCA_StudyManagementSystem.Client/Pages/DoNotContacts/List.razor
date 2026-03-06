@@ -1,0 +1,67 @@
+﻿@page "/donotcontact/list"
+
+@using Blazored.LocalStorage
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.ViewModels
+@using MudBlazor
+@using System.Linq
+
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject DoNotContactData DoNotContactData
+@inject LookupData LookupData
+@inject GridStateView<DoNotContact> DncGridStateView
+@inject ILocalStorageService LocalStorage
+
+@implements IDisposable
+
+@rendermode InteractiveWebAssembly
+
+
+<MudDataGrid T="DoNotContact" @ref="dncGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
+             QuickFilter="@_quickFilter" Dense
+             FilterDefinitions="@DncGridStateView.FilterDefinitions"
+             SortDefinitions="@DncGridStateView.SortDefinitions"
+             CurrentPage="@DncGridStateView.CurrentPage"
+             CurrentPageChanged=@((currentPage) => OnCurrentPageChanged(currentPage))
+             FilterMode="DataGridFilterMode.ColumnFilterRow" AllowUnsorted="false" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Do Not Contact</MudText>
+        <MudSpacer />
+        <MudButton Class="mr-2" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="() => ClearStateItems()">Reset Filters</MudButton>
+        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable="true"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <Col Width="15em" />
+       
+    </ColGroup>
+    <Columns>
+
+        <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="false" />
+        <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="false" />
+        <PropertyColumn Property="x => x.MiddleName" Title="Middle Name" Filterable="false" />
+        <PropertyColumn Property="x => x.DateOfBirth.Value.ToShortDateString()" Title="Date of Birth" Filterable="false" />
+
+@*         <TemplateColumn Title="Phone Number" Filterable="false">
+            <CellTemplate>
+                <MudText>@FormatPhoneNumber(context.Item.PhoneNumber)</MudText>
+            </CellTemplate>
+        </TemplateColumn> *@
+        <PropertyColumn Property="x => x.StudyName" Title="Study" Filterable="false" />
+        <PropertyColumn Property="x => x.DateLastContact.Value.ToShortDateString()" Title="Date of Last Contact" Filterable="false" />
+
+        <TemplateColumn HeaderText="Actions">
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item, context.Item)) Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Href="@($"/donotcontact/edit/{context.Item.DoNotContactId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="DoNotContact"/>
+    </PagerContent>
+</MudDataGrid>
+@* <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"  OnClick="OnImport">Import Do Not Contact</MudButton>
+ *@

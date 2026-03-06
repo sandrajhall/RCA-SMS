@@ -1,0 +1,12 @@
+﻿@page "/invoices/invoicepdf/{InvoiceId:guid}"
+
+@layout NullLayout
+
+
+<iframe src="/invoices/view/@InvoiceId" style="border: 0; width:1200px; height: 1200px; overflow: hidden;" scrolling="no"></iframe>
+
+
+@code {
+    [Parameter]
+    public Guid InvoiceId { get; set; }
+}

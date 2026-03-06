@@ -1,0 +1,82 @@
+﻿@page "/studies/list"
+
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using MudBlazor
+@using System.Linq
+
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject StudyData StudyData
+
+@rendermode InteractiveWebAssembly
+
+
+
+<MudDataGrid @ref="studyGrid" T="Study" Items="@Studies" SortMode="SortMode.Single" Filterable="true" QuickFilter="@_quickFilter" Dense
+             FilterMode="DataGridFilterMode.ColumnFilterRow" AllowUnsorted="false" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Studies</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable="true"></MudTextField>
+    </ToolBarContent><Columns>
+        <TemplateColumn Title="Study Name" SortBy="@(x => x.Name)" Sortable="true">
+            <CellTemplate>
+                <MudText Typo="Typo.body2">@context.Item.Name</MudText>
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Start Date" SortBy="@(x => x.StartDate)" Sortable="true">
+            <CellTemplate>
+                <MudText Typo="Typo.body2">@context.Item.StartDate?.ToShortDateString()</MudText>
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Stop Date" SortBy="@(x => x.EndDate)" Sortable="true">
+            <CellTemplate>
+                <MudText Typo="Typo.body2">@context.Item.EndDate?.ToShortDateString()</MudText>
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.Prefix" Title="Prefix" Filterable="false" />
+        <PropertyColumn Property="x => x.MudColorLight.Value" Title="Color" Filterable="false" CellStyleFunc="@_cellStyleFunc" />
+        <TemplateColumn Title="Last Enrollment" SortBy="@(x => x.LastEnrolledDate)" Sortable="true">
+            <CellTemplate>
+                <MudText Typo="Typo.body2">@context.Item.LastEnrolledDate?.ToShortDateString()</MudText>
+            </CellTemplate>
+        </TemplateColumn>       
+        <TemplateColumn Title="Days Since Last Enrollment" SortBy="@(x => x.DaysSinceLastEnrollment)" Sortable="true">
+            <CellTemplate Context="daysContext">
+                @if (daysContext.Item.DaysSinceLastEnrollment > 0)
+                {
+                    @if (daysContext.Item.DaysSinceLastEnrollment < 365)
+                    {
+                        <MudText Typo="Typo.body2">@daysContext.Item.DaysSinceLastEnrollment</MudText>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2" Color="Color.Error">@daysContext.Item.DaysSinceLastEnrollment</MudText>
+                    }
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2">N/A</MudText>
+                }
+            </CellTemplate>
+        </TemplateColumn>
+
+        <PropertyColumn Property="x => x.IsActive" Title="Active" HeaderStyle="width: 15em;">
+            <CellTemplate>
+                <MudCheckBox T="bool" @bind-Value="context.Item.IsActive" ReadOnly="true" />
+            </CellTemplate>
+        </PropertyColumn>
+
+        <TemplateColumn HeaderText="Actions">
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item)) Variant="Variant.Text" Color="Color.Primary">View</MudIconButton>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Href="@($"/studies/edit/{context.Item.StudyId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="Study" />
+    </PagerContent>
+</MudDataGrid>

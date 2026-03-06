@@ -1,0 +1,19 @@
+﻿@using RCA_StudyManagementSystem.Shared.DTOs
+@using RCA_StudyManagementSystem.Shared.Domain
+@if (Data != null)
+{
+    <p>Hello, @Data.ContactName,</p>
+    <p>Attached please find the invoices for @Data.ReimbursementEntity for @Data.Quarter @Data.Year totalling $@Data.TotalAmount.</p>
+    <p>Please sign and return the invoices to:</p>
+
+    <p>Get the rest of the email text from Lisa.</p>
+}
+else
+{
+    <p>Loading email content...</p>
+}
+
+@code {
+    [Parameter]
+    public InvoiceEmailData Data { get; set; }
+}

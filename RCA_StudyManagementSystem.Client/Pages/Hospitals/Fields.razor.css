@@ -1,0 +1,20 @@
+﻿h3 {
+    color: dodgerblue;
+    font-family: Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.mud-select-input {
+    z-index: 2000 !important;
+}
+
+.mud-data-grid .mud-table-cell.edit-mode-cell .mud-input .mud-input-outlined-border {
+    border: revert;
+}
+
+
+
+/*:root {
+   .mud-toolbar {
+        --mud-internal-toolbar-height: 15px !important;
+    }
+}*/
