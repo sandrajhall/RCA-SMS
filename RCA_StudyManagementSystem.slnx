@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="RCA_StudyManagementSystem.Client/RCA_StudyManagementSystem.Client.csproj" />
+  <Project Path="RCA_StudyManagementSystem/RCA_StudyManagementSystem.csproj" />
+</Solution>
