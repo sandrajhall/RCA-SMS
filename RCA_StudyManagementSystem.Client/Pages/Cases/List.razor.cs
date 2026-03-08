@@ -112,8 +112,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         {
 
             Console.WriteLine("OnInitializedAsync method called!");
+            await Task.Delay(300); // Add delay so recordLimit gets set to stored value, not sure why this is needed but it works
 
-            await Task.Delay(50); // Add delay so recordLimit gets set to stored value, not sure why this is needed but it works
+            _recordLimit = (int)(storedView != 0 ? storedView : 1);
+
 
             switch (_recordLimit)
             {
@@ -168,12 +170,20 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
 
+            storedStateDto = await LocalStorage.GetItemAsync<GridStateDto>(GridStateStorageKey);
 
             if (firstRender && pathGrid != null)
             {
-                storedStateDto = await LocalStorage.GetItemAsync<GridStateDto>(GridStateStorageKey);
-                Task.Delay(50); // Add delay to ensure that the grid is fully initialized before applying state, not sure why this is needed but it works
-                storedView = storedStateDto.ViewLimit ?? 1;
+                if (storedStateDto is not null)
+                {
+                    storedView = storedStateDto.ViewLimit;
+                }
+                else
+                {
+                    storedView = 1;
+                }
+
+
 
                 _recordLimit = (int)(storedView != 0 ? storedView : _recordLimit); // Use stored view limit if available, otherwise default
 
@@ -195,6 +205,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                 }
                 //SetPathId(); // Do not use for now
 
+                StateHasChanged();
 
                 if (storedStateDto != null)
                 {

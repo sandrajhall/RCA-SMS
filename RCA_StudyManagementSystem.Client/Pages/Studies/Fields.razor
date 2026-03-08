@@ -71,7 +71,7 @@ else
 {
     <MudTabs KeepPanelsAlive="true" Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
         <MudTabPanel Text="Study" Icon="@Icons.Material.Filled.Hive">
-            <MudGrid>
+            <MudGrid Class="mt-3 ml-1">
 
                 <MudItem xs="12" sm="4" md="3" Class="my-n3">
                     <MudTextField Label="Study Name" Variant="Variant.Outlined"
@@ -290,7 +290,7 @@ else
         </MudTabPanel>
 
         <MudTabPanel Text="Color" Icon="@Icons.Material.Filled.ColorLens">
-            <MudGrid>
+            <MudGrid Class="mt-3 ml-1">
                 <MudItem>
                     <MudText Typo="Typo.subtitle1" Class="mt-3 d-flex justify-center">Select your color, then set opacity (60-70% is good). </MudText>
                 </MudItem>
@@ -305,7 +305,7 @@ else
         {
 
             <MudTabPanel Text="Options" Icon="@Icons.Material.Filled.ListAlt">
-                <MudGrid>
+                <MudGrid Class="mt-3 ml-1">
                     <MudItem xs="12" sm="12" md="12" Class="my-n3">
                         <MudExpansionPanels MultiExpansion="true">
                             <MudExpansionPanel Text="Gender Options" Expanded="false">
@@ -520,7 +520,7 @@ else
             <MudTabPanel Text="Counties" Icon="@Icons.Material.Filled.ListAlt">
                 <br />
                 <br />
-                <MudGrid>
+                <MudGrid Class="mt-3 ml-1">
                     <MudDataGrid T="StudyLookupView" Virtualize
                                  Items="@luCounty"
                                  EditMode="DataGridEditMode.Cell" ReadOnly="false"
@@ -561,7 +561,7 @@ else
                 <br />
                 <MudStack xs="12" sm="12" md="8" Class="my-n3" Row=true Wrap=Wrap.NoWrap>
                     <div class="mud-width-60">
-                        <MudGrid>
+                        <MudGrid Class="mt-3 ml-1">
                             <MudDataGrid T="StudyHistologyView" @ref="dataHistology" Virtualize
                                          Items="@luHistology" QuickFilter="@_quickFilter"
                                          EditMode="DataGridEditMode.Cell" ReadOnly="false"
@@ -682,7 +682,7 @@ else
                 </MudText>
                 <br />
                 <br />
-                <MudGrid>
+                <MudGrid Class="mt-3 ml-1">
                     <MudDataGrid T="StudyHeaderView" Virtualize
                                  Items="@luHeaderOption"
                                  EditMode="DataGridEditMode.Cell" ReadOnly="false"
@@ -755,8 +755,8 @@ else
                 </MudText>
                 <br />
                 <br />
-                <MudGrid>
-                    <MudDataGrid T="StudyReportHeaderView" Virtualize
+                    <MudGrid Class="mt-3 ml-1">
+                        <MudDataGrid T="StudyReportHeaderView" Virtualize
                                  Items="@luReportHeaderOption"
                                  EditMode="DataGridEditMode.Cell" ReadOnly="false"
                                  MultiSelection="true" Dense SelectOnRowClick="false"

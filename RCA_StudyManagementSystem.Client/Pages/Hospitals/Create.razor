@@ -39,7 +39,7 @@
     <MudSpacer />
     @if (!IsDialog)
     {
-        <div class="col-4 mt-3">
+        <div class="mt-3">
             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnSubmit">Save</MudButton>
             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnSaveAndAddNew">Save and Add New</MudButton>
             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnSaveAndClose">Save and Close</MudButton>
@@ -48,7 +48,7 @@
     }
     else
     {
-        <div class="col-3 mt-3">
+        <div class="mt-3">
             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnSubmit">Save</MudButton>
             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnSaveAndClose">Save and Close</MudButton>
             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Warning" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnCancel">Cancel</MudButton>

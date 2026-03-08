@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +12,29 @@ using RCA_StudyManagementSystem.Components.Account;
 using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add output caching services
+builder.Services.AddOutputCache(options =>
+{
+    options.AddPolicy("DoctorTagPolicy", policy =>
+    {
+        policy.Expire(TimeSpan.FromDays(7)); // A long expiration, relying on tag invalidation
+        policy.Tag("doctor-api");
+    });
+    options.AddPolicy("PatientTagPolicy", policy =>
+    {
+        policy.Expire(TimeSpan.FromDays(7));
+        policy.Tag("patient-api");
+    });
+    options.AddPolicy("HistologyTagPolicy", policy =>
+    {
+        policy.Expire(TimeSpan.FromDays(7));
+        policy.Tag("histology-api");
+    });
+});
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -56,6 +78,28 @@ builder.Services.AddHttpClient("Geoapify", client =>
     // Add other configurations like default headers, timeouts, etc.
 });
 
+builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
+
+// Register HttpClient
+builder.Services.AddScoped(sp =>
+{
+    NavigationManager navigation = sp.GetRequiredService<NavigationManager>();
+    return new HttpClient { BaseAddress = new Uri(navigation.BaseUri) };
+});
+
+
+builder.Services.AddLogging(builder =>
+{
+    builder.AddConsole(); // Adds console logging
+    builder.SetMinimumLevel(LogLevel.Debug); // Sets default minimum log level
+    // Add other providers as needed, e.g., builder.AddAzureWebAppDiagnostics();
+});
+
 
 // Register data services
 builder.Services.AddScoped<PatientData>();
@@ -93,6 +137,7 @@ builder.Services.AddScoped<GridStateView<Invoice>>(); // Register for a specific
 
 builder.Services.AddBlazoredLocalStorage();
 
+builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
@@ -112,9 +157,13 @@ else
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
-app.UseAntiforgery();
 
 app.MapStaticAssets();
+
+app.UseAntiforgery();
+
+
+app.MapControllers();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

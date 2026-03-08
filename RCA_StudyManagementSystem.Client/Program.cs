@@ -73,5 +73,4 @@ builder.Services.AddScoped<GridStateView<Invoice>>(); // Register for a specific
 
 builder.Services.AddBlazoredLocalStorage();
 
-
 await builder.Build().RunAsync();
