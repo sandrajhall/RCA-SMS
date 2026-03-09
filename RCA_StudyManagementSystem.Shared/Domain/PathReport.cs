@@ -212,6 +212,12 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         [NotMapped]
         public Hospital? HospitalEntity { get; set; } = null; // Navigation property to the Hospital entity, if applicable
         [NotMapped]
+        public Hospital? OrigHospitalEntity { get; set; } = null; // Navigation property to the originating Hospital entity, if applicable
+        [NotMapped]
+        public Hospital? Reimb1HospitalEntity { get; set; } = null; // Navigation property to the originating Hospital entity, if applicable
+        [NotMapped]
+        public Hospital? Reimb2HospitalEntity { get; set; } = null; // Navigation property to the originating Hospital entity, if applicable
+        [NotMapped]
         public Doctor? DoctorEntity1 { get; set; } = null; // Navigation property to the Doctor entity, if applicable
         [NotMapped]
         public Doctor? DoctorEntity2 { get; set; } = null; // Navigation property to the second Doctor entity, if applicable

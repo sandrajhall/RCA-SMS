@@ -233,21 +233,25 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         private async Task OnSaveAndClose()
         {
             await Save();
+            Task.Delay(1000); // Optional: Add a delay to allow the user to see the save message before navigating away
 
-            switch (List)
+            if (IsSaved)
             {
-                case "Cases":
-                    NavigationManager.NavigateTo($"/cases/list");
-                    break;
-                case "CurrentExports":
-                    NavigationManager.NavigateTo($"/exports/list/{StudyId}");
-                    break;
-                case "PastExports":
-                    NavigationManager.NavigateTo($"/exports/pastlist/{StudyId}");
-                    break;
-                default:
-                    NavigationManager.NavigateTo($"/cases/list");
-                    break;
+                switch (List)
+                {
+                    case "Cases":
+                        NavigationManager.NavigateTo($"/cases/list");
+                        break;
+                    case "CurrentExports":
+                        NavigationManager.NavigateTo($"/exports/list/{StudyId}");
+                        break;
+                    case "PastExports":
+                        NavigationManager.NavigateTo($"/exports/pastlist/{StudyId}");
+                        break;
+                    default:
+                        NavigationManager.NavigateTo($"/cases/list");
+                        break;
+                }
             }
         }
     }

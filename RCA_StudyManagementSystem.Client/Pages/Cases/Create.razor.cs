@@ -173,16 +173,20 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         {
             var id = await Save();
 
-            NavigationManager.NavigateTo($"/cases/create", forceLoad: true);
-
+            if (IsSaved)
+            {
+                NavigationManager.NavigateTo($"/cases/create", forceLoad: true);
+            }
         }
 
         private async Task OnSaveAndClose()
         {
             var id = await Save();
 
-            NavigationManager.NavigateTo($"/cases/list");
-
+            if (IsSaved)
+            {
+                NavigationManager.NavigateTo($"/cases/list");
+            }
         }
 
         private async Task OnStudySelectChanged(Study value)

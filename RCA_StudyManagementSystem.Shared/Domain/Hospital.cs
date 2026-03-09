@@ -43,6 +43,6 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         public Guid? ModifiedUserId { get; set; } = null;
         public DateTime? ModifiedDate { get; set; } = null;
 
-        public ICollection<DailyPathSubmission> DailyPathSubmissions { get; set; }
+        public ICollection<DailyPathSubmission>? DailyPathSubmissions { get; set; }
     }
 }

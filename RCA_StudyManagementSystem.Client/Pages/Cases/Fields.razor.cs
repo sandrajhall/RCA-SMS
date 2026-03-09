@@ -38,6 +38,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         public CancellationToken CancellationToken { get; set; } = new CancellationToken();
         private GeoapifySuggestion? SelectedValue { get; set; }
 
+        private PathReport _activeReport;
+
 
         private IEnumerable<string> GenderList = new List<string>();
         private IEnumerable<string> RaceList = new List<string>();
@@ -126,114 +128,193 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         protected override async Task OnInitializedAsync()
         {
-            IsLoading = true;
-            StudyColor = await StudyData.GetStudyColorAsync(StudyId); // Set the study color based on the Patient's StudyId
 
-            await InvokeAsync(StateHasChanged); // Force a re-render after initialization
+        }
 
-
-            GeoapifyApiKey = Configuration["Geoapify:ApiKey"]!;
-
-            EditContext!.OnFieldChanged += HandleFieldChanged; // Subscribe to field change events
-
-            var taskGenderList = StudyLookupData.ListOptionsAsync("Gender", StudyId);
-            var taskRaceList = StudyLookupData.ListOptionsAsync("Race", StudyId);
-            var taskEthnicityList = StudyLookupData.ListOptionsAsync("Ethnicity", StudyId);
-            var taskProcedureList = StudyLookupData.ListOptionsAsync("Procedure", StudyId);
-            var taskCountyList = StudyLookupData.ListOptionsAsync("County", StudyId);
-            var taskHistologicDiffList = LookupData.ListLookupsByTypeAsync("HistologicDiff");
-
-
-            await Task.WhenAll(taskGenderList, taskRaceList, taskEthnicityList, taskProcedureList,
-                taskCountyList, taskHistologicDiffList);
-
-            GenderList = await taskGenderList;
-            RaceList = await taskRaceList;
-            EthnicityList = await taskEthnicityList;
-            ProcedureList = await taskProcedureList;
-            CountyList = await taskCountyList;
-            HistologicDiffList = await taskHistologicDiffList;
-
-            await InvokeAsync(StateHasChanged); // Force a re-render after initialization
-
-
-            var taskHistologyList1 = StudyHistologyData.ListStudyHistologiesByStudyIdAsync(StudyId);
-            var taskHistologyList2 = StudyHistologyData.ListStudyHistologiesByStudyIdAsync(StudyId);
-            var taskSiteList = StudyLookupData.ListStudyLookupsByStudyIdAsync(StudyId);
-            //var taskDoctorList = DoctorData.ListDoctorsAsync(CancellationToken);
-            //var taskPathologistList = DoctorData.ListPathologistsAsync(CancellationToken);
-            //var taskHospitalList = HospitalData.ListHospitalsAsync(CancellationToken);
-            var tasklookups = LookupData.ListLookupsAsync(); // Fetch lookups from the server
-
-            await Task.WhenAll(taskHistologyList1, taskHistologyList2, taskSiteList, tasklookups);
-
-
-            HistologyList1 = await taskHistologyList1;
-            HistologyList2 = await taskHistologyList2;
-            SiteList = await taskSiteList;
-            //DoctorList = await taskDoctorList;
-            //PathologistList = await taskPathologistList;
-            //HospitalList = await taskHospitalList;
-            lookups = await tasklookups;
-
-            HistologyList1 = HistologyList1.Where(x => x.IsActive && x.IsPreferred).OrderBy(x => x.HistologyCode).ThenBy(x => x.HistologyName).ToList(); // Filter to only include active histologies
-            HistologyList2 = HistologyList2.Where(x => x.IsActive && x.IsPreferred).OrderBy(x => x.HistologyCode).ThenBy(x => x.HistologyName).ToList(); // Filter to only include active histologies
-            SiteList = SiteList.Where(x => x.LookupType == "Site").ToList(); // Filter to only include sites
-
-            // Set the value of dropdown if only one option is available
-            if (GenderList.Count() == 1 && Patient.Gender == string.Empty)
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
             {
-                Patient.Gender = GenderList.First();
-                Patient.GenderCode = lookups.Where(x => x.LookupName == Patient.Gender).FirstOrDefault()!.LookupCode; // Set GenderCode
-            }
-            if (RaceList.Count() == 1 && Patient.Race == string.Empty)
-            {
-                Patient.Race = RaceList.First();
-                Patient.RaceCode = lookups.Where(x => x.LookupName == Patient.Race).FirstOrDefault()!.LookupCode; // Set RaceCode
-            }
-            if (EthnicityList.Count() == 1 && Patient.Ethnicity == string.Empty)
-            {
-                Patient.Ethnicity = EthnicityList.First();
-                Patient.EthnicityCode = lookups.Where(x => x.LookupName == Patient.Ethnicity).FirstOrDefault()!.LookupCode; // Set EthnicityCode
-            }
-            if (CountyList.Count() == 1 && Patient.County == string.Empty)
-            {
-                Patient.County = CountyList.First();
-                Patient.CountyCode = lookups.Where(x => x.LookupName == Patient.County).FirstOrDefault()!.LookupCode; // Set CountyCode
-            }
+                IsLoading = true;
+                StudyColor = await StudyData.GetStudyColorAsync(StudyId); // Set the study color based on the Patient's StudyId
+
+                await InvokeAsync(StateHasChanged); // Force a re-render after initialization
 
 
-            if (Patient.PathReports.Count > 0)
-            {
-                if (ProcedureList.Count() == 1 && Patient.PathReports.First().PathProcedure == string.Empty)
+                GeoapifyApiKey = Configuration["Geoapify:ApiKey"]!;
+
+                EditContext!.OnFieldChanged += HandleFieldChanged; // Subscribe to field change events
+
+                var taskGenderList = StudyLookupData.ListOptionsAsync("Gender", StudyId);
+                var taskRaceList = StudyLookupData.ListOptionsAsync("Race", StudyId);
+                var taskEthnicityList = StudyLookupData.ListOptionsAsync("Ethnicity", StudyId);
+                var taskProcedureList = StudyLookupData.ListOptionsAsync("Procedure", StudyId);
+                var taskCountyList = StudyLookupData.ListOptionsAsync("County", StudyId);
+                var taskHistologicDiffList = LookupData.ListLookupsByTypeAsync("HistologicDiff");
+
+
+                await Task.WhenAll(taskGenderList, taskRaceList, taskEthnicityList, taskProcedureList,
+                    taskCountyList, taskHistologicDiffList);
+
+                GenderList = await taskGenderList;
+                RaceList = await taskRaceList;
+                EthnicityList = await taskEthnicityList;
+                ProcedureList = await taskProcedureList;
+                CountyList = await taskCountyList;
+                HistologicDiffList = await taskHistologicDiffList;
+
+                await InvokeAsync(StateHasChanged); // Force a re-render after initialization
+
+
+                var taskHistologyList1 = StudyHistologyData.ListStudyHistologiesByStudyIdAsync(StudyId);
+                var taskHistologyList2 = StudyHistologyData.ListStudyHistologiesByStudyIdAsync(StudyId);
+                var taskSiteList = StudyLookupData.ListStudyLookupsByStudyIdAsync(StudyId);
+                //var taskDoctorList = DoctorData.ListDoctorsAsync(CancellationToken);
+                //var taskPathologistList = DoctorData.ListPathologistsAsync(CancellationToken);
+                //var taskHospitalList = HospitalData.ListHospitalsAsync(CancellationToken);
+                var tasklookups = LookupData.ListLookupsAsync(); // Fetch lookups from the server
+
+                await Task.WhenAll(taskHistologyList1, taskHistologyList2, taskSiteList, tasklookups);
+
+
+                HistologyList1 = await taskHistologyList1;
+                HistologyList2 = await taskHistologyList2;
+                SiteList = await taskSiteList;
+                //DoctorList = await taskDoctorList;
+                //PathologistList = await taskPathologistList;
+                //HospitalList = await taskHospitalList;
+                lookups = await tasklookups;
+
+                HistologyList1 = HistologyList1.Where(x => x.IsActive && x.IsPreferred).OrderBy(x => x.HistologyCode).ThenBy(x => x.HistologyName).ToList(); // Filter to only include active histologies
+                HistologyList2 = HistologyList2.Where(x => x.IsActive && x.IsPreferred).OrderBy(x => x.HistologyCode).ThenBy(x => x.HistologyName).ToList(); // Filter to only include active histologies
+                SiteList = SiteList.Where(x => x.LookupType == "Site").ToList(); // Filter to only include sites
+
+                // Set the value of dropdown if only one option is available
+                if (GenderList.Count() == 1 && Patient.Gender == string.Empty)
                 {
-                    Patient.PathReports.First().PathProcedure = ProcedureList.First();
+                    Patient.Gender = GenderList.First();
+                    Patient.GenderCode = lookups.Where(x => x.LookupName == Patient.Gender).FirstOrDefault()!.LookupCode; // Set GenderCode
+                }
+                if (RaceList.Count() == 1 && Patient.Race == string.Empty)
+                {
+                    Patient.Race = RaceList.First();
+                    Patient.RaceCode = lookups.Where(x => x.LookupName == Patient.Race).FirstOrDefault()!.LookupCode; // Set RaceCode
+                }
+                if (EthnicityList.Count() == 1 && Patient.Ethnicity == string.Empty)
+                {
+                    Patient.Ethnicity = EthnicityList.First();
+                    Patient.EthnicityCode = lookups.Where(x => x.LookupName == Patient.Ethnicity).FirstOrDefault()!.LookupCode; // Set EthnicityCode
+                }
+                if (CountyList.Count() == 1 && Patient.County == string.Empty)
+                {
+                    Patient.County = CountyList.First();
+                    Patient.CountyCode = lookups.Where(x => x.LookupName == Patient.County).FirstOrDefault()!.LookupCode; // Set CountyCode
                 }
 
-                if (SiteList.Count() == 1 && Patient.PathReports.First().Site == string.Empty)
+
+                if (Patient.PathReports.Count > 0)
                 {
-                    Patient.PathReports.First().Site = SiteList.First().LookupName;
-                    Patient.PathReports.First().SiteCode = SiteList.First().LookupCode; // Set SiteCode
+                    if (ProcedureList.Count() == 1 && Patient.PathReports.First().PathProcedure == string.Empty)
+                    {
+                        Patient.PathReports.First().PathProcedure = ProcedureList.First();
+                    }
+
+                    if (SiteList.Count() == 1 && Patient.PathReports.First().Site == string.Empty)
+                    {
+                        Patient.PathReports.First().Site = SiteList.First().LookupName;
+                        Patient.PathReports.First().SiteCode = SiteList.First().LookupCode; // Set SiteCode
+                    }
                 }
+
+                foreach (var pathReport in Patient.PathReports)
+                {
+                    if (pathReport?.Site2?.Length > 0)
+                    {
+                        pathReport.IsShownSite2 = true;
+                    }
+
+                    if (pathReport?.ExportStatus == "Path too early")
+                    {
+                        PathMinAgeCheck(pathReport);
+                    }
+
+                    if (pathReport.HospitalEntity == null && !string.IsNullOrEmpty(pathReport.SubmittingHospital))
+                    {
+                        if (pathReport.HospitalId == null)
+                        {
+                            pathReport.HospitalId = await HospitalData.GetHospitalIdAsync(pathReport.SubmittingHospital);
+                        }
+
+                        if (pathReport.HospitalId != null)
+                        {
+                            pathReport.HospitalEntity = await HospitalData.GetHospitalAsync(pathReport.HospitalId.Value);
+                        }
+                    }
+
+                    if (pathReport.OrigHospitalEntity == null && !string.IsNullOrEmpty(pathReport.OriginatingHospitalName))
+                    {
+                        if (pathReport.OrigHospitalId == null)
+                        {
+                            pathReport.OrigHospitalId = await HospitalData.GetHospitalIdAsync(pathReport.OriginatingHospitalName);
+                        }
+
+                        if (pathReport.OrigHospitalId != null)
+                        {
+                            pathReport.OrigHospitalEntity = await HospitalData.GetHospitalAsync(pathReport.OrigHospitalId.Value);
+                        }
+                    }
+
+                    if (pathReport.Reimb1HospitalEntity == null && !string.IsNullOrEmpty(pathReport.Reimbursement1))
+                    {    
+                        var reimb1Id = await HospitalData.GetHospitalIdAsync(pathReport.Reimbursement1);      
+
+                        if (reimb1Id != null)
+                        {
+                            pathReport.Reimb1HospitalEntity = await HospitalData.GetHospitalAsync(reimb1Id);
+                        }
+                    }
+
+                    if (pathReport.Reimb2HospitalEntity == null && !string.IsNullOrEmpty(pathReport.Reimbursement2))
+                    {
+                        var reimb2Id = await HospitalData.GetHospitalIdAsync(pathReport.Reimbursement2);
+
+                        if (reimb2Id != null)
+                        {
+                            pathReport.Reimb1HospitalEntity = await HospitalData.GetHospitalAsync(reimb2Id);
+                        }
+                    }
+
+                    if (pathReport.DoctorEntity1 == null && pathReport.DoctorId != null)
+                    {
+
+                            pathReport.DoctorEntity1 = await DoctorData.GetDoctorAsync(pathReport.DoctorId.Value);
+                    }
+                    
+                    if (pathReport.DoctorEntity2 == null && pathReport.Doctor2Id != null)
+                    {
+
+                        pathReport.DoctorEntity2 = await DoctorData.GetDoctorAsync(pathReport.Doctor2Id.Value);
+                    }
+
+                    if (pathReport.PathologistEntity1 == null && pathReport.PathologistId != null)
+                    {
+
+                        pathReport.PathologistEntity1 = await DoctorData.GetDoctorAsync(pathReport.PathologistId.Value);
+                    }
+
+                    if (pathReport.PathologistEntity2 == null && pathReport.Pathologist2Id != null)
+                    {
+
+                        pathReport.PathologistEntity2 = await DoctorData.GetDoctorAsync(pathReport.Pathologist2Id.Value);
+                    }
+
+                }
+
+                await InvokeAsync(StateHasChanged); // Force a re-render after initialization
+
+                Study = await StudyData.GetStudyAsync(Patient.StudyId);
+                IsLoading = false;
             }
-
-            foreach (var pathReport in Patient.PathReports)
-            {
-                if (pathReport?.Site2?.Length > 0)
-                {
-                    pathReport.IsShownSite2 = true;
-                }
-
-                if (pathReport?.ExportStatus == "Path too early")
-                {
-                    PathMinAgeCheck(pathReport);
-                }
-            }
-
-            await InvokeAsync(StateHasChanged); // Force a re-render after initialization
-
-            Study = await StudyData.GetStudyAsync(Patient.StudyId);
-            IsLoading = false;
         }
 
 
@@ -778,6 +859,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             {
                 return; // Exit if no hospital is selected
             }
+
             if (pathReport.RcaExportDate == null)
             {
                 //pathReport.SubmittingHospital = hospital.Split("(").FirstOrDefault().Trim();
@@ -789,6 +871,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                 pathReport.SubmittingHospital = hospital.HospitalName;
                 pathReport.HospitalId = hospital.HospitalId;
                 pathReport.Reimbursement1 = hospital.HospitalName;
+                pathReport.HospitalEntity = hospital;
+                pathReport.Reimb1HospitalEntity = hospital;
 
 
                 var updatedHospital = await HospitalData.GetHospitalAsync(hospital.HospitalId);
@@ -814,10 +898,13 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             {
                 return; // Exit if no hospital is selected
             }
+
+
             if (pathReport.RcaExportDate == null)
             {
                 pathReport.OriginatingHospitalName = hospital.HospitalName;
                 pathReport.OrigHospitalId = hospital.HospitalId;
+                pathReport.OrigHospitalEntity = hospital;
 
                 var updatedHospital = await HospitalData.GetHospitalAsync(hospital.HospitalId);
 
@@ -846,6 +933,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             if (pathReport.RcaExportDate == null)
             {
                 pathReport.Reimbursement1 = hospital.HospitalName;
+                pathReport.Reimb1HospitalEntity = hospital;
             }
         }
 
@@ -861,6 +949,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             if (pathReport.RcaExportDate == null)
             {
                 pathReport.Reimbursement2 = hospital.HospitalName;
+                pathReport.Reimb2HospitalEntity = hospital;
             }
         }
 
@@ -1028,6 +1117,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             pathReport.SubmittingHospital = string.Empty;
             pathReport.HospitalId = null;
             pathReport.Reimbursement1 = string.Empty;
+            pathReport.HospitalEntity = null;
+            pathReport.Reimb1HospitalEntity = null;
         }
 
         private async Task OnOrigHospitalTextChanged(string value, PathReport pathReport)
@@ -1060,6 +1151,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         {
             pathReport.IsOrigHospitalCleared = true;
             pathReport.OriginatingHospitalName = string.Empty;
+            pathReport.OrigHospitalId = null;
+            pathReport.OrigHospitalEntity = null;
 
         }
 
@@ -1093,6 +1186,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         {
             pathReport.IsReimbursement1Cleared = true;
             pathReport.Reimbursement1 = string.Empty;
+            pathReport.Reimb1HospitalEntity = null;
         }
 
         private async Task OnReimbursement2TextChanged(string value, PathReport pathReport)
@@ -1125,51 +1219,145 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         {
             pathReport.IsReimbursement2Cleared = true;
             pathReport.Reimbursement2 = string.Empty;
+            pathReport.Reimb2HospitalEntity = null;
         }
 
 
         private async Task<IEnumerable<Hospital>> HospitalSearch(string value, CancellationToken token)
         {
-            if (hospSelectionMade)
+            if (string.IsNullOrWhiteSpace(value))
             {
-                hospSelectionMade = false; // Reset the flag for the next search
-                return Enumerable.Empty<Hospital>();
+                hospSelectionMade = false;
+
+                // Return the saved entity ONLY if we aren't explicitly clearing it
+                return _activeReport?.HospitalEntity != null
+                    ? new[] { _activeReport.HospitalEntity }
+                    : Enumerable.Empty<Hospital>();
             }
 
-            if (origHospSelectionMade)
+            if (value != _activeReport?.HospitalEntity?.HospitalName)
             {
-                origHospSelectionMade = false; // Reset the flag for the next search
-                return Enumerable.Empty<Hospital>();
+                hospSelectionMade = false;
             }
 
-            if (value == null || value == string.Empty)
-            {
+            // Normal flag check
+            if (hospSelectionMade) return Enumerable.Empty<Hospital>();
 
-                return Enumerable.Empty<Hospital>();
+            return await HospitalData.GetHospitalsAsync(value);
+        }
+
+        private async Task<IEnumerable<Hospital>> OrigHospitalSearch(string value, CancellationToken token)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                origHospSelectionMade = false;
+
+                // Return the saved entity ONLY if we aren't explicitly clearing it
+                return _activeReport?.OrigHospitalEntity != null
+                    ? new[] { _activeReport.OrigHospitalEntity }
+                    : Enumerable.Empty<Hospital>();
             }
 
-            var hospitals = await HospitalData.GetHospitalsAsync(value);
-            return hospitals;
+            if (value != _activeReport?.OrigHospitalEntity?.HospitalName)
+            {
+                origHospSelectionMade = false;
+            }
+
+            // Normal flag check
+            if (origHospSelectionMade) return Enumerable.Empty<Hospital>();
+
+            return await HospitalData.GetHospitalsAsync(value);
+        }
+
+        private async Task<IEnumerable<Hospital>> Reimb1HospitalSearch(string value, CancellationToken token)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                reimb1SelectionMade = false;
+
+                // Return the saved entity ONLY if we aren't explicitly clearing it
+                return _activeReport?.Reimb1HospitalEntity != null
+                    ? new[] { _activeReport.Reimb1HospitalEntity }
+                    : Enumerable.Empty<Hospital>();
+            }
+
+            if (value != _activeReport?.Reimb1HospitalEntity?.HospitalName)
+            {
+                reimb1SelectionMade = false;
+            }
+
+            // Normal flag check
+            if (reimb1SelectionMade) return Enumerable.Empty<Hospital>();
+
+            return await HospitalData.GetHospitalsAsync(value);
+        }
+
+        private async Task<IEnumerable<Hospital>> Reimb2HospitalSearch(string value, CancellationToken token)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                reimb2SelectionMade = false;
+
+                // Return the saved entity ONLY if we aren't explicitly clearing it
+                return _activeReport?.Reimb2HospitalEntity != null
+                    ? new[] { _activeReport.Reimb2HospitalEntity }
+                    : Enumerable.Empty<Hospital>();
+            }
+
+            if (value != _activeReport?.Reimb2HospitalEntity?.HospitalName)
+            {
+                reimb2SelectionMade = false;
+            }
+
+            // Normal flag check
+            if (reimb2SelectionMade) return Enumerable.Empty<Hospital>();
+
+            return await HospitalData.GetHospitalsAsync(value);
         }
 
         private async Task<IEnumerable<Doctor>> DoctorSearch(string value, CancellationToken token)
         {
-            if (doctorSelectionMade)
+            if (string.IsNullOrWhiteSpace(value))
             {
-                doctorSelectionMade = false; // Reset the flag for the next search
-                return Enumerable.Empty<Doctor>();
-            }
-            if (doctor2SelectionMade)
-            {
-                doctor2SelectionMade = false; // Reset the flag for the next search
-                return Enumerable.Empty<Doctor>();
+                doctorSelectionMade = false;
+
+                // Return the saved entity ONLY if we aren't explicitly clearing it
+                return _activeReport?.DoctorEntity1 != null
+                    ? new[] { _activeReport.DoctorEntity1 }
+                    : Enumerable.Empty<Doctor>();
             }
 
-            if (value == null || value == string.Empty)
+            if (value != _activeReport?.DoctorEntity1?.DisplayName)
             {
-
-                return Enumerable.Empty<Doctor>();
+                doctorSelectionMade = false;
             }
+
+            // Normal flag check
+            if (doctorSelectionMade) return Enumerable.Empty<Doctor>();
+
+            var doctors = await DoctorData.GetDoctorsAsync(value);
+            return doctors;
+        }
+
+        private async Task<IEnumerable<Doctor>> Doctor2Search(string value, CancellationToken token)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                doctor2SelectionMade = false;
+
+                // Return the saved entity ONLY if we aren't explicitly clearing it
+                return _activeReport?.DoctorEntity2 != null
+                    ? new[] { _activeReport.DoctorEntity2 }
+                    : Enumerable.Empty<Doctor>();
+            }
+
+            if (value != _activeReport?.DoctorEntity2?.DisplayName)
+            {
+                doctor2SelectionMade = false;
+            }
+
+            // Normal flag check
+            if (doctor2SelectionMade) return Enumerable.Empty<Doctor>();
 
             var doctors = await DoctorData.GetDoctorsAsync(value);
             return doctors;
@@ -1177,22 +1365,47 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private async Task<IEnumerable<Doctor>> PathologistSearch(string value, CancellationToken token)
         {
-            if (pathologistSelectionMade)
+            if (string.IsNullOrWhiteSpace(value))
             {
-                pathologistSelectionMade = false; // Reset the flag for the next search
-                return Enumerable.Empty<Doctor>();
-            }
-            if (pathologist2SelectionMade)
-            {
-                pathologist2SelectionMade = false; // Reset the flag for the next search
-                return Enumerable.Empty<Doctor>();
+                pathologistSelectionMade = false;
+
+                // Return the saved entity ONLY if we aren't explicitly clearing it
+                return _activeReport?.PathologistEntity1 != null
+                    ? new[] { _activeReport.PathologistEntity1 }
+                    : Enumerable.Empty<Doctor>();
             }
 
-            if (value == null || value == string.Empty)
+            if (value != _activeReport?.PathologistEntity1?.DisplayName)
             {
-
-                return Enumerable.Empty<Doctor>();
+                pathologistSelectionMade = false;
             }
+
+            // Normal flag check
+            if (pathologistSelectionMade) return Enumerable.Empty<Doctor>();
+
+            var pathologists = await DoctorData.GetPathologistsAsync(value);
+            return pathologists;
+        }
+
+        private async Task<IEnumerable<Doctor>> Pathologist2Search(string value, CancellationToken token)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                pathologist2SelectionMade = false;
+
+                // Return the saved entity ONLY if we aren't explicitly clearing it
+                return _activeReport?.PathologistEntity2 != null
+                    ? new[] { _activeReport.PathologistEntity2 }
+                    : Enumerable.Empty<Doctor>();
+            }
+
+            if (value != _activeReport?.PathologistEntity2?.DisplayName)
+            {
+                pathologist2SelectionMade = false;
+            }
+
+            // Normal flag check
+            if (pathologist2SelectionMade) return Enumerable.Empty<Doctor>();
 
             var pathologists = await DoctorData.GetPathologistsAsync(value);
             return pathologists;
