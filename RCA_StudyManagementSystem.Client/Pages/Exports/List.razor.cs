@@ -28,6 +28,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
         private List<PathReportView>? checkedPathReports { get; set; } = new List<PathReportView>();
         private List<PathReportView>? reCheckedPathReports { get; set; } = new List<PathReportView>();
 
+
         public bool IsExported { get; set; } = false;
         public bool IsLoaded { get; set; } = false;
         private int Index = 0;
@@ -52,7 +53,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
         protected string studySelectText;
         protected string color = "white"; // Default colour for the patient
 
-        private IEnumerable<Study> StudyList = new List<Study>();
+        private IEnumerable<Study> _studyList = new List<Study>();
         private string prefix = string.Empty; // Prefix for the case number
 
         [Parameter]
@@ -108,7 +109,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
         protected override async Task OnInitializedAsync()
         {
-            StudyList = await StudyData.ListStudiesAsync();
+            _studyList = await StudyData.ListStudiesAsync();
             if (StudyId != Guid.Empty)
             {
                 var study = await StudyData.GetStudyAsync(StudyId);
@@ -389,7 +390,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
         private async Task PathMinAgeCheck(Patient patient)
         {
-            var Study = await StudyData.GetStudyAsync(patient.StudyId);
+            var Study = _studyList.Where(x => x.StudyId == patient.StudyId).FirstOrDefault();
 
             foreach (var path in patient.PathReports)
             {
@@ -406,7 +407,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
         private async Task<PathReportView> PathMaxAgeCheck(Patient patient, PathReportView pathReportView)
         {
-            var Study = await StudyData.GetStudyAsync(patient.StudyId);
+            var Study = _studyList.Where(x => x.StudyId == patient.StudyId).FirstOrDefault();
             foreach (var path in patient.PathReports)
             {
                 if (path.ExportStatus == "Ready")
@@ -439,7 +440,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
         private async Task RecheckEligibility(Guid studyId)
         {
-            var Study = await StudyData.GetStudyAsync(StudyId);
+            var Study = _studyList.Where(x => x.StudyId == studyId).FirstOrDefault();
 
             reCheckedPathReports = new List<PathReportView>();
 
@@ -468,7 +469,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
         private async Task OnExport(Guid StudyId)
         {
-            var Study = await StudyData.GetStudyAsync(StudyId);
+            var Study = _studyList.Where(x => x.StudyId == StudyId).FirstOrDefault();
             // create a new batch
 
             var batchPrefix = "EXP-" + Study.Prefix;
@@ -535,7 +536,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
         private async Task OnGenerateReport(Guid StudyId)
         {
-            var Study = await StudyData.GetStudyAsync(StudyId);
+            var Study = _studyList.Where(x => x.StudyId == StudyId).FirstOrDefault();
 
             var pathIds = "Not applicable";
             var isReport = true;

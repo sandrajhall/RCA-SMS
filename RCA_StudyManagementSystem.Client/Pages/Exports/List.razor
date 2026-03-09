@@ -37,7 +37,7 @@
                    Label="Study" HelperText="" Placeholder="Select Study" Variant="Variant.Outlined" Dense="true"
                    SelectedValuesChanged="@((value) => OnStudySelectChanged(value.First<Study>()))"
                    aria-hidden="false">
-            @foreach (var option in StudyList)
+            @foreach (var option in _studyList)
             {
                 <MudSelectItem T="Study" Value="@option">@option.Prefix</MudSelectItem>
             }

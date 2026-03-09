@@ -1,5 +1,6 @@
 ﻿using ExcelDataReader;
 using MudBlazor;
+using RCA_StudyManagementSystem.Client.Pages.Archives;
 using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Client.Utilities;
 using RCA_StudyManagementSystem.Shared.Domain;
@@ -28,6 +29,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         private IEnumerable<DoNotContact>? _displayDNC { get; set; }
         private List<PathReportView>? checkedPathReports { get; set; } = new List<PathReportView>();
 
+        private IEnumerable<Study>? _studyList { get; set; } = new List<Study>();
 
         private int Index = 0;
 
@@ -140,6 +142,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             Patients = await PatientData.ListPatientsAsync();
 
             await InvokeAsync(StateHasChanged);
+
+            _studyList = await StudyData.ListStudiesAsync();
 
             foreach (var item in Patients)
             {
@@ -509,7 +513,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private async Task PathMinAgeCheck(Patient patient)
         {
-            var Study = await StudyData.GetStudyAsync(patient.StudyId);
+            var Study = _studyList.Where(x => x.StudyId == patient.StudyId).FirstOrDefault();
 
             foreach (var path in patient.PathReports)
             {
@@ -526,7 +530,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private async Task<PathReportView> PathMaxAgeCheck(Patient patient, PathReportView pathReportView)
         {
-            var Study = await StudyData.GetStudyAsync(patient.StudyId);
+            var Study = _studyList.Where(x => x.StudyId == patient.StudyId).FirstOrDefault();
             foreach (var path in patient.PathReports)
             {
                 if (path.ExportStatus == "Ready")
