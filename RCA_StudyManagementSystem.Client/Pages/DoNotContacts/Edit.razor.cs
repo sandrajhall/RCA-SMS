@@ -179,14 +179,17 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
         {
             await Save();
 
-            if (!IsDialog)
+            if (!IsDialog && IsSaved)
             {
                 NavigationManager.NavigateTo($"/donotcontact/list");
             }
             else
             {
-                // Set the dialog's result with the saved data
-                MudDialog.Close(DialogResult.Ok(DoNotContact));
+                if (IsSaved)
+                {
+                    // Set the dialog's result with the saved data
+                    MudDialog.Close(DialogResult.Ok(DoNotContact));
+                }
             }
         }
     }

@@ -96,22 +96,30 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
         {
             var id = await Save();
 
-            NavigationManager.NavigateTo($"/studies/edit/{id}/{IsSaved}");
-
+            if (IsSaved)
+            {
+                NavigationManager.NavigateTo($"/studies/edit/{id}/{IsSaved}");
+            }
         }
 
         private async Task OnSaveAndAddNew()
         {
             var id = await Save();
 
-            NavigationManager.NavigateTo($"/studies/create", forceLoad: true);
+            if (IsSaved)
+            {
+                NavigationManager.NavigateTo($"/studies/create", forceLoad: true);
+            }
         }
 
         private async Task OnSaveAndClose()
         {
             var id = await Save();
 
-            NavigationManager.NavigateTo($"/studies/list");
+            if (IsSaved)
+            {
+                NavigationManager.NavigateTo($"/studies/list");
+            }
         }
     }
 }

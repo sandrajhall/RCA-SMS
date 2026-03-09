@@ -135,22 +135,27 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
         {
             var id = await Save();
 
-            NavigationManager.NavigateTo($"/rcacontacts/create", forceLoad: true);
-
+            if (IsSaved)
+            {
+                NavigationManager.NavigateTo($"/rcacontacts/create", forceLoad: true);
+            }
         }
 
         private async Task OnSaveAndClose()
         {
             var id = await Save();
 
-            if (!IsDialog)
+            if (!IsDialog && IsSaved)
             {
                 NavigationManager.NavigateTo($"/rcacontacts/list");
             }
             else
             {
-                // Set the dialog's result with the saved data
-                MudDialog.Close(DialogResult.Ok(RCAContact));
+                if (IsSaved)
+                {
+                    // Set the dialog's result with the saved data
+                    MudDialog.Close(DialogResult.Ok(RCAContact));
+                }
             }
         }
     }

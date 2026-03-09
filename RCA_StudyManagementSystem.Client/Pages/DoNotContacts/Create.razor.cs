@@ -139,7 +139,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
         {
             var id =  await Save();
 
-            if (!IsDialog)
+            if (!IsDialog && IsSaved)
             {
                 NavigationManager.NavigateTo($"/donotcontact/edit/{id}/{IsSaved}");
             }
@@ -149,21 +149,27 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
         {
             var id = await Save();
 
-            NavigationManager.NavigateTo($"/donotcontact/create", forceLoad: true);
+            if (IsSaved)
+            {
+                NavigationManager.NavigateTo($"/donotcontact/create", forceLoad: true);
+            }
         }
 
         private async Task OnSaveAndClose()
         {
             var id = await Save();
 
-            if (!IsDialog)
+            if (!IsDialog && IsSaved)
             {
                 NavigationManager.NavigateTo($"/donotcontact/list");
             }
             else
             {
-                // Set the dialog's result with the saved data
-                MudDialog.Close(DialogResult.Ok(DoNotContact));
+                if (IsSaved)
+                {
+                    // Set the dialog's result with the saved data
+                    MudDialog.Close(DialogResult.Ok(DoNotContact));
+                }
             }
         }
     }

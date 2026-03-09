@@ -212,14 +212,17 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
         {
             await Save();
 
-            if (!IsDialog)
+            if (!IsDialog && IsSaved)
             {
                 NavigationManager.NavigateTo($"/hospitals/list");
             }
             else
             {
-                // Set the dialog's result with the saved data
-                MudDialog.Close(DialogResult.Ok(Hospital));
+                if (IsSaved)
+                {
+                    // Set the dialog's result with the saved data
+                    MudDialog.Close(DialogResult.Ok(Hospital));
+                }
             }
         }
     }

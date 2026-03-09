@@ -139,7 +139,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
         {
             var id =  await Save();
 
-            if (!IsDialog)
+            if (!IsDialog && IsSaved)
             {
                 NavigationManager.NavigateTo($"/doctors/edit/{id}/{IsSaved}");
             }
@@ -149,21 +149,27 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
         {
             var id = await Save();
 
-            NavigationManager.NavigateTo($"/doctors/create", forceLoad: true);
+            if (IsSaved)
+            {
+                NavigationManager.NavigateTo($"/doctors/create", forceLoad: true);
+            }
         }
 
         private async Task OnSaveAndClose()
         {
             var id = await Save();
 
-            if (!IsDialog)
+            if (!IsDialog && IsSaved)
             {
                 NavigationManager.NavigateTo($"/doctors/list");
             }
             else
             {
-                // Set the dialog's result with the saved data
-                MudDialog.Close(DialogResult.Ok(Doctor));
+                if (IsSaved)
+                {
+                    // Set the dialog's result with the saved data
+                    MudDialog.Close(DialogResult.Ok(Doctor));
+                }
             }
         }
     }

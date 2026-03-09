@@ -827,7 +827,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
         {
             await Save();
 
-            NavigationManager.NavigateTo($"/studies/list");
+            if (IsSaved)
+            {
+                NavigationManager.NavigateTo($"/studies/list");
+            }
         }
     }
 }
