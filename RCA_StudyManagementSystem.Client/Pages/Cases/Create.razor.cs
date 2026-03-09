@@ -64,12 +64,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         {
             if (Patient == null)
             {
-                Patient = new Patient(); // Initialize Patient if it's null
-                EditContext = new EditContext(Patient); // Create a new EditContext for the new Patient
+                Patient = new Patient();
             }
-            else
+
+            if (EditContext == null || EditContext.Model != Patient)
             {
-                EditContext = new EditContext(Patient); // Reinitialize editContext if Patient is not null
+                EditContext = new EditContext(Patient);
             }
         }
 

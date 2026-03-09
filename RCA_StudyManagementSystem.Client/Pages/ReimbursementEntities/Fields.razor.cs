@@ -73,12 +73,15 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
             }
         }
 
+
         private string GetDisplayText(Guid id)
         {
-            var contact = RCAContactData.GetRCAContactAsync(id).Result;
+            var contact = rcaContacts.Where(x => x.RCAContactId == id).FirstOrDefault();
             var name = contact != null ? $"{contact.LastName}, {contact.FirstName}" : "Unknown";
             return name;
         }
+
+
 
         private async Task AddNewContact()
         {

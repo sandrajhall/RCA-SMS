@@ -51,12 +51,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
         {
             if (Hospital == null)
             {
-                Hospital = new Hospital(); // Initialize Hospital if it's null
-                EditContext = new EditContext(Hospital); // Create a new EditContext for the new Hospital
+                Hospital = new Hospital();
             }
-            else
+
+            if (EditContext == null || EditContext.Model != Hospital)
             {
-                EditContext = new EditContext(Hospital); // Reinitialize editContext if Hospital is not null
+                EditContext = new EditContext(Hospital);
             }
         }
 

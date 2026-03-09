@@ -50,6 +50,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
         protected Study studySelectValue;
         protected string studySelectText;
         protected string color = "white"; // Default colour for the patient
+        private Study _study;
 
         private IEnumerable<Study> StudyList = new List<Study>();
         private string prefix = string.Empty; // Prefix for the case number
@@ -59,6 +60,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
         [Parameter]
         public EventCallback<string> StudyColorChanged { get; set; }
+
+     
 
 
         private Func<PathReportView, object> _sortByHold => x =>
@@ -116,10 +119,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
             if (StudyId != Guid.Empty)
             {
-                var study = await StudyData.GetStudyAsync(StudyId);
-                if (study != null)
+                _study = await StudyData.GetStudyAsync(StudyId);
+                if (_study != null)
                 {
-                    await OnStudySelectChanged(study);
+                    await OnStudySelectChanged(_study);
                 }
             }
         }
@@ -131,7 +134,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
             _displayItems = new List<PathReportView>();
             checkedPathReports = new List<PathReportView>();
 
-            var batches = await BatchData.ListBatchesByStudyAsync(StudyId);
+            var batches = await BatchData.ListBatchesByStudyAsync(_study.StudyId);
 
             foreach (var batch in batches)
             {
@@ -155,7 +158,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
             foreach (var item in Patients)
             {
-                item.StudyColor = await StudyData.GetStudyColorAsync(item.StudyId);
+                //item.StudyColor = await StudyData.GetStudyColorAsync(item.StudyId);
                 await PathMinAgeCheck(item);
 
             }
@@ -185,7 +188,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
             if (firstRender && pathGrid != null)
             {
-                PathReports = await PathReportData.ListPathReportsAsync("All");
+                SetPathReports();
+                //PathReports = await PathReportData.ListPathReportsAsync("All");
                 //SetPathId();
 
                 var storedStateDto = await LocalStorage.GetItemAsync<GridStateDto>(GridStateStorageKey);
@@ -442,8 +446,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
         {
             var selectedItems = _displayItems.Where(x => x.IsSelected);
             var selectedIds = selectedItems.Select(p => p.PathReportId).ToList();
-            var Study = await StudyData.GetStudyAsync(StudyId);
-
+            //var Study = await StudyData.GetStudyAsync(StudyId);
+            var Study = _study;
 
             string pathIdsString = string.Join(",", selectedIds.Select(g => g.ToString()));
 
@@ -483,6 +487,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
         private async Task OnStudySelectChanged(Study value)
         {
+            _study = value; // Store the selected study for later use
             ShowFields = true; // Show additional fields when a study is selected
             studySelectValue = value;
             studySelectText = value.Name;
@@ -560,7 +565,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
         private async Task PathMinAgeCheck(Patient patient)
         {
-            var Study = await StudyData.GetStudyAsync(patient.StudyId);
+            //var Study = await StudyData.GetStudyAsync(patient.StudyId);
+            var Study = _study; // Use the already loaded study to avoid multiple calls to the database
 
             foreach (var path in patient.PathReports)
             {
@@ -577,7 +583,9 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
         private async Task<PathReportView> PathMaxAgeCheck(Patient patient, PathReportView pathReportView)
         {
-            var Study = await StudyData.GetStudyAsync(patient.StudyId);
+            //var Study = await StudyData.GetStudyAsync(patient.StudyId);
+            var Study = _study; // Use the already loaded study to avoid multiple calls to the database
+
             foreach (var path in patient.PathReports)
             {
                 if (path.ExportStatus == "Ready")

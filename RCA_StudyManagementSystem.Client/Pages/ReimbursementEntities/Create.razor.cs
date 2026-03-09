@@ -55,13 +55,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
         {
             if (ReimbursementEntity == null)
             {
-                ReimbursementEntity = new ReimbursementEntity(); // Initialize ReimbursementEntity if it's null
-                EditContext = new EditContext(ReimbursementEntity); // Create a new EditContext for the new ReimbursementEntity
-                ReimbursementEntity.ReimbursementEntityRCAContacts = new List<ReimbursementEntityRCAContact>();
+                ReimbursementEntity = new ReimbursementEntity();
             }
-            else
+
+            if (EditContext == null || EditContext.Model != ReimbursementEntity)
             {
-                EditContext = new EditContext(ReimbursementEntity); // Reinitialize editContext if ReimbursementEntity is not null
+                EditContext = new EditContext(ReimbursementEntity);
             }
         }
 

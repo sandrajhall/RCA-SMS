@@ -237,12 +237,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
         {
             if (Study == null)
             {
-                Study = new Study(); // Initialize Study if it's null
-                EditContext = new EditContext(Study); // Create a new EditContext for the new Study
+                Study = new Study();
             }
-            else
+
+            if (EditContext == null || EditContext.Model != Study)
             {
-                EditContext = new EditContext(Study); // Reinitialize editContext if Study is not null
+                EditContext = new EditContext(Study);
             }
         }
 

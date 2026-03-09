@@ -43,6 +43,19 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
             NavigationManager.NavigateTo($"/studies/list");
         }
 
+        protected override void OnParametersSet()
+        {
+            if (Study == null)
+            {
+                Study = new Study();
+            }
+
+            if (EditContext == null || EditContext.Model != Study)
+            {
+                EditContext = new EditContext(Study);
+            }
+        }
+
         private async Task<Guid> Save()
         {
             var id = Guid.Empty;

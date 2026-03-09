@@ -103,12 +103,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
         {
             if (DoNotContact == null)
             {
-                DoNotContact = new DoNotContact(); // Initialize DoNotContact if it's null
-                EditContext = new EditContext(DoNotContact); // Create a new EditContext for the new DoNotContact
+                DoNotContact = new DoNotContact();
             }
-            else
+
+            if (EditContext == null || EditContext.Model != DoNotContact)
             {
-                EditContext = new EditContext(DoNotContact); // Reinitialize editContext if DoNotContact is not null
+                EditContext = new EditContext(DoNotContact);
             }
         }
 

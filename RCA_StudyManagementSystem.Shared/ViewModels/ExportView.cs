@@ -10,5 +10,7 @@ namespace RCA_StudyManagementSystem.Shared.ViewModels
     public class ExportView : Batch
     {
         public string PathId { get; set; } = string.Empty;
+
+        public string CaseNumber { get; set; } = string.Empty;  
     }
 }

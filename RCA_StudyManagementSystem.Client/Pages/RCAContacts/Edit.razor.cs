@@ -112,12 +112,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
         {
             if (RCAContact == null)
             {
-                RCAContact = new RCAContact(); // Initialize RCAContact if it's null
-                EditContext = new EditContext(RCAContact); // Create a new EditContext for the new RCAContact
+                RCAContact = new RCAContact();
             }
-            else
+
+            if (EditContext == null || EditContext.Model != RCAContact)
             {
-                EditContext = new EditContext(RCAContact); // Reinitialize editContext if RCAContact is not null
+                EditContext = new EditContext(RCAContact);
             }
         }
 

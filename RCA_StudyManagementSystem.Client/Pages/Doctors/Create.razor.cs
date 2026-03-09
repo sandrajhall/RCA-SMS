@@ -73,12 +73,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
         {
             if (Doctor == null)
             {
-                Doctor = new Doctor(); // Initialize Doctor if it's null
-                EditContext = new EditContext(Doctor); // Create a new EditContext for the new Doctor
+                Doctor = new Doctor();
             }
-            else
+
+            if (EditContext == null || EditContext.Model != Doctor)
             {
-                EditContext = new EditContext(Doctor); // Reinitialize editContext if Doctor is not null
+                EditContext = new EditContext(Doctor);
             }
         }
 
