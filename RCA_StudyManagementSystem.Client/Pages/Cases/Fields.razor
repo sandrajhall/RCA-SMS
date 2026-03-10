@@ -340,12 +340,21 @@
                                                      OnClearButtonClick="() => OnHospitalCleared(pathReport)"
                                                      Variant="Variant.Outlined"
                                                      ValueChanged="((value) => OnHospitalSelectionChanged(value, pathReport))"
-                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName} [{item.City}]")"
+                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName}")"
                                                      ShowProgressIndicator="true"
                                                      ProgressIndicatorColor="Color.Info"
                                                      AnchorOrigin="@_anchor"
                                                      TransformOrigin="@_transform"
-                                                     RelativeWidth="_dropdownWidth" />
+                                                     RelativeWidth="_dropdownWidth">
+                                                     <ItemTemplate Context="item">
+                                                        <div class="d-flex flex-column">
+                                                            <MudText Typo="Typo.body1">@item.HospitalName</MudText>
+                                                            <MudText Typo="Typo.caption" Color="Color.Info">
+                                                                @item.City
+                                                            </MudText>
+                                                        </div>
+                                                    </ItemTemplate>
+                                     </MudAutocomplete>
                                 </MudItem>
                                 <MudItem xs="12" sm="12" md="1" Class="mt-7">
                                     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
@@ -423,12 +432,21 @@
                                                          OnClearButtonClick="() => OnOrigHospitalCleared(pathReport)"
                                                          Variant="Variant.Outlined"
                                                          ValueChanged="((value) => OnOrigHospitalSelectionChanged(value, pathReport))"
-                                                         ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName} [{item.City}]")"
+                                                         ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName}")"
                                                          ShowProgressIndicator="true"
                                                          ProgressIndicatorColor="Color.Info"
                                                          AnchorOrigin="@_anchor"
                                                          TransformOrigin="@_transform"
-                                                         RelativeWidth="_dropdownWidth" />
+                                                             RelativeWidth="_dropdownWidth">
+                                                <ItemTemplate Context="item">
+                                                    <div class="d-flex flex-column">
+                                                        <MudText Typo="Typo.body1">@item.HospitalName</MudText>
+                                                        <MudText Typo="Typo.caption" Color="Color.Info">
+                                                            @item.City
+                                                        </MudText>
+                                                    </div>
+                                                </ItemTemplate>
+                                            </MudAutocomplete>
                                     </MudItem>
                                     <MudItem xs="12" sm="12" md="1" Class="mt-7">
                                         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
@@ -465,12 +483,21 @@
                                                      OnClearButtonClick="() => OnReimbursement1Cleared(pathReport)"
                                                      Variant="Variant.Outlined"
                                                      ValueChanged="((value) => OnReimbursement1SelectionChanged(value, pathReport))"
-                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName} [{item.City}]")"
+                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName}")"
                                                      ShowProgressIndicator="true"
                                                      ProgressIndicatorColor="Color.Info"
                                                      AnchorOrigin="@_anchor"
                                                      TransformOrigin="@_transform"
-                                                     RelativeWidth="_dropdownWidth" />
+                                                         RelativeWidth="_dropdownWidth">
+                                            <ItemTemplate Context="item">
+                                                <div class="d-flex flex-column">
+                                                    <MudText Typo="Typo.body1">@item.HospitalName</MudText>
+                                                    <MudText Typo="Typo.caption" Color="Color.Info">
+                                                        @item.City
+                                                    </MudText>
+                                                </div>
+                                            </ItemTemplate>
+                                        </MudAutocomplete>
                                 </MudItem>
                                 <MudItem xs="12" sm="12" md="5" Class="mb-3 mt-2">
                                     <MudAutocomplete T="Hospital" Value="pathReport.Reimb2HospitalEntity" @ref="@reimb2AutocompleteRef"
@@ -487,12 +514,21 @@
                                                      OnClearButtonClick="() => OnReimbursement2Cleared(pathReport)"
                                                      Variant="Variant.Outlined"
                                                      ValueChanged="((value) => OnReimbursement2SelectionChanged(value, pathReport))"
-                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName} [{item.City}]")"
+                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName}")"
                                                      ShowProgressIndicator="true"
                                                      ProgressIndicatorColor="Color.Info"
                                                      AnchorOrigin="@_anchor"
                                                      TransformOrigin="@_transform"
-                                                     RelativeWidth="_dropdownWidth" />
+                                                         RelativeWidth="_dropdownWidth">
+                                            <ItemTemplate Context="item">
+                                                <div class="d-flex flex-column">
+                                                    <MudText Typo="Typo.body1">@item.HospitalName</MudText>
+                                                    <MudText Typo="Typo.caption" Color="Color.Info">
+                                                        @item.City
+                                                    </MudText>
+                                                </div>
+                                            </ItemTemplate>
+                                        </MudAutocomplete>
                                 </MudItem>
                                 <MudItem xs="12" sm="3" md="2" Class="mb-n3 mt-2 d-flex">
                                     <MudCheckBox T=bool Label="Do Not Invoice" @bind-Value="pathReport.DoNotInvoice"
@@ -561,12 +597,21 @@
                                                      OnClearButtonClick="() => OnDoctor1Cleared(pathReport)"
                                                      Variant="Variant.Outlined"
                                                      ValueChanged="((value) => OnDoctorSelectionChanged(value, pathReport))"
-                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName} ({item.Address1}) ({item.City}) ({item.PrimarySpecialty})")"
+                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName}")"
                                                      ShowProgressIndicator="true"
                                                      ProgressIndicatorColor="Color.Info"
                                                      AnchorOrigin="@_anchor"
                                                      TransformOrigin="@_transform"
-                                                     RelativeWidth="_dropdownWidth" />
+                                                     RelativeWidth="_dropdownWidth">
+                                            <ItemTemplate Context="item">
+                                                <div class="d-flex flex-column">
+                                                    <MudText Typo="Typo.body1">@item.DisplayName</MudText>
+                                                    <MudText Typo="Typo.caption" Color="Color.Info">
+                                                        @item.Address1, @item.City, @item.PrimarySpecialty
+                                                    </MudText>
+                                                </div>
+                                            </ItemTemplate>
+                                        </MudAutocomplete>
                                 </MudItem>
                                 <MudItem xs="12" sm="12" md="1" Class="my-2">
                                     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
@@ -592,12 +637,21 @@
                                                      OnClearButtonClick="() => OnPathologist1Cleared(pathReport)"
                                                      Variant="Variant.Outlined"
                                                      ValueChanged="((value) => OnPathologistSelectionChanged(value, pathReport))"
-                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName} ({item.Address1}) ({item.City}) ({item.PrimarySpecialty})")"
+                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName}")"
                                                      ShowProgressIndicator="true"
                                                      ProgressIndicatorColor="Color.Info"
                                                      AnchorOrigin="@_anchor"
                                                      TransformOrigin="@_transform"
-                                                     RelativeWidth="_dropdownWidth" />
+                                                     RelativeWidth="_dropdownWidth">
+                                            <ItemTemplate Context="item">
+                                                <div class="d-flex flex-column">
+                                                    <MudText Typo="Typo.body1">@item.DisplayName</MudText>
+                                                    <MudText Typo="Typo.caption" Color="Color.Info">
+                                                        @item.Address1, @item.City, @item.PrimarySpecialty
+                                                    </MudText>
+                                                </div>
+                                            </ItemTemplate>
+                                        </MudAutocomplete>
                                 </MudItem>
                                 <MudItem xs="12" sm="12" md="1" Class="my-2">
                                     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
@@ -737,12 +791,21 @@
                                                              OnClearButtonClick="() => OnDoctor2Cleared(pathReport)"
                                                              Variant="Variant.Outlined"
                                                              ValueChanged="((value) => OnDoctor2SelectionChanged(value, pathReport))"
-                                                             ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName} ({item.City}) ({item.PrimarySpecialty})")"
+                                                             ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName}")"
                                                              ShowProgressIndicator="true"
                                                              ProgressIndicatorColor="Color.Info"
                                                              AnchorOrigin="@_anchor"
                                                              TransformOrigin="@_transform"
-                                                             RelativeWidth="_dropdownWidth" />
+                                                             RelativeWidth="_dropdownWidth">
+                                                    <ItemTemplate Context="item">
+                                                        <div class="d-flex flex-column">
+                                                            <MudText Typo="Typo.body1">@item.DisplayName</MudText>
+                                                            <MudText Typo="Typo.caption" Color="Color.Info">
+                                                                @item.Address1, @item.City, @item.PrimarySpecialty
+                                                            </MudText>
+                                                        </div>
+                                                    </ItemTemplate>
+                                                </MudAutocomplete>
                                         </MudItem>
                                         <MudItem xs="12" sm="12" md="1" Class="my-2">
                                             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
@@ -768,12 +831,21 @@
                                                              OnClearButtonClick="() => OnPathologist2Cleared(pathReport)"
                                                              Variant="Variant.Outlined"
                                                              ValueChanged="((value) => OnPathologist2SelectionChanged(value, pathReport))"
-                                                             ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName} ({item.City}) ({item.PrimarySpecialty})")"
+                                                             ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName}")"
                                                              ShowProgressIndicator="true"
                                                              ProgressIndicatorColor="Color.Info"
                                                              AnchorOrigin="@_anchor"
                                                              TransformOrigin="@_transform"
-                                                             RelativeWidth="_dropdownWidth" />
+                                                             RelativeWidth="_dropdownWidth">
+                                                    <ItemTemplate Context="item">
+                                                        <div class="d-flex flex-column">
+                                                            <MudText Typo="Typo.body1">@item.DisplayName</MudText>
+                                                            <MudText Typo="Typo.caption" Color="Color.Info">
+                                                                @item.Address1, @item.City, @item.PrimarySpecialty
+                                                            </MudText>
+                                                        </div>
+                                                    </ItemTemplate>
+                                                </MudAutocomplete>
                                         </MudItem>
                                         <MudItem xs="12" sm="12" md="1" Class="my-2">
                                             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
