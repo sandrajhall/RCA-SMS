@@ -517,7 +517,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
                     path.RcaExportDate = DateTime.Now;
                     path.BatchNumber = batchNumber;
 
-                    await PathReportData.UpdatePathReportAsync(path.PathReportId, path);
+                    await PathReportData.UpdatePathReportExportStatusAsync(path.PathReportId, path);
 
                     // create a new PathReportExport record
                     var pathReportExport = new PathReportExport

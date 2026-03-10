@@ -39,6 +39,12 @@ namespace RCA_StudyManagementSystem.Client.Services
         {
             await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/pathreports/{id}"), pathReport);
         }
+
+        public async Task UpdatePathReportExportStatusAsync(Guid id, PathReport pathReport)
+        {
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/pathreports/exportstatus/{id}"), pathReport);
+        }
+
         public async Task<IEnumerable<PathReportView>> ListPathReportsAsync(string limit)
         {
             var response = await _httpClient.GetFromJsonAsync<IEnumerable<PathReportView>>(_navigationManager.ToAbsoluteUri($"api/pathreports/limit/{limit}"));

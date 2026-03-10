@@ -243,6 +243,33 @@ namespace RCA_StudyManagementSystem.Controllers
             return NoContent();
         }
 
+        [HttpPut("exportstatus/{id}")]
+        public async Task<IActionResult> UpdatePathReportExportStatus(Guid id, PathReport pathReport)
+        {
+            var entry = _context.PathReports.Attach(pathReport);
+
+            entry.Property(x => x.ExportStatus).IsModified = true;
+            entry.Property(x => x.RcaExportDate).IsModified = true;
+            entry.Property(x => x.BatchNumber).IsModified = true;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PathReportExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return NoContent();
+        }
+
         private bool PathReportExists(Guid id)
         {
             return _context.PathReports.Any(e => e.PathReportId == id);

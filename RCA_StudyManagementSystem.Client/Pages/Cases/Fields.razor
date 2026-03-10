@@ -318,6 +318,8 @@
                     @foreach (var pathReport in Patient.PathReports)
                     {
                         var pathHeader = "Path Report " + pathReport.PathIndex.ToString() + " - Export Date: " + pathReport.RcaExportDate?.ToShortDateString();
+
+                        <div @key="pathReport.PathReportId">
                         <MudExpansionPanel Text="@pathHeader" Expanded="true">
                             <MudGrid>
 
@@ -868,6 +870,7 @@
                                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(async () => DeletePathReport(pathReport))" />
                             </MudItem>
                         </MudExpansionPanel>
+                        </div>
                     }
 
                 </MudExpansionPanels>
