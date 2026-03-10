@@ -65,7 +65,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
             if (isValid)
             {
-                IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
                 HasErrors = false;
 
                 try
@@ -73,6 +72,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     id = await StudyData.CreateStudyAsync(Study);
 
                     //Logger.LogInformation("Study created. {Study}", System.Text.Json.JsonSerializer.Serialize(Study));
+
+                    IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 
                     EditContext.MarkAsUnmodified(); // Mark the edit context as unmodified to prevent further validation errors
                 }

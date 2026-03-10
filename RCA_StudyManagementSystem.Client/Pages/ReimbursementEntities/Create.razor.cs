@@ -88,7 +88,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
             if (isValid)
             {
 
-                IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
                 HasErrors = false;
 
 
@@ -99,6 +98,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
                 try
                 {
                     id = await ReimbursementEntityData.CreateReimbursementEntityAsync(ReimbursementEntity);
+                    
+                    IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 
                     //Logger.LogInformation("ReimbursementEntity created. {ReimbursementEntity}", System.Text.Json.JsonSerializer.Serialize(ReimbursementEntity));
 

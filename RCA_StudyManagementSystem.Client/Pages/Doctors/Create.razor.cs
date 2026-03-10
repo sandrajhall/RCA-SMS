@@ -65,7 +65,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
             EditContext = new EditContext(Doctor);
 
 
-            DoctorList = await DoctorData.ListDoctorsAsync(CancellationToken);
+            //DoctorList = await DoctorData.ListDoctorsAsync(CancellationToken);
 
         }
 
@@ -104,7 +104,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
             if (isValid)
             {
-                IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
                 HasErrors = false;
 
                 Doctor.DisplayName = $"{Doctor.FirstName} {Doctor.LastName}, {Doctor.LicenseType}";
@@ -112,6 +111,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
                 try
                 {
                     id = await DoctorData.CreateDoctorAsync(Doctor);
+
+                    IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 
                     //Logger.LogInformation("Doctor created. {Doctor}", System.Text.Json.JsonSerializer.Serialize(Doctor));
 

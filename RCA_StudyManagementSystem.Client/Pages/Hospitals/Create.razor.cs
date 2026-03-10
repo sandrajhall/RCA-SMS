@@ -84,7 +84,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
             if (isValid)
             {
 
-                IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
                 HasErrors = false;
 
 
@@ -95,6 +94,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
                 try
                 {
                     id = await HospitalData.CreateHospitalAsync(Hospital);
+
+                    IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 
                     //Logger.LogInformation("Hospital created. {Hospital}", System.Text.Json.JsonSerializer.Serialize(Hospital));
 

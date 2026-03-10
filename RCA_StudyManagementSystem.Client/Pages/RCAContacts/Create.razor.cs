@@ -84,7 +84,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
             if (isValid)
             {
 
-                IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
                 HasErrors = false;
 
 
@@ -95,6 +94,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
                 try
                 {
                     id = await RCAContactData.CreateRCAContactAsync(RCAContact);
+
+                    IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 
                     //Logger.LogInformation("RCAContact created. {RCAContact}", System.Text.Json.JsonSerializer.Serialize(RCAContact));
 

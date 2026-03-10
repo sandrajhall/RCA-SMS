@@ -135,7 +135,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
             if (isValid)
             {
 
-                IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
                 HasErrors = false;
 
                 severity = Severity.Success; // Set severity to Success if the form is valid
@@ -148,6 +147,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
                 {
                     // Make a GET request to the SampleController
                     await DoNotContactData.UpdateDoNotContactAsync(DoNotContact.DoNotContactId, DoNotContact);
+
+                    IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 
                     //Logger.LogInformation("DoNotContact updated. {DoNotContact}", System.Text.Json.JsonSerializer.Serialize(DoNotContact));
 

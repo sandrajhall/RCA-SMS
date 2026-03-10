@@ -167,7 +167,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
             if (isValid)
             {
 
-                IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
                 HasErrors = false;
 
                 severity = Severity.Success; // Set severity to Success if the form is valid
@@ -178,6 +177,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
                 {
                     // Make a GET request to the SampleController
                     await RCAContactData.UpdateRCAContactAsync(RCAContact.RCAContactId, RCAContact);
+
+                    IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 
                     //Logger.LogInformation("RCAContact updated. {RCAContact}", System.Text.Json.JsonSerializer.Serialize(RCAContact));
 

@@ -192,7 +192,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             if (isValid)
             {
 
-                IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
                 HasErrors = false;
 
                 try
@@ -200,8 +199,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                     Patient.PathReports.ToList().ForEach(pr => pr.CaseNumber = Patient.CaseNumber); // Set the case number for each path report
                     Patient.PathReports.ToList().ForEach(pr => pr.StudyPrefix = prefix); // Set the study prefix for each path report
                     Patient.PathReports.ToList().ForEach(pr => pr.StudyColor = StudyColor); // Set the study color for each path report
-                    // Make a GET request to the SampleController
+
                     await PatientData.UpdatePatientAsync(Patient.PatientId, Patient);
+                    
+                    IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 
                     //Logger.LogInformation("Patient updated. {Patient}", System.Text.Json.JsonSerializer.Serialize(Patient));
 
@@ -234,7 +235,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         private async Task OnSaveAndClose()
         {
             await Save();
-            Task.Delay(1000); // Optional: Add a delay to allow the user to see the save message before navigating away
 
             if (IsSaved)
             {

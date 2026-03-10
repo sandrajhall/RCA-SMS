@@ -776,7 +776,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
             if (isValid)
             {
-                IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
                 HasErrors = false;
                 severity = Severity.Success; // Set severity to Success if the form is valid
                 SaveMessage = "Study updated."; // Set a success message
@@ -796,6 +795,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     await SetStudyHistologyViewsAsync(StudyHistologyViews);
                     await SetStudyHeaderViewsAsync(StudyHeaderViews);
                     await SetStudyReportHeaderViewsAsync(StudyReportHeaderViews);
+
+                    IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 
                     //Logger.LogInformation("Study updated. {Study}", System.Text.Json.JsonSerializer.Serialize(Study));
 

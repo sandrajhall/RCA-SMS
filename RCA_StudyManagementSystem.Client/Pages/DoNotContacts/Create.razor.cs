@@ -104,7 +104,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
 
             if (isValid)
             {
-                IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
                 HasErrors = false;
 
                 DoNotContact.DisplayName = $"{DoNotContact.FirstName} {DoNotContact.LastName}".Trim();
@@ -112,6 +111,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
                 try
                 {
                     id = await DoNotContactData.CreateDoNotContactAsync(DoNotContact);
+
+                    IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 
                     //Logger.LogInformation("DoNotContact created. {DoNotContact}", System.Text.Json.JsonSerializer.Serialize(DoNotContact));
 

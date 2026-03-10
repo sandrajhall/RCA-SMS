@@ -167,7 +167,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
             if (isValid)
             {
 
-                IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
                 HasErrors = false;
 
                 severity = Severity.Success; // Set severity to Success if the form is valid
@@ -178,6 +177,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
                 {
                     // Make a GET request to the SampleController
                     await HospitalData.UpdateHospitalAsync(Hospital.HospitalId, Hospital);
+
+                    IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 
                     //Logger.LogInformation("Hospital updated. {Hospital}", System.Text.Json.JsonSerializer.Serialize(Hospital));
 

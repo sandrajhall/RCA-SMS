@@ -122,7 +122,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
             if (isValid)
             {
-                IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
                 HasErrors = false;
                 Patient.CaseNumber = await GenerateCaseNumber?.Generate(prefix); // Get the last case number for the selected study
                 Patient.PathReports.ToList().ForEach(pr => pr.CaseNumber = Patient.CaseNumber); // Set the case number for each path report
@@ -132,6 +131,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                 try
                 {
                     id = await PatientData.CreatePatientAsync(Patient);
+
+                    IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 
                     //Logger.LogInformation("Patient created. {Patient}", System.Text.Json.JsonSerializer.Serialize(Patient));
 
