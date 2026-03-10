@@ -81,6 +81,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                 {
                     apiResponse = $"Error: {ex.Message}"; // Handle potential errors during the API call
                     SaveMessage = apiResponse; // Set the save message to the error message
+                    severity = Severity.Error; // Set severity to Error if the form is invalid
+                    IsSaved = false; // Set IsSaved to false if there was an error
                 }
             }
             else
