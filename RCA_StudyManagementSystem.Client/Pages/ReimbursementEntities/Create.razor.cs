@@ -114,6 +114,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
                     SaveMessage = apiResponse; // Set the save message to the error message
                     severity = Severity.Error; // Set severity to Error if the form is invalid
                     IsSaved = false; // Set IsSaved to false if there was an error
+                    HasErrors = true; // Set HasErrors to true to indicate there are errors
                 }
 
             }
