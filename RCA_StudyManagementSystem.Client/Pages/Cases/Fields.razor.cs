@@ -1468,6 +1468,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                 pathReport.HospZipCode = updatedHospital.ZipCode;
                 pathReport.HospPhoneNumber = updatedHospital.PhoneNumber;
                 pathReport.HospFaxNumber = updatedHospital.FaxNumber;
+                pathReport.HospitalEntity = updatedHospital;
                 StateHasChanged(); // Tell Blazor to re-render the component
             }
         }
@@ -1514,6 +1515,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             {
                 //HospitalList = await HospitalData.ListHospitalsAsync(CancellationToken); // Refresh the hospital list in case of any changes
                 pathReport.OriginatingHospitalName = updatedHospital.HospitalName;
+                pathReport.OrigHospitalEntity = updatedHospital;
 
                 StateHasChanged(); // Tell Blazor to re-render the component
             }
@@ -1583,6 +1585,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                 pathReport.MDPhoneNumber2 = updatedDoctor?.PhoneNumber2;
                 pathReport.MDFaxNumber = updatedDoctor.FaxNumber;
                 pathReport.MDEmail = updatedDoctor.Email;
+                pathReport.DoctorEntity1 = updatedDoctor;
                 StateHasChanged(); // Tell Blazor to re-render the component
             }
         }
@@ -1649,6 +1652,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                 pathReport.PathPhoneNumber2 = updatedDoctor?.PhoneNumber2;
                 pathReport.PathFaxNumber = updatedDoctor.FaxNumber;
                 pathReport.PathEmail = updatedDoctor.Email;
+                pathReport.PathologistEntity1 = updatedDoctor;
                 StateHasChanged(); // Tell Blazor to re-render the component
             }
         }
@@ -1716,6 +1720,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                 pathReport.MD2PhoneNumber2 = updatedDoctor?.PhoneNumber2;
                 pathReport.MD2FaxNumber = updatedDoctor.FaxNumber;
                 pathReport.MD2Email = updatedDoctor.Email;
+                pathReport.DoctorEntity2 = updatedDoctor;
                 StateHasChanged(); // Tell Blazor to re-render the component
             }
         }
@@ -1782,6 +1787,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                 pathReport.Path2PhoneNumber2 = updatedDoctor?.PhoneNumber2;
                 pathReport.Path2FaxNumber = updatedDoctor.FaxNumber;
                 pathReport.Path2Email = updatedDoctor.Email;
+                pathReport.PathologistEntity2 = updatedDoctor;
                 StateHasChanged(); // Tell Blazor to re-render the component
             }
         }
