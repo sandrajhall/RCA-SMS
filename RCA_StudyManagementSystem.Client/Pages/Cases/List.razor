@@ -39,17 +39,17 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Cases by Path Report</MudText>
         <MudRadioGroup T="int" Value="_recordLimit" ValueChanged="OnRecordLimitChange">
-            <MudRadio T="int" Value="1" Class="ml-4">Show Past Week</MudRadio>
-            <MudRadio T="int" Value="2" Class="ml-4">Show Past Three Months</MudRadio>
-            <MudRadio T="int" Value="3" Class="ml-4">Show Past Year</MudRadio>
-            <MudRadio T="int" Value="4" Class="ml-4">Show All</MudRadio>
+            <MudRadio T="int" Value="1" Class="ml-15" Dense="true">Show Past Week</MudRadio>
+            <MudRadio T="int" Value="2" Class="ml-4" Dense="true">Show Past Three Months</MudRadio>
+            <MudRadio T="int" Value="3" Class="ml-4" Dense="true">Show Past Year</MudRadio>
+            <MudRadio T="int" Value="4" Class="ml-4" Dense="true">Show All</MudRadio>
         </MudRadioGroup>
         
         <MudSpacer />
         @* <MudButton Class="mr-2" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="() => ClearStateItems()">Reset Filters</MudButton> *@
         <MudTextField @bind-Value="SearchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable="true"></MudTextField>
-        <MudButton Class="mr-2" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="() => CheckDNC(SearchString)">Check Do Not Contact</MudButton>
+        <MudButton Class="ml-2 mr-2" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="() => CheckDNC(SearchString)">Check Do Not Contact</MudButton>
     </ToolBarContent>
     <Columns>
 
