@@ -71,7 +71,7 @@ else
 {
     <MudTabs KeepPanelsAlive="true" Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
         <MudTabPanel Text="Study" Icon="@Icons.Material.Filled.Hive">
-            <MudGrid Class="mt-3 ml-1">
+            <MudGrid Class="mt-3 ml-1" Style="width: 100%; margin: 0;">
 
                 <MudItem xs="12" sm="4" md="3" Class="my-n3">
                     <MudTextField Label="Study Name" Variant="Variant.Outlined"
@@ -305,7 +305,7 @@ else
         {
 
             <MudTabPanel Text="Options" Icon="@Icons.Material.Filled.ListAlt">
-                <MudGrid Class="mt-3 ml-1">
+                <MudGrid Class="mt-3 ml-1" Style="width: 100%; margin: 0;">
                     <MudItem xs="12" sm="12" md="12" Class="my-n3">
                         <MudExpansionPanels MultiExpansion="true">
                             <MudExpansionPanel Text="Gender Options" Expanded="false">
@@ -520,7 +520,7 @@ else
             <MudTabPanel Text="Counties" Icon="@Icons.Material.Filled.ListAlt">
                 <br />
                 <br />
-                <MudGrid Class="mt-3 ml-1">
+                <MudGrid Class="mt-3 ml-3">
                     <MudDataGrid T="StudyLookupView" Virtualize
                                  Items="@luCounty"
                                  EditMode="DataGridEditMode.Cell" ReadOnly="false"
@@ -561,7 +561,7 @@ else
                 <br />
                 <MudStack xs="12" sm="12" md="8" Class="my-n3" Row=true Wrap=Wrap.NoWrap>
                     <div class="mud-width-60">
-                        <MudGrid Class="mt-3 ml-1">
+                        <MudGrid Class="mt-3 ml-3">
                             <MudDataGrid T="StudyHistologyView" @ref="dataHistology" Virtualize
                                          Items="@luHistology" QuickFilter="@_quickFilter"
                                          EditMode="DataGridEditMode.Cell" ReadOnly="false"
@@ -659,7 +659,8 @@ else
             </MudTabPanel>
             <MudTabPanel Text="Export Fields" Icon="@Icons.Material.Filled.ListAlt">
                 @*                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Download" OnClick="@(() => OnExportFields(Study))">Export Fields</MudButton>
- *@<MudText Typo="Typo.h6">Export Fields
+ *@<MudText Typo="Typo.h6" Class="ml-3">
+                    Export Fields
                 <MudTooltip Placement="Placement.Right" Text="Primary" Color="Color.Info">
                     @* ChildContent is the element that triggers the tooltip on hover *@
                     <ChildContent>
@@ -682,7 +683,7 @@ else
                 </MudText>
                 <br />
                 <br />
-                <MudGrid Class="mt-3 ml-1">
+                <MudGrid Class="mt-3 ml-3">
                     <MudDataGrid T="StudyHeaderView" Virtualize
                                  Items="@luHeaderOption"
                                  EditMode="DataGridEditMode.Cell" ReadOnly="false"
@@ -731,8 +732,8 @@ else
             {
                 <MudTabPanel Text="Report Fields" Icon="@Icons.Material.Filled.ListAlt">
                     @*                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Download" OnClick="@(() => OnExportFields(Study))">Export Fields</MudButton>
- *@<MudText Typo="Typo.h6">
-                    Export Fields
+ *@<MudText Typo="Typo.h6" Class="ml-3">
+                    Report Fields
                     <MudTooltip Placement="Placement.Right" Text="Primary" Color="Color.Info">
                         @* ChildContent is the element that triggers the tooltip on hover *@
                         <ChildContent>
@@ -741,7 +742,7 @@ else
 
                         @* TooltipContent is the custom content displayed inside the tooltip *@
                         <TooltipContent>
-                            <MudText Typo="Typo.h6">Export Fields Info</MudText>
+                            <MudText Typo="Typo.h6">Report Fields Info</MudText>
                             <MudText Typo="Typo.body2" Style="text-align: left">
                                 If you want the report header to be different than the field name, you can set it in Header Text.
                                 <br />
@@ -755,7 +756,7 @@ else
                 </MudText>
                 <br />
                 <br />
-                    <MudGrid Class="mt-3 ml-1">
+                    <MudGrid Class="mt-3 ml-3">
                         <MudDataGrid T="StudyReportHeaderView" Virtualize
                                  Items="@luReportHeaderOption"
                                  EditMode="DataGridEditMode.Cell" ReadOnly="false"
