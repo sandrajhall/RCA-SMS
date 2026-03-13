@@ -705,40 +705,40 @@ namespace RCA_StudyManagementSystem.Controllers
                         HeaderName = $"PhoneNumber{phoneIndex}",
                         ExportTitle = $"PhoneNumber{phoneIndex}",
                         TableName = "PatientPhoneNumber",
-                        Order = headerIndex + i,
+                        Order = headerIndex + 0,
                         IsActive = true
                     };
-                    reportHeaders.Insert(headerIndex + i, phoneNumberHeader);
+                    reportHeaders.Insert(headerIndex + 0, phoneNumberHeader);
 
                     var phoneTypeHeader = new StudyReportHeader
                     {
                         HeaderName = $"PhoneNumberType{phoneIndex}",
                         ExportTitle = $"PhoneNumberType{phoneIndex}",
                         TableName = "PatientPhoneNumber",
-                        Order = headerIndex + i + 1,
+                        Order = headerIndex + 1,
                         IsActive = true
                     };
-                    reportHeaders.Insert(headerIndex + i + 1, phoneTypeHeader);
+                    reportHeaders.Insert(headerIndex + 1, phoneTypeHeader);
 
                     var phoneCommentsHeader = new StudyReportHeader
                     {
                         HeaderName = $"PhoneNumberComments{phoneIndex}",
                         ExportTitle = $"PhoneNumberComments{phoneIndex}",
                         TableName = "PatientPhoneNumber",
-                        Order = headers.Count + i + 2,
+                        Order = headerIndex + 2,
                         IsActive = true
                     };
-                    reportHeaders.Insert(headerIndex + i + 2, phoneCommentsHeader);
+                    reportHeaders.Insert(headerIndex + 2, phoneCommentsHeader);
 
                     var isPrimaryHeader = new StudyReportHeader
                     {
                         HeaderName = $"IsPrimaryPhone{phoneIndex}",
                         ExportTitle = $"IsPrimaryPhone{phoneIndex}",
                         TableName = "PatientPhoneNumber",
-                        Order = headers.Count + i + 3,
+                        Order = headerIndex + 3,
                         IsActive = true
                     };
-                    reportHeaders.Insert(headerIndex + i + 3, isPrimaryHeader);
+                    reportHeaders.Insert(headerIndex + 3, isPrimaryHeader);
                     headerIndex += 4;
                 }
             }
@@ -763,40 +763,40 @@ namespace RCA_StudyManagementSystem.Controllers
                         HeaderName = $"PhoneNumber{phoneIndex}",
                         ExportTitle = $"PhoneNumber{phoneIndex}",
                         TableName = "PatientPhoneNumber",
-                        Order = headerIndex + i,
+                        Order = headerIndex + 0,
                         IsActive = true
                     };
-                    headers.Insert(headerIndex + i, phoneNumberHeader);
+                    headers.Insert(headerIndex + 0, phoneNumberHeader);
 
                     var phoneTypeHeader = new StudyHeader
                     {
                         HeaderName = $"PhoneNumberType{phoneIndex}",
                         ExportTitle = $"PhoneNumberType{phoneIndex}",
                         TableName = "PatientPhoneNumber",
-                        Order = headerIndex + i + 1,
+                        Order = headerIndex + 1,
                         IsActive = true
                     };
-                    headers.Insert(headerIndex + i + 1, phoneTypeHeader);
+                    headers.Insert(headerIndex + 1, phoneTypeHeader);
 
                     var phoneCommentsHeader = new StudyHeader
                     {
                         HeaderName = $"PhoneNumberComments{phoneIndex}",
                         ExportTitle = $"PhoneNumberComments{phoneIndex}",
                         TableName = "PatientPhoneNumber",
-                        Order = headers.Count + i + 2,
+                        Order = headerIndex + 2,
                         IsActive = true
                     };
-                    headers.Insert(headerIndex + i + 2, phoneCommentsHeader);
+                    headers.Insert(headerIndex + 2, phoneCommentsHeader);
 
                     var isPrimaryHeader = new StudyHeader
                     {
                         HeaderName = $"IsPrimaryPhone{phoneIndex}",
                         ExportTitle = $"IsPrimaryPhone{phoneIndex}",
                         TableName = "PatientPhoneNumber",
-                        Order = headers.Count + i + 3,
+                        Order = headerIndex + 3,
                         IsActive = true
                     };
-                    headers.Insert(headerIndex + i + 3, isPrimaryHeader);
+                    headers.Insert(headerIndex + 3, isPrimaryHeader);
                     headerIndex += 4;
                 }
             }
@@ -934,15 +934,15 @@ namespace RCA_StudyManagementSystem.Controllers
             var fromClause = string.Empty;
             if (exportType == "Current")
             {
-                fromClause = $" FROM Patient INNER JOIN PatientPhoneNumber ON Patient.PatientId = PatientPhoneNumber.PatientId " +
+                fromClause = $" FROM Patient " +
                 $"INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId AND PathReport.ExportStatus = 'Ready' AND PathReport.IsOnHold != 1"
                 + $" WHERE StudyId = '{studyId}'";
             }
             if (exportType == "Past")
             {
-                fromClause = $" FROM Patient INNER JOIN PatientPhoneNumber ON Patient.PatientId = PatientPhoneNumber.PatientId " +
+                fromClause = $" FROM Patient " +
                 $"INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId " +
-                $"INNER JOIN PathReportExports On PathReportExports.PathReportId = PathReport.PathReportId" +
+                $"INNER JOIN PathReportExport On PathReportExport.PathReportId = PathReport.PathReportId" +
                 $" WHERE BatchId = '{batchId}'";
             }
             if (exportType == "Selected")
@@ -956,7 +956,7 @@ namespace RCA_StudyManagementSystem.Controllers
                 if (idList.Length > 2)
                     idList = idList.Remove(idList.Length - 2, 2);
 
-                fromClause = $" FROM Patient INNER JOIN PatientPhoneNumber ON Patient.PatientId = PatientPhoneNumber.PatientId " +
+                fromClause = $" FROM Patient " +
                 $"INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId " +
                 $" WHERE PathReport.PathReportId IN ({idList})";
             }
@@ -1082,15 +1082,15 @@ namespace RCA_StudyManagementSystem.Controllers
 
             if (exportType == "Current")
             {
-                fromClause = $" FROM Patient INNER JOIN PatientPhoneNumber ON Patient.PatientId = PatientPhoneNumber.PatientId " +
+                fromClause = $" FROM Patient " +
                 $"INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId AND PathReport.ExportStatus = 'Ready' AND PathReport.IsOnHold != 1"
                 + $" WHERE StudyId = '{studyId}'";
             }
             if (exportType == "Past")
             {
-                fromClause = $" FROM Patient INNER JOIN PatientPhoneNumber ON Patient.PatientId = PatientPhoneNumber.PatientId " +
+                fromClause = $" FROM Patient " +
                 $"INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId " +
-                $"INNER JOIN PathReportExports On PathReportExports.PathReportId = PathReport.PathReportId" +
+                $"INNER JOIN PathReportExport On PathReportExport.PathReportId = PathReport.PathReportId" +
                 $" WHERE BatchId = '{batchId}'";
             }
             if (exportType == "Selected")
@@ -1104,7 +1104,7 @@ namespace RCA_StudyManagementSystem.Controllers
                 if (idList.Length > 2)
                     idList = idList.Remove(idList.Length - 2, 2);
 
-                fromClause = $" FROM Patient INNER JOIN PatientPhoneNumber ON Patient.PatientId = PatientPhoneNumber.PatientId " +
+                fromClause = $" FROM Patient " +
                 $"INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId " +
                 $" WHERE PathReport.PathReportId IN ({idList})";
             }
