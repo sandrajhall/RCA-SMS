@@ -43,8 +43,8 @@ namespace RCA_StudyManagementSystem.Controllers
                 .ToListAsync();
         }
 
-            // GET: api/Batches/5
-            [HttpGet("{id}")]
+        // GET: api/Batches/5
+        [HttpGet("{id}")]
         public async Task<ActionResult<Batch>> GetBatch(Guid id)
         {
             var batch = await _context.Batches.FindAsync(id);

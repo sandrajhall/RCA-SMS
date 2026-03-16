@@ -13,7 +13,9 @@ namespace RCA_StudyManagementSystem.Shared.Domain
     public class RCAContact : ITrackable
     {
         public Guid RCAContactId { get; set; }
+        [Required(ErrorMessage = "First name is required")]
         public string FirstName { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Last name is required")]
         public string LastName { get; set; } = string.Empty;
         public string? Credentials { get; set; } = string.Empty;
         public string? Title { get; set; } = string.Empty;

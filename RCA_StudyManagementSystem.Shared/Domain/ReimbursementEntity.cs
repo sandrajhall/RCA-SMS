@@ -13,7 +13,9 @@ namespace RCA_StudyManagementSystem.Shared.Domain
     public class ReimbursementEntity : ITrackable
     {
         public Guid ReimbursementEntityId { get; set; }
+        [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; } = string.Empty;
+        [Required(ErrorMessage = "PayableTo is required")]
         public string PayableTo { get; set; } = string.Empty;
         public string? AttentionTo { get; set; } = string.Empty;
         public string AddressLine1 { get; set; } = string.Empty;
@@ -25,6 +27,7 @@ namespace RCA_StudyManagementSystem.Shared.Domain
 
         public string? Comments { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Invoice prefix is required")]
         public string InvoicePrefix { get; set; } = string.Empty;
 
         public bool IsActive { get; set; } = true;

@@ -104,6 +104,8 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         public int? SecGleason2 { get; set; }
         public int? GleasonSum2 { get; set; }
 
+
+
         [Required(ErrorMessage = "Authorizing Provider is required")]
         public string AuthorizingProvider { get; set; } = string.Empty;
         public Guid? DoctorId { get; set; } = null; // Foreign key to the Doctor entity, if applicable

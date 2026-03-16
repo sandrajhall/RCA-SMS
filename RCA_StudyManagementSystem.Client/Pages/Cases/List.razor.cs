@@ -629,7 +629,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private async Task OnCBCS4Import()
         {
-            string fileUrl = "https://localhost:7190/cbcs4-cases.xlsx";
+            string fileUrl = "https://localhost:7150/cbcs4-cases.xlsx";
             string fileContent = string.Empty;
 
             string excelUrl = fileUrl; // Replace with your URL
@@ -786,7 +786,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private async Task OnCBCS4PathImport()
         {
-            string fileUrl = "https://localhost:7190/cbcs4-pathreports.xlsx";
+            string fileUrl = "https://localhost:7150/cbcs4-pathreports.xlsx";
             string fileContent = string.Empty;
 
             string excelUrl = fileUrl; // Replace with your URL
@@ -1072,7 +1072,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private async Task OnCECSImport()
         {
-            string fileUrl = "https://localhost:7190/cecs-cases.xlsx";
+            string fileUrl = "https://localhost:7150/cecs-cases.xlsx";
             string fileContent = string.Empty;
 
             string excelUrl = fileUrl; // Replace with your URL
@@ -1265,7 +1265,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private async Task OnCECSPathImport()
         {
-            string fileUrl = "https://localhost:7190/cecs-pathreports.xlsx";
+            string fileUrl = "https://localhost:7150/cecs-pathreports.xlsx";
             string fileContent = string.Empty;
 
             string excelUrl = fileUrl; // Replace with your URL
@@ -1540,7 +1540,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private async Task OnKIDCOMMImport()
         {
-            string fileUrl = "https://localhost:7190/kid-comm-cases.xlsx";
+            string fileUrl = "https://localhost:7150/kid-comm-cases.xlsx";
             string fileContent = string.Empty;
 
             string excelUrl = fileUrl; // Replace with your URL
@@ -1681,7 +1681,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private async Task OnKIDCOMMPathImport()
         {
-            string fileUrl = "https://localhost:7190/kid-comm-pathreports.xlsx";
+            string fileUrl = "https://localhost:7150/kid-comm-pathreports.xlsx";
             string fileContent = string.Empty;
 
             string excelUrl = fileUrl; // Replace with your URL
@@ -2005,7 +2005,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private async Task OnMTCSSImport()
         {
-            string fileUrl = "https://localhost:7190/mtcss-cases.xlsx";
+            string fileUrl = "https://localhost:7150/mtcss-cases.xlsx";
             string fileContent = string.Empty;
 
             string excelUrl = fileUrl; // Replace with your URL
@@ -2162,7 +2162,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private async Task OnMTCSSPathImport()
         {
-            string fileUrl = "https://localhost:7190/mtcss-pathreports.xlsx";
+            string fileUrl = "https://localhost:7150/mtcss-pathreports.xlsx";
             string fileContent = string.Empty;
 
             string excelUrl = fileUrl; // Replace with your URL
