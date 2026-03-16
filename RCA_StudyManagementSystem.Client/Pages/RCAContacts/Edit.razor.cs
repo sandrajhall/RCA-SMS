@@ -178,8 +178,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
                     // Make a GET request to the SampleController
                     await RCAContactData.UpdateRCAContactAsync(RCAContact.RCAContactId, RCAContact);
 
+                    SaveMessage = "RCA Contact updated.";
+                    severity = Severity.Success; // Set severity to Success if the form is valid
                     IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
-
+                    Snackbar.Add(SaveMessage, severity);
                     //Logger.LogInformation("RCAContact updated. {RCAContact}", System.Text.Json.JsonSerializer.Serialize(RCAContact));
 
 

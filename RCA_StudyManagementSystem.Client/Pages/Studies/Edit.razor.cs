@@ -796,8 +796,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     await SetStudyHeaderViewsAsync(StudyHeaderViews);
                     await SetStudyReportHeaderViewsAsync(StudyReportHeaderViews);
 
+                    SaveMessage = "Study updated.";
+                    severity = Severity.Success; // Set severity to Success if the form is valid
                     IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
-
+                    Snackbar.Add(SaveMessage, severity);
                     //Logger.LogInformation("Study updated. {Study}", System.Text.Json.JsonSerializer.Serialize(Study));
 
                     EditContext.MarkAsUnmodified(); // Mark the edit context as unmodified to prevent further validation errors

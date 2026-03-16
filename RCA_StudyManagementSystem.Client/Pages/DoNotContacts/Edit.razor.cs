@@ -148,8 +148,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
                     // Make a GET request to the SampleController
                     await DoNotContactData.UpdateDoNotContactAsync(DoNotContact.DoNotContactId, DoNotContact);
 
+                    SaveMessage = "Do Not Contact updated.";
+                    severity = Severity.Success; // Set severity to Success if the form is valid
                     IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
-
+                    Snackbar.Add(SaveMessage, severity);
                     //Logger.LogInformation("DoNotContact updated. {DoNotContact}", System.Text.Json.JsonSerializer.Serialize(DoNotContact));
 
                     EditContext.MarkAsUnmodified(); // Mark the edit context as unmodified to prevent further validation errors

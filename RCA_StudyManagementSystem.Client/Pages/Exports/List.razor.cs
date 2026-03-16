@@ -513,11 +513,13 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
                 // set export status to exported, set export date to now, set batchnumber
                 foreach (var path in _displayItems)
                 {
-                    path.ExportStatus = "Exported";
-                    path.RcaExportDate = DateTime.Now;
-                    path.BatchNumber = batchNumber;
+                    var existingPath = await PathReportData.GetPathReportAsync(path.PathReportId);
 
-                    await PathReportData.UpdatePathReportExportStatusAsync(path.PathReportId, path);
+                    existingPath.ExportStatus = "Exported";
+                    existingPath.RcaExportDate = DateTime.Now;
+                    existingPath.BatchNumber = batchNumber;
+
+                    await PathReportData.UpdatePathReportAsync(path.PathReportId, existingPath);
 
                     // create a new PathReportExport record
                     var pathReportExport = new PathReportExport

@@ -201,8 +201,15 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                     Patient.PathReports.ToList().ForEach(pr => pr.StudyColor = StudyColor); // Set the study color for each path report
 
                     await PatientData.UpdatePatientAsync(Patient.PatientId, Patient);
-                    
+
+                    SaveMessage = "Case updated.";
+                    severity = Severity.Success; // Set severity to Success if the form is valid
                     IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
+                    Snackbar.Add(SaveMessage, severity);
+
+                    // Give the JS Interop a millisecond to fire before any 
+                    // potential navigation or "close" logic happens.
+                    await Task.Delay(50);
 
                     //Logger.LogInformation("Patient updated. {Patient}", System.Text.Json.JsonSerializer.Serialize(Patient));
 

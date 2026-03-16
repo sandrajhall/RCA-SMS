@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace RCA_StudyManagementSystem.Shared.Domain
 {
     [Table("PathReport")]
-    public class PathReport
+    public class PathReport :ITrackable
     {
         [Key]
         public Guid PathReportId { get; set; }

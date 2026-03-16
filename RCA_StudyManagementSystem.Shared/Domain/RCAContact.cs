@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RCA_StudyManagementSystem.Shared.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace RCA_StudyManagementSystem.Shared.Domain
 {
     [Table("RCAContact")]
-    public class RCAContact
+    public class RCAContact : ITrackable
     {
         public Guid RCAContactId { get; set; }
         public string FirstName { get; set; } = string.Empty;
@@ -21,6 +22,11 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         public string? PhoneExtension { get; set; } = string.Empty;
         public string? Comments { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
+
+        public Guid CreatedUserId { get; set; } = Guid.Empty;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public Guid? ModifiedUserId { get; set; } = null;
+        public DateTime? ModifiedDate { get; set; } = null;
 
         public ICollection<ReimbursementEntityRCAContact>? ReimbursementEntityRCAContacts { get; set; }
 

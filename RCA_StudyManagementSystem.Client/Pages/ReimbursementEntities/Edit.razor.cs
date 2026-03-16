@@ -188,8 +188,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
                     // Make a GET request to the SampleController
                     await ReimbursementEntityData.UpdateReimbursementEntityAsync(ReimbursementEntity.ReimbursementEntityId, ReimbursementEntity);
 
+                    SaveMessage = "Reimbursement Entity updated.";
+                    severity = Severity.Success; // Set severity to Success if the form is valid
                     IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
-
+                    Snackbar.Add(SaveMessage, severity);
                     //Logger.LogInformation("ReimbursementEntity updated. {ReimbursementEntity}", System.Text.Json.JsonSerializer.Serialize(ReimbursementEntity));
 
 
