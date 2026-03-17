@@ -116,22 +116,27 @@ namespace RCA_StudyManagementSystem.Controllers
 
             foreach (var incomingContact in reimbEntity.ReimbursementEntityRCAContacts)
             {
+                // Try to find if this Guid already exists in the database's child collection
                 var existingContact = existingEntity.ReimbursementEntityRCAContacts
                     .FirstOrDefault(c => c.ReimbursementEntityRCAContactId == incomingContact.ReimbursementEntityRCAContactId);
-
                 if (existingContact == null)
                 {
-                    // New contact
+                    // 1. THIS IS A NEW CONTACT
+                    // Ensure the Foreign Key is set correctly
                     incomingContact.ReimbursementEntityId = existingEntity.ReimbursementEntityId;
+
+                    // 2. Add it to the collection tracked by the context
                     existingEntity.ReimbursementEntityRCAContacts.Add(incomingContact);
+
+                    // 3. FORCE EF to recognize this as a NEW insert
+                    _context.Entry(incomingContact).State = Microsoft.EntityFrameworkCore.EntityState.Added;
                 }
                 else
                 {
-                    // Update fields of existing contact
+                    // THIS IS AN UPDATE
                     _context.Entry(existingContact).CurrentValues.SetValues(incomingContact);
                 }
             }
-
             try
             {
                 await _context.SaveChangesAsync();

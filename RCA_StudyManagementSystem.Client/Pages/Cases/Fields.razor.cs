@@ -1804,6 +1804,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             {
                 newItem.IsPrimary = false; // Subsequent items are not primary by default
             }
+            newItem.PatientPhoneNumberId = Guid.NewGuid(); // Assign a new unique ID
             Patient.PatientPhoneNumbers.Add(newItem); // Add to your data source
             await InvokeAsync(StateHasChanged);
             await Task.Delay(100); // Give the UI a moment to update

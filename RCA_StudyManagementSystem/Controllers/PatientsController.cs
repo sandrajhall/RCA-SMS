@@ -348,22 +348,28 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
             foreach (var incomingPhone in patient.PatientPhoneNumbers)
             {
+                // Try to find if this Guid already exists in the database's child collection
                 var existingPhone = existingEntity.PatientPhoneNumbers
                     .FirstOrDefault(c => c.PatientPhoneNumberId == incomingPhone.PatientPhoneNumberId);
 
                 if (existingPhone == null)
                 {
-                    // New contact
+                    // 1. THIS IS A NEW PHONE NUMBER
+                    // Ensure the Foreign Key is set correctly
                     incomingPhone.PatientId = existingEntity.PatientId;
+
+                    // 2. Add it to the collection tracked by the context
                     existingEntity.PatientPhoneNumbers.Add(incomingPhone);
+
+                    // 3. FORCE EF to recognize this as a NEW insert
+                    _context.Entry(incomingPhone).State = Microsoft.EntityFrameworkCore.EntityState.Added;
                 }
                 else
                 {
-                    // Update fields of existing phone number
+                    // THIS IS AN UPDATE
                     _context.Entry(existingPhone).CurrentValues.SetValues(incomingPhone);
                 }
             }
-
             // Update PathReports (child collection)
             var incomingPathIds = patient.PathReports.Select(c => c.PathReportId).ToList();
             foreach (var path in existingEntity.PathReports.ToList())

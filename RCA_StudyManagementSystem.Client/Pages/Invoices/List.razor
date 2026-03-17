@@ -26,11 +26,16 @@
    
     <MudSpacer />
     <div class="mt-3">
-        @if (IsNewQuarter)
+        @if (IsNewQuarter && !InvoicesCreated)
         {
             <MudButton Class="ml-1" Variant="Variant.Filled" Color="Color.Tertiary" Size="Size.Small" OnClick="() => GenerateInvoices()">Generate Invoices</MudButton>
 
         }
+        else
+        {
+        <MudText Typo="Typo.h4" Class="mt-1">Invoices for the current quarter have already been generated.</MudText>
+        }
+
 
 @*         <MudButton Class="ml-1" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="() => OnSend()">Send Invoices</MudButton>
  *@
@@ -83,5 +88,4 @@
         <MudDataGridPager T="Invoice" />
     </PagerContent>
 </MudDataGrid>
-@* <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"  OnClick="OnImport">Import Hospitals</MudButton>
- *@
+

@@ -95,7 +95,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
                 newItem.IsPrimaryContact = false; // Subsequent items are not primary by default
             }
             newItem.ReimbursementEntityId = ReimbursementEntity.ReimbursementEntityId;
-            //newItem.RCAContactId = Guid.Empty;
+            newItem.ReimbursementEntityRCAContactId = Guid.NewGuid();
+
             ReimbursementEntity.ReimbursementEntityRCAContacts.Add(newItem); // Add to your data source
             await InvokeAsync(StateHasChanged);
             await Task.Delay(100); // Give the UI a moment to update

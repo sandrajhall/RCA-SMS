@@ -328,6 +328,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
             var newItem = new StudyContact();
 
             newItem.StudyId = Study.StudyId;
+            newItem.StudyContactId = Guid.NewGuid(); // Generate a new ID for the contact
 
             Study.StudyContacts.Add(newItem); // Add to your data source
             await InvokeAsync(StateHasChanged);

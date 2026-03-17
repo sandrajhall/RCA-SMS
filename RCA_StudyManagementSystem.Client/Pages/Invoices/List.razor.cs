@@ -43,6 +43,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Invoices
         public bool IsNewQuarter = false;
         public int LastQuarter = 0;
         public int CurrentQuarter = 0;
+        public bool InvoicesCreated = false;
 
 
         // quick filter - filter globally across multiple columns with the same input
@@ -65,6 +66,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Invoices
         {
             Console.WriteLine("OnInitializedAsync method called!");
 
+
             Invoices = await InvoiceData.ListInvoicesNotSentAsync(CancellationToken);
             _displayItems = Invoices;
 
@@ -74,6 +76,23 @@ namespace RCA_StudyManagementSystem.Client.Pages.Invoices
             invGrid.CurrentPage = InvGridStateView.CurrentPage;
 
             IsNewQuarter = await CheckNewQuarter();
+
+            var invoicesSent = await InvoiceData.ListInvoicesSentAsync(CancellationToken);
+            var invoicesLastQuarter = new List<Invoice>();
+
+            if (LastQuarter == 4)
+            {
+                invoicesLastQuarter = invoicesSent.Where(i => i.InvoiceQuarter == $"{DateTime.Now.Year-1} Quarter {LastQuarter}").ToList();
+            }
+            else
+            {
+                invoicesLastQuarter = invoicesSent.Where(i => i.InvoiceQuarter == $"{DateTime.Now.Year} Quarter {LastQuarter}").ToList();
+            }
+
+            if (IsNewQuarter && invoicesLastQuarter.Count() > 0)
+            { 
+                InvoicesCreated = true;
+            }
 
             return;
         }
@@ -203,7 +222,14 @@ namespace RCA_StudyManagementSystem.Client.Pages.Invoices
             if (LastQuarter == 0)
             {
                 IsNewQuarter = true;
-                LastQuarter = CurrentQuarter - 1;
+                if (CurrentQuarter == 1)
+                {
+                    LastQuarter = 4;
+                }
+                else
+                {
+                    LastQuarter = CurrentQuarter - 1;
+                }
             }
 
             //  set IsNewQuarter to false if there are any invoices for the last quarter that are not sent
@@ -283,8 +309,19 @@ namespace RCA_StudyManagementSystem.Client.Pages.Invoices
             // generate invoice logic here
             var startMonth = (LastQuarter - 1) * 3 + 1;
             var endMonth = startMonth + 2;
-            var startDate = new DateTime(DateTime.Now.Year, startMonth, 1);
-            var endDate = new DateTime(DateTime.Now.Year, endMonth, DateTime.DaysInMonth(DateTime.Now.Year, endMonth));
+            var startDate = DateTime.Now;
+            var endDate = DateTime.Now;
+            if (LastQuarter == 4)
+            {
+                startDate = new DateTime(DateTime.Now.Year-1, startMonth, 1);
+                endDate = new DateTime(DateTime.Now.Year-1, endMonth, DateTime.DaysInMonth(DateTime.Now.Year, endMonth));
+            }
+            else
+            {
+                startDate = new DateTime(DateTime.Now.Year, startMonth, 1);
+                endDate = new DateTime(DateTime.Now.Year, endMonth, DateTime.DaysInMonth(DateTime.Now.Year, endMonth));
+            }
+            
 
             var invoices = await InvoiceData.GenerateInvoicesAsync(startDate.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture), endDate.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture), LastQuarter);
             _displayItems = invoices;
