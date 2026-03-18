@@ -67,7 +67,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
 
             if (!IsDialog)
             {
-                NavigationManager.NavigateTo($"/hospitals/list");
+                NavigationManager.NavigateTo($"/app/hospitals/list");
             }
             else
             {
@@ -131,7 +131,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
 
             if (!IsDialog && IsSaved)
             {
-                NavigationManager.NavigateTo($"/hospitals/edit/{id}/{IsSaved}");
+                NavigationManager.NavigateTo($"/app/hospitals/edit/{id}/{IsSaved}");
             }
         }
 
@@ -141,7 +141,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/hospitals/create", forceLoad: true);
+                NavigationManager.NavigateTo($"/app/hospitals/create", forceLoad: true);
             }
         }
 
@@ -151,7 +151,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
 
             if (!IsDialog && IsSaved)
             {
-                NavigationManager.NavigateTo($"/hospitals/list");
+                NavigationManager.NavigateTo($"/app/hospitals/list");
             }
             else
             {

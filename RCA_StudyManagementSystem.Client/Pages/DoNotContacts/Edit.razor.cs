@@ -119,7 +119,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
 
             if (!IsDialog)
             {
-                NavigationManager.NavigateTo($"/donotcontact/list");
+                NavigationManager.NavigateTo($"/app/donotcontact/list");
             }
             else
             {
@@ -187,7 +187,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
 
             if (!IsDialog && IsSaved)
             {
-                NavigationManager.NavigateTo($"/donotcontact/list");
+                NavigationManager.NavigateTo($"/app/donotcontact/list");
             }
             else
             {

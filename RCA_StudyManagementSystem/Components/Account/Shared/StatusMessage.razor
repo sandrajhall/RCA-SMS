@@ -1,4 +1,6 @@
-﻿@if (!string.IsNullOrEmpty(DisplayMessage))
+﻿@inject IHttpContextAccessor HttpContextAccessor
+
+@if (!string.IsNullOrEmpty(DisplayMessage))
 {
     var statusMessageClass = DisplayMessage.StartsWith("Error") ? "danger" : "success";
     <div class="alert alert-@statusMessageClass" role="alert">
@@ -19,11 +21,18 @@
 
     protected override void OnInitialized()
     {
-        messageFromCookie = HttpContext.Request.Cookies[IdentityRedirectManager.StatusCookieName];
+        var http = HttpContextAccessor.HttpContext;
+        if (http is null)
+        {
+            // Running interactively (no HttpContext). Nothing to read/delete.
+            return;
+        }
+
+        messageFromCookie = http.Request.Cookies[IdentityRedirectManager.StatusCookieName];
 
         if (messageFromCookie is not null)
         {
-            HttpContext.Response.Cookies.Delete(IdentityRedirectManager.StatusCookieName);
+            http.Response.Cookies.Delete(IdentityRedirectManager.StatusCookieName);
         }
     }
 }

@@ -1,0 +1,24 @@
+﻿@namespace RCA_StudyManagementSystem.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using RCA_StudyManagementSystem.Routing
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly"
+            AdditionalAssemblies="new[]
+                                    {
+                                        typeof(ServerPagesAssemblyMarker).Assembly,
+                                        typeof(ClientAssemblyMarker).Assembly,
+                                        typeof(RCA_StudyManagementSystem.Shared.Layout.MainLayout).Assembly
+                                    }">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData"
+                                DefaultLayout="@typeof(RCA_StudyManagementSystem.Shared.Layout.MainLayout)" />
+        </Found>
+
+        <NotFound>
+            <LayoutView Layout="@typeof(RCA_StudyManagementSystem.Shared.Layout.MainLayout)">
+                <p role="alert">SERVER Sorry, there’s nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

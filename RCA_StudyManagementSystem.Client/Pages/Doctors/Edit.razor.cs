@@ -119,7 +119,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
             if (!IsDialog)
             {
-                NavigationManager.NavigateTo($"/doctors/list");
+                NavigationManager.NavigateTo($"/app/doctors/list");
             }
             else
             {
@@ -187,7 +187,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
             if (!IsDialog && IsSaved)
             {
-                NavigationManager.NavigateTo($"/doctors/list");
+                NavigationManager.NavigateTo($"/app/doctors/list");
             }
             else
             {

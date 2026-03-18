@@ -1,8 +1,10 @@
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
+using RCA_StudyManagementSystem.Client;
 using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Client.Utilities;
 using RCA_StudyManagementSystem.Shared.Domain;
@@ -35,6 +37,12 @@ builder.Services.AddHttpClient("Geoapify", client =>
     client.BaseAddress = new Uri("https://api.geoapify.com");
     // Add other configurations like default headers, timeouts, etc.
 });
+
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
+
+// Optional, but typical:
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 
 // Register data services

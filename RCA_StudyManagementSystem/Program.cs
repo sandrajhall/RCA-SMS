@@ -9,10 +9,14 @@ using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Client.Utilities;
 using RCA_StudyManagementSystem.Components;
 using RCA_StudyManagementSystem.Components.Account;
+using RCA_StudyManagementSystem.Components.Account.Pages;
 using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
+using RCA_StudyManagementSystem.Shared;
 using System.Text.Json.Serialization;
+using RCA_StudyManagementSystem.Data;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +40,9 @@ builder.Services.AddOutputCache(options =>
     });
 });
 
+builder.Services.AddRazorPages();
+builder.Services.AddHttpContextAccessor();
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
@@ -45,6 +52,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+builder.Services.AddAntiforgery();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -142,9 +150,11 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseWebAssemblyDebugging();
     app.UseMigrationsEndPoint();
 }
@@ -154,7 +164,45 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+//app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+
+app.MapGet("/", () => Results.Redirect("/Account/Login"));
+
+//app.MapGet("/", (HttpContext ctx) =>
+//{
+//    return ctx.User?.Identity?.IsAuthenticated == true
+//        ? Results.Redirect("/app/")
+//        : Results.Redirect("/Account/Login");
+//});
+
+app.MapPost("/account/login-post", async (
+    HttpContext http,
+    SignInManager<ApplicationUser> signInManager,
+    UserManager<ApplicationUser> userManager) =>
+{
+    var form = await http.Request.ReadFormAsync();
+    var email = form["Input.Email"].ToString();
+    var password = form["Input.Password"].ToString();
+    var rememberMe = form["Input.RememberMe"].Count > 0;
+
+    var user = await userManager.FindByEmailAsync(email);
+    if (user is null)
+    {
+        return Results.Redirect("/Account/Login?error=InvalidLogin", permanent: false);
+    }
+
+    var result = await signInManager.PasswordSignInAsync(
+        user.UserName!, password,
+        isPersistent: rememberMe,
+        lockoutOnFailure: true);
+
+    return result.Succeeded
+    ? Results.Redirect("/app", permanent: false)
+    : Results.Redirect("/Account/Login?error=InvalidLogin", permanent: false);
+
+    return Results.Redirect("/Account/Login?error=InvalidLogin", permanent: false);
+}).DisableAntiforgery();
+
 app.UseHttpsRedirection();
 
 
@@ -162,15 +210,35 @@ app.MapStaticAssets();
 
 app.UseAntiforgery();
 
-
-app.MapControllers();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(RCA_StudyManagementSystem.Client._Imports).Assembly);
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+app.MapRazorPages();
+app.MapControllers();
+//app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments("/Account"), accountApp =>
+//{
+//    // Let the normal endpoint routing handle /Account/*.
+//    // IMPORTANT: do NOT map RazorComponents here.
+//    accountApp.UseRouting();
+//    accountApp.UseAuthentication();
+//    accountApp.UseAuthorization();
+//    accountApp.UseAntiforgery();
+
+//    accountApp.UseEndpoints(endpoints =>
+//    {
+//        // Map Identity endpoints and anything else needed under /Account
+//        endpoints.MapAdditionalIdentityEndpoints();
+//        endpoints.MapRazorPages();
+//        endpoints.MapControllers();
+//    });
+//});
+
+app.MapRazorComponents<RCA_StudyManagementSystem.Components.App>()
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(RCA_StudyManagementSystem.Shared.Layout.MainLayout).Assembly);
 
 app.Run();

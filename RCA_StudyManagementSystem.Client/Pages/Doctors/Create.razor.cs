@@ -88,7 +88,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
             SaveMessage = "Doctor not added.";
             if (!IsDialog)
             {
-                NavigationManager.NavigateTo($"/doctors/list");
+                NavigationManager.NavigateTo($"/app/doctors/list");
             }
             else
             {
@@ -145,7 +145,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
             if (!IsDialog && IsSaved)
             {
-                NavigationManager.NavigateTo($"/doctors/edit/{id}/{IsSaved}");
+                NavigationManager.NavigateTo($"/app/doctors/edit/{id}/{IsSaved}");
             }
         }
 
@@ -155,7 +155,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/doctors/create", forceLoad: true);
+                NavigationManager.NavigateTo($"/app/doctors/create", forceLoad: true);
             }
         }
 
@@ -165,7 +165,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
             if (!IsDialog && IsSaved)
             {
-                NavigationManager.NavigateTo($"/doctors/list");
+                NavigationManager.NavigateTo($"/app/doctors/list");
             }
             else
             {

@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RCA_StudyManagementSystem.Shared\RCA_StudyManagementSystem.Shared.csproj" />
-    <ProjectReference Include="..\RCA_StudyManagementSystem.Shared\RCA_StudyManagementSystem.Shared.csproj" />
   </ItemGroup>
 
 </Project>

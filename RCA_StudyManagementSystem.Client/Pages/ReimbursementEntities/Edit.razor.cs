@@ -138,7 +138,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
 
             if (!IsDialog)
             {
-                NavigationManager.NavigateTo($"/reimbursemententities/list");
+                NavigationManager.NavigateTo($"/app/reimbursemententities/list");
             }
             else
             {
@@ -164,7 +164,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
                 severity = Severity.Warning;
                 await InvokeAsync(StateHasChanged);
 
-                NavigationManager.NavigateTo($"/reimbursemententities/list");
+                NavigationManager.NavigateTo($"/app/reimbursemententities/list");
             }
         }
 
@@ -230,7 +230,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
 
             if (!IsDialog && IsSaved)
             {
-                NavigationManager.NavigateTo($"/reimbursemententities/list");
+                NavigationManager.NavigateTo($"/app/reimbursemententities/list");
             }
             else
             {

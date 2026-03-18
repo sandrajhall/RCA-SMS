@@ -1,14 +1,20 @@
 ﻿@using Microsoft.AspNetCore.Antiforgery
 @inject IServiceProvider Services
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IAntiforgery Antiforgery
+
+<input type="hidden" id="__antiforgery" value="@_requestToken" />
 
 <button type="submit" name="__passkeySubmit" @attributes="AdditionalAttributes">@ChildContent</button>
-<passkey-submit
-    operation="@Operation"
-    name="@Name"
-    email-name="@EmailName"
-    request-token-name="@tokens?.HeaderName"
-    request-token-value="@tokens?.RequestToken">
-</passkey-submit>
+@if (tokens is not null && !string.IsNullOrEmpty(tokens.RequestToken))
+{
+    <passkey-submit operation="@Operation"
+                    name="@Name"
+                    email-name="@EmailName"
+                    request-token-name="@tokens.HeaderName"
+                    request-token-value="@tokens.RequestToken">
+    </passkey-submit>
+}
 
 @code {
     private AntiforgeryTokenSet? tokens;
@@ -32,9 +38,16 @@
 
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object>? AdditionalAttributes { get; set; }
+    private bool CanRender => HttpContextAccessor.HttpContext is not null;
+    private string? _requestToken;
 
-    protected override void OnInitialized()
-    {
-        tokens = Services.GetService<IAntiforgery>()?.GetTokens(HttpContext);
+
+        protected override void OnInitialized()
+        {
+            var http = HttpContextAccessor.HttpContext;
+            if (http is null)
+                return;
+
+            tokens = Antiforgery.GetAndStoreTokens(http);
+        }
     }
-}

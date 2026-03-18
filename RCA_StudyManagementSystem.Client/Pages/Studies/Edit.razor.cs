@@ -248,7 +248,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
         private async Task OnCancel()
         {
-            NavigationManager.NavigateTo($"/studies/list");
+            NavigationManager.NavigateTo($"/app/studies/list");
         }
 
         private async Task OnDeactivate()
@@ -269,7 +269,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                 severity = Severity.Warning;
                 await InvokeAsync(StateHasChanged);
 
-                NavigationManager.NavigateTo($"/studies/list");
+                NavigationManager.NavigateTo($"/app/studies/list");
             }
         }
 
@@ -291,7 +291,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                 severity = Severity.Warning;
                 await InvokeAsync(StateHasChanged);
 
-                NavigationManager.NavigateTo($"/studies/list");
+                NavigationManager.NavigateTo($"/app/studies/list");
             }
         }
 
@@ -835,7 +835,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/studies/list");
+                NavigationManager.NavigateTo($"/app/studies/list");
             }
         }
     }

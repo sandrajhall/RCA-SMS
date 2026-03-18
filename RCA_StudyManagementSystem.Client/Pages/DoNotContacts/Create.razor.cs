@@ -88,7 +88,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
             SaveMessage = "Do Not Contact not added.";
             if (!IsDialog)
             {
-                NavigationManager.NavigateTo($"/donotcontact/list");
+                NavigationManager.NavigateTo($"/app/donotcontact/list");
             }
             else
             {
@@ -145,7 +145,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
 
             if (!IsDialog && IsSaved)
             {
-                NavigationManager.NavigateTo($"/donotcontact/edit/{id}/{IsSaved}");
+                NavigationManager.NavigateTo($"/app/donotcontact/edit/{id}/{IsSaved}");
             }
         }
 
@@ -155,7 +155,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/donotcontact/create", forceLoad: true);
+                NavigationManager.NavigateTo($"/app/donotcontact/create", forceLoad: true);
             }
         }
 
@@ -165,7 +165,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
 
             if (!IsDialog && IsSaved)
             {
-                NavigationManager.NavigateTo($"/donotcontact/list");
+                NavigationManager.NavigateTo($"/app/donotcontact/list");
             }
             else
             {

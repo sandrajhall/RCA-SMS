@@ -1,12 +1,13 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using RCA_StudyManagementSystem.Components
 
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/" />
+    <base href="@BaseHref" />
     <ResourcePreloader />
-    <HeadOutlet @rendermode="InteractiveServer" />
+    <HeadOutlet />
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["RCA_StudyManagementSystem.styles.css"]" />
@@ -16,7 +17,9 @@
 </head>
 
 <body>
-    <Routes @rendermode="new InteractiveWebAssemblyRenderMode(prerender: false)" />
+    <RoutesWrapper @rendermode="InteractiveServer" />
+
+
     <ReconnectModal />
     <script src="js/interop.js"></script>
     <script src="js/downloadFile.js"></script>
@@ -31,7 +34,27 @@
 @code {
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
+    
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
+    // If you still use this elsewhere, it's fine to keep (but you're forcing InteractiveServer above).
     private IComponentRenderMode? PageRenderMode =>
         HttpContext.AcceptsInteractiveRouting() ? InteractiveAuto : null;
+
+    private string BaseHref
+    {
+        get
+        {
+            // NavigationManager.BaseUri will be like "https://localhost:7150/app/"
+            // or "https://localhost:7150/".
+            var baseUri = NavigationManager.BaseUri;
+
+            // Convert to a path-only base href ("/app/" or "/")
+            var uri = new Uri(baseUri, UriKind.Absolute);
+            var path = uri.AbsolutePath;
+
+            // Ensure it ends with "/"
+            return path.EndsWith("/") ? path : path + "/";
+        }
+    }
 }

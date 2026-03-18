@@ -5,15 +5,20 @@
     typeof window.PublicKeyCredential.parseRequestOptionsFromJSON === 'function';
 
 async function fetchWithErrorHandling(url, options = {}) {
+    const normalizedHeaders = new Headers(options.headers || {});
+
     const response = await fetch(url, {
         credentials: 'include',
-        ...options
+        ...options,
+        headers: normalizedHeaders
     });
+
     if (!response.ok) {
         const text = await response.text();
         console.error(text);
         throw new Error(`The server responded with status ${response.status}.`);
     }
+
     return response;
 }
 
@@ -29,11 +34,14 @@ async function createCredential(headers, signal) {
 }
 
 async function requestCredential(email, mediation, headers, signal) {
-    const optionsResponse = await fetchWithErrorHandling(`/Account/PasskeyRequestOptions?username=${email}`, {
-        method: 'POST',
-        headers,
-        signal,
-    });
+    const optionsResponse = await fetchWithErrorHandling(
+        `/Account/PasskeyRequestOptions?username=${encodeURIComponent(email)}`,
+        {
+            method: 'POST',
+            headers,
+            signal,
+        });
+
     const optionsJson = await optionsResponse.json();
     const options = PublicKeyCredential.parseRequestOptionsFromJSON(optionsJson);
     return await navigator.credentials.get({ publicKey: options, mediation, signal });
@@ -71,9 +79,11 @@ customElements.define('passkey-submit', class extends HTMLElement {
             throw new Error('Some passkey features are missing. Please update your browser.');
         }
 
-        const headers = {
-            [this.attrs.requestTokenName]: this.attrs.requestTokenValue,
-        };
+        const headerName = this.attrs.requestTokenName || "RequestVerificationToken";
+        const headers = new Headers();
+        if (this.attrs.requestTokenValue) {
+            headers.set(headerName, this.attrs.requestTokenValue);
+        }
 
         if (this.attrs.operation === 'Create') {
             return await createCredential(headers, signal);

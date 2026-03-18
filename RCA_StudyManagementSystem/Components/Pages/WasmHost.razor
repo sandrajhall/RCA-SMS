@@ -1,0 +1,12 @@
+﻿@namespace RCA_StudyManagementSystem.ServerPages
+@page "/app/{*path}"
+@using RCA_StudyManagementSystem.Client
+@using Microsoft.AspNetCore.Components
+
+<component type="typeof(RCA_StudyManagementSystem.Client.App)"
+           render-mode="InteractiveWebAssembly" />
+
+@code {
+    [Parameter]
+    public string? Path { get; set; }
+}

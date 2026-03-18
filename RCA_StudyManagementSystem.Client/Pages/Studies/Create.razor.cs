@@ -40,7 +40,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
         {
             //EditContext?.MarkAsUnmodified(); // Mark the edit context as unmodified to prevent further validation errors
             SaveMessage = "Study not added.";
-            NavigationManager.NavigateTo($"/studies/list");
+            NavigationManager.NavigateTo($"/app/studies/list");
         }
 
         protected override void OnParametersSet()
@@ -102,7 +102,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/studies/edit/{id}/{IsSaved}");
+                NavigationManager.NavigateTo($"/app/studies/edit/{id}/{IsSaved}");
             }
         }
 
@@ -112,7 +112,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/studies/create", forceLoad: true);
+                NavigationManager.NavigateTo($"/app/studies/create", forceLoad: true);
             }
         }
 
@@ -122,7 +122,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/studies/list");
+                NavigationManager.NavigateTo($"/app/studies/list");
             }
         }
     }

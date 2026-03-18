@@ -225,7 +225,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Invoices
             {
                 await InvoiceData.UpdateInvoiceAsync(item.InvoiceId, item);
             }
-            NavigationManager.NavigateTo("/invoices/tracking", forceLoad: true);
+            NavigationManager.NavigateTo("/app/invoices/tracking", forceLoad: true);
         }
 
         private void OnCancel()

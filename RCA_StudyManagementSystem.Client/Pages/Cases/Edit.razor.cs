@@ -147,16 +147,16 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             switch (List)
             {
                 case "Cases":
-                    NavigationManager.NavigateTo($"/cases/list");
+                    NavigationManager.NavigateTo($"/app/cases/list");
                     break;
                 case "CurrentExports":
-                    NavigationManager.NavigateTo($"/exports/list/{StudyId}");
+                    NavigationManager.NavigateTo($"/app/exports/list/{StudyId}");
                     break;
                 case "PastExports":
-                    NavigationManager.NavigateTo($"/exports/pastlist/{StudyId}");
+                    NavigationManager.NavigateTo($"/app/exports/pastlist/{StudyId}");
                     break;
                 default:
-                    NavigationManager.NavigateTo($"/cases/list");
+                    NavigationManager.NavigateTo($"/app/cases/list");
                     break;
             }
         }
@@ -179,7 +179,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                 severity = Severity.Warning;
                 await InvokeAsync(StateHasChanged);
 
-                NavigationManager.NavigateTo($"/cases/list");
+                NavigationManager.NavigateTo($"/app/cases/list");
             }
         }
 
@@ -251,16 +251,16 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                 switch (List)
                 {
                     case "Cases":
-                        NavigationManager.NavigateTo($"/cases/list");
+                        NavigationManager.NavigateTo($"/app/cases/list");
                         break;
                     case "CurrentExports":
-                        NavigationManager.NavigateTo($"/exports/list/{StudyId}");
+                        NavigationManager.NavigateTo($"/app/exports/list/{StudyId}");
                         break;
                     case "PastExports":
-                        NavigationManager.NavigateTo($"/exports/pastlist/{StudyId}");
+                        NavigationManager.NavigateTo($"/app/exports/pastlist/{StudyId}");
                         break;
                     default:
-                        NavigationManager.NavigateTo($"/cases/list");
+                        NavigationManager.NavigateTo($"/app/cases/list");
                         break;
                 }
             }

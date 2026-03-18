@@ -128,7 +128,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
 
             if (!IsDialog)
             {
-                NavigationManager.NavigateTo($"/rcacontacts/list");
+                NavigationManager.NavigateTo($"/app/rcacontacts/list");
             }
             else
             {
@@ -154,7 +154,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
                 severity = Severity.Warning;
                 await InvokeAsync(StateHasChanged);
 
-                NavigationManager.NavigateTo($"/rcacontacts/list");
+                NavigationManager.NavigateTo($"/app/rcacontacts/list");
             }
         }
 
@@ -220,7 +220,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
 
             if (!IsDialog && IsSaved)
             {
-                NavigationManager.NavigateTo($"/rcacontacts/list");
+                NavigationManager.NavigateTo($"/app/rcacontacts/list");
             }
             else
             {

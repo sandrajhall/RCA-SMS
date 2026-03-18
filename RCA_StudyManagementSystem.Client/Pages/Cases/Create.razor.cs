@@ -77,7 +77,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         {
             //EditContext?.MarkAsUnmodified(); // Mark the edit context as unmodified to prevent further validation errors
             SaveMessage = "Case not added.";
-            NavigationManager.NavigateTo($"/cases/list");
+            NavigationManager.NavigateTo($"/app/cases/list");
         }
 
         private void SetPatientHistoricalData()
@@ -167,7 +167,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/cases/edit/{id}/{IsSaved}");
+                NavigationManager.NavigateTo($"/app/cases/edit/{id}/{IsSaved}");
             }
 
         }
@@ -178,7 +178,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/cases/create", forceLoad: true);
+                NavigationManager.NavigateTo($"/app/cases/create", forceLoad: true);
             }
         }
 
@@ -188,7 +188,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/cases/list");
+                NavigationManager.NavigateTo($"/app/cases/list");
             }
         }
 
