@@ -15,7 +15,7 @@
 
 @implements IDisposable
 
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveAuto
 
 
 <MudPaper Class="d-flex pa-2 rca-case-header">
@@ -80,7 +80,7 @@
         <TemplateColumn Title="Actions">
             <CellTemplate>
                 <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item, context.Item)) Variant="Variant.Text" Color="Color.Primary">View</MudIconButton>
-                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.PictureAsPdf" Href="@($"/invoices/invoicepdf/{context.Item.InvoiceId}")" Target="_blank" Variant="Variant.Text" Color="Color.Primary">PDF</MudIconButton>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.PictureAsPdf" Href="@($"/app/invoices/invoicepdf/{context.Item.InvoiceId}")" Target="_blank" Variant="Variant.Text" Color="Color.Primary">PDF</MudIconButton>
             </CellTemplate>
         </TemplateColumn>
     </Columns>

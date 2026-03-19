@@ -142,7 +142,7 @@
                     <CellTemplate>
                         @*                 <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item)) Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
  *@                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item.Patient, context.Item)) Variant="Variant.Text" Color="Color.Primary">View</MudIconButton>
-                        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Href="@($"/cases/edit/{context.Item.PatientId}/PastExports")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+                        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Href="@($"/app/cases/edit/{context.Item.PatientId}/PastExports")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
                     </CellTemplate>
                 </TemplateColumn>
             </Columns>

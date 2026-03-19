@@ -18,7 +18,7 @@
 
 @implements IDisposable
 
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveAuto
 
 
 <MudDataGrid T="PathReportView" @ref="pathGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
@@ -91,7 +91,7 @@
             <CellTemplate>
                 @*                 <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item)) Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
  *@                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item.Patient, context.Item)) Variant="Variant.Text" Color="Color.Primary">View</MudIconButton>
-@*                 <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Href="@($"/cases/edit/{context.Item.PatientId}/Cases")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+@*                 <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Href="@($"/app/cases/edit/{context.Item.PatientId}/Cases")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
  *@            </CellTemplate>
         </TemplateColumn>
     </Columns>

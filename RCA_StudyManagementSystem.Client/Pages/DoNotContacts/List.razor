@@ -16,7 +16,7 @@
 
 @implements IDisposable
 
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveAuto
 
 
 <MudDataGrid T="DoNotContact" @ref="dncGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
@@ -55,7 +55,7 @@
         <TemplateColumn HeaderText="Actions">
             <CellTemplate>
                 <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item, context.Item)) Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
-                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Href="@($"/donotcontact/edit/{context.Item.DoNotContactId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Href="@($"/app/donotcontact/edit/{context.Item.DoNotContactId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
             </CellTemplate>
         </TemplateColumn>
     </Columns>

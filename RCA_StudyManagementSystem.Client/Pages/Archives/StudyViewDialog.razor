@@ -1,7 +1,7 @@
 ﻿@using MudBlazor
 @using RCA_StudyManagementSystem.Client.Services;
 
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveAuto
 @inject IDialogService DialogService
 @inject StudyLookupData StudyLookupData
 @inject StudyHistologyData StudyHistologyData
@@ -31,7 +31,7 @@
             <MudContainer Class="ml-2 mt-2">
                 <MudText Typo="Typo.h4">@Study.Name</MudText>
                 <div class="mt-n12 d-flex justify-end">
-@*                     <MudIconButton Size="@Size.Large" Icon="@Icons.Material.Outlined.Edit" Href="@($"/studies/edit/{Study.StudyId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+                    @*                     <MudIconButton Size="@Size.Large" Icon="@Icons.Material.Outlined.Edit" Href="@($"/app/studies/edit/{Study.StudyId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
  *@                </div>
             </MudContainer>
         </MudPaper>

@@ -651,7 +651,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             if (!string.IsNullOrEmpty(newValue) && Patient != null && lookups.Count() > 0)
             {
                 Patient.County = newValue; // Update the county name in the Patient
-                Patient.CountyCode = lookups.Where(x => x.LookupName == newValue).FirstOrDefault()!.LookupCode; // Reset CountyCode when County changes
+                Patient.CountyCode = lookups.FirstOrDefault(x => x.LookupName == newValue)?.LookupCode ?? ""; // Reset CountyCode when County changes
 
                 var fieldIdentifierCounty = new FieldIdentifier(Patient, nameof(Patient.County));
                 EditContext!.NotifyFieldChanged(fieldIdentifierCounty); // Refresh the UI to reflect the changes
@@ -1954,66 +1954,67 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private async Task<IEnumerable<GeoapifySuggestion>> Search(string text, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(text) || text.Length < 3)
+            if (string.IsNullOrWhiteSpace(text) || text.Trim().Length < 3)
             {
-                Suggestions.Clear();
-                return null!;
+                return Enumerable.Empty<GeoapifySuggestion>();
             }
+
+            var q = text.Trim();
+
+            // IMPORTANT: encode user input
+            var encoded = Uri.EscapeDataString(q);
+
+            // Force GeoJSON since you're deserializing Features/Properties
+            var url = $"https://api.geoapify.com/v1/geocode/autocomplete?text={encoded}&format=geojson&apiKey={GeoapifyApiKey}";
 
             try
             {
-                var url = $"https://api.geoapify.com/v1/geocode/autocomplete?text={text}&apiKey={GeoapifyApiKey}";
                 var client = ClientFactory.CreateClient("Geoapify");
-                var response = await client.GetFromJsonAsync<GeoapifyAutocompleteResponse>(url);
-                if (response == null)
-                {
-                    Console.WriteLine("No response received.");
-                    Suggestions.Clear();
-                    return null!;
-                }
-                if (response?.Features != null)
-                {
-                    Suggestions = response.Features
-                                            .Select(f => new GeoapifySuggestion
-                                            {
-                                                FormattedAddress = f.Properties.Formatted,
-                                                City = f.Properties.City,
-                                                State_Code = f.Properties.State_Code,
-                                                Postcode = f.Properties.Postcode,
-                                                County = f.Properties.County,
-                                                Address_line1 = f.Properties.Address_line1,
-                                                Address_line2 = f.Properties.Address_line2,
-                                            })
-                                            .ToList();
-                    return Suggestions;
 
-                }
-                else
+                using var resp = await client.GetAsync(url, cancellationToken);
+                var body = await resp.Content.ReadAsStringAsync(cancellationToken);
+
+                Console.WriteLine($"Geoapify status={(int)resp.StatusCode} {resp.StatusCode}");
+                Console.WriteLine(body.Length > 500 ? body[..500] : body);
+
+                if (!resp.IsSuccessStatusCode)
                 {
                     Suggestions.Clear();
-                    return null!;
+                    return Enumerable.Empty<GeoapifySuggestion>();
                 }
-            }
-            catch (HttpRequestException ex)
-            {
-                Console.WriteLine($"Error fetching suggestions: {ex.Message}");
-                Suggestions.Clear();
-                return null!;
 
-            }
-            catch (NotSupportedException) // When content type is not valid
-            {
-                Console.WriteLine("The content type is not supported.");
-                Suggestions.Clear();
-                return null!;
+                var response = System.Text.Json.JsonSerializer.Deserialize<GeoapifyAutocompleteResponse>(
+                    body,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            }
-            catch (JsonException) // Invalid JSON
-            {
-                Console.WriteLine("Invalid JSON.");
-                Suggestions.Clear();
-                return null!;
+                var features = response?.Features ?? new List<Feature>();
 
+                Suggestions = features
+                    .Select(f => new GeoapifySuggestion
+                    {
+                        FormattedAddress = f.Properties?.Formatted ?? "",
+                        City = f.Properties?.City,
+                        State_Code = f.Properties?.State_Code,
+                        Postcode = f.Properties?.Postcode,
+                        County = f.Properties?.County,
+                        Address_line1 = f.Properties?.Address_line1,
+                        Address_line2 = f.Properties?.Address_line2,
+                    })
+                    .Where(s => !string.IsNullOrWhiteSpace(s.FormattedAddress))
+                    .ToList();
+
+                return Suggestions;
+            }
+            catch (OperationCanceledException)
+            {
+                // MudAutocomplete cancels as you type; cancellation is normal.
+                return Enumerable.Empty<GeoapifySuggestion>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Geoapify exception: {ex}");
+                Suggestions.Clear();
+                return Enumerable.Empty<GeoapifySuggestion>();
             }
         }
 
@@ -2023,31 +2024,56 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             await SelectAddress(newValue);
         }
 
-        private async Task SelectAddress(GeoapifySuggestion suggestion)
+        private Task SelectAddress(GeoapifySuggestion? suggestion)
         {
+            if (suggestion is null)
+            {
+                // X was clicked (clear)
+                Patient.City = "";
+                Patient.State = "";
+                Patient.ZipCode = "";
+                Patient.County = "";
+                Patient.Address1 = "";
+                // Patient.Address2 = "";
 
-            //SelectedAddress = suggestion.FormattedAddress;
-            //SearchText = suggestion.FormattedAddress; // Update the input field with the selected address
-            Patient.City = suggestion.City;
-            Patient.State = suggestion.State_Code;
-            Patient.ZipCode = suggestion.Postcode;
-            Patient.County = suggestion.County.Remove(suggestion.County.Length - 7, 7); ;
-            Patient.Address1 = suggestion.Address_line1;
-            //Patient.Address2 = suggestion.Address_line2; // Assuming Address2 is part of the suggestion
-            Suggestions.Clear(); // Clear the suggestions after selection
+                Suggestions.Clear();
 
-            var fieldIdentifierCity = new FieldIdentifier(Patient, nameof(Patient.City));
-            var fieldIdentifierState = new FieldIdentifier(Patient, nameof(Patient.State));
-            var fieldIdentifierZip = new FieldIdentifier(Patient, nameof(Patient.ZipCode));
-            var fieldIdentifierCounty = new FieldIdentifier(Patient, nameof(Patient.County));
-            var fieldIdentifierAddress1 = new FieldIdentifier(Patient, nameof(Patient.Address1));
+                EditContext.NotifyFieldChanged(new FieldIdentifier(Patient, nameof(Patient.City)));
+                EditContext.NotifyFieldChanged(new FieldIdentifier(Patient, nameof(Patient.State)));
+                EditContext.NotifyFieldChanged(new FieldIdentifier(Patient, nameof(Patient.ZipCode)));
+                EditContext.NotifyFieldChanged(new FieldIdentifier(Patient, nameof(Patient.County)));
+                EditContext.NotifyFieldChanged(new FieldIdentifier(Patient, nameof(Patient.Address1)));
 
-            EditContext.NotifyFieldChanged(fieldIdentifierCity); // Refresh the UI to reflect the changes
-            EditContext.NotifyFieldChanged(fieldIdentifierState); // Refresh the UI to reflect the changes
-            EditContext.NotifyFieldChanged(fieldIdentifierZip); // Refresh the UI to reflect the changes
-            EditContext.NotifyFieldChanged(fieldIdentifierCounty); // Refresh the UI to reflect the changes
-            EditContext.NotifyFieldChanged(fieldIdentifierAddress1); // Refresh the UI to reflect the changes
-            await InvokeAsync(StateHasChanged);
+                return Task.CompletedTask;
+            }
+
+            Patient.City = suggestion.City ?? "";
+            Patient.State = suggestion.State_Code ?? "";
+            Patient.ZipCode = suggestion.Postcode ?? "";
+            Patient.Address1 = suggestion.Address_line1 ?? "";
+
+            Patient.County = NormalizeCounty(suggestion.County);
+
+            Suggestions.Clear();
+
+            EditContext.NotifyFieldChanged(new FieldIdentifier(Patient, nameof(Patient.City)));
+            EditContext.NotifyFieldChanged(new FieldIdentifier(Patient, nameof(Patient.State)));
+            EditContext.NotifyFieldChanged(new FieldIdentifier(Patient, nameof(Patient.ZipCode)));
+            EditContext.NotifyFieldChanged(new FieldIdentifier(Patient, nameof(Patient.County)));
+            EditContext.NotifyFieldChanged(new FieldIdentifier(Patient, nameof(Patient.Address1)));
+
+            return Task.CompletedTask;
+        }
+
+        private static string NormalizeCounty(string? county)
+        {
+            if (string.IsNullOrWhiteSpace(county))
+                return "";
+
+            const string suffix = " County";
+            return county.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)
+                ? county[..^suffix.Length]
+                : county;
         }
 
         // You would define these classes based on the Geoapify API response structure
