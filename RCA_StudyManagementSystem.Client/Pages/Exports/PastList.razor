@@ -1,8 +1,10 @@
-﻿@page "/app/exports/pastlist"
+﻿@attribute [Authorize]
+@page "/app/exports/pastlist"
 @page "/app/exports/pastlist/{StudyId:guid}"
 
 
 @using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Client.Utilities
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services

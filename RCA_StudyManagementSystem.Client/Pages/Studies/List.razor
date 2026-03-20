@@ -1,5 +1,7 @@
-﻿@page "/app/studies/list"
+﻿@attribute [Authorize]
+@page "/app/studies/list"
 
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services
 @using MudBlazor

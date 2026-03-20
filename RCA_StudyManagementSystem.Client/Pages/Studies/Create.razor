@@ -1,4 +1,6 @@
-﻿@page "/app/studies/create"
+﻿@attribute [Authorize]
+@page "/app/studies/create"
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.Domain
 @using System.ComponentModel.DataAnnotations

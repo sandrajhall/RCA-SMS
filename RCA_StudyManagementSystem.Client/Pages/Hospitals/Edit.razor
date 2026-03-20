@@ -1,5 +1,7 @@
-﻿@page "/app/hospitals/edit/{HospitalId:guid}"
+﻿@attribute [Authorize]
+@page "/app/hospitals/edit/{HospitalId:guid}"
 @page "/app/hospitals/edit/{HospitalId:guid}/{IsSaved:bool?}"
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.Domain
 @using System.ComponentModel.DataAnnotations

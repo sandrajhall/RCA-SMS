@@ -1,7 +1,9 @@
-﻿@page "/app/exports/list"
+﻿@attribute [Authorize]
+@page "/app/exports/list"
 @page "/app/exports/list/{StudyId:guid}"
 
 @using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Client.Utilities
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services

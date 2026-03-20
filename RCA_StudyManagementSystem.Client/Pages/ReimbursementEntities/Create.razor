@@ -1,4 +1,6 @@
-﻿@page "/app/reimbursemententities/create"
+﻿@attribute [Authorize]
+@page "/app/reimbursemententities/create"
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Client.Utilities
 @using RCA_StudyManagementSystem.Shared.Domain

@@ -4,6 +4,7 @@
 @using MudBlazor
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
 @inject NavigationManager Nav
 
@@ -11,6 +12,7 @@
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
+
 
 <div class="page">
     <div class="sidebar">
@@ -38,6 +40,13 @@
         </div>
 
         <article class="content px-4">
+            <AuthorizeView>
+                <NotAuthorized>
+                    <div class="alert alert-danger">
+                        Please log in to access the application.
+                    </div>
+                </NotAuthorized>
+            </AuthorizeView>
             @Body
         </article>
     </main>

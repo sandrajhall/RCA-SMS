@@ -1,6 +1,8 @@
-﻿@page "/app/doctors/list"
+﻿@attribute [Authorize]
+@page "/app/doctors/list"
 
 @using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.ViewModels

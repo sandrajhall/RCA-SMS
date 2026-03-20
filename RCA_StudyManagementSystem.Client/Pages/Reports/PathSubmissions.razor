@@ -1,5 +1,7 @@
-﻿@page "/app/reports/pathsubmissions"
+﻿@attribute [Authorize]
+@page "/app/reports/pathsubmissions"
 
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.ViewModels

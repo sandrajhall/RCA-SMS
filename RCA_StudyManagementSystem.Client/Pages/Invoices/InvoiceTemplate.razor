@@ -1,4 +1,6 @@
-﻿@page "/app/invoices/view/{InvoiceId:guid}"
+﻿@attribute [Authorize]
+@page "/app/invoices/view/{InvoiceId:guid}"
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Shared.Layout
 @layout NullLayout
 

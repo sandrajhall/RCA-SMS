@@ -1,4 +1,6 @@
-﻿@page "/app/cases/create"
+﻿@attribute [Authorize]
+@page "/app/cases/create"
+@using Microsoft.AspNetCore.Authorization
 @using MudBlazor
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Client.Utilities

@@ -1,5 +1,7 @@
-﻿@page "/app/reports/cecspathcaserace"
+﻿@attribute [Authorize]
+@page "/app/reports/cecspathcaserace"
 
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.ViewModels

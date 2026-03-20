@@ -1,5 +1,7 @@
-﻿@page "/app/donotcontact/edit/{DoNotContactId:guid}"
+﻿@attribute [Authorize]
+@page "/app/donotcontact/edit/{DoNotContactId:guid}"
 @page "/app/donotcontact/edit/{DoNotContactId:guid}/{IsSaved:bool?}"
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.Domain
 @using System.ComponentModel.DataAnnotations

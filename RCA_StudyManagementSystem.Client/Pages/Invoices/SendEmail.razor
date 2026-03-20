@@ -1,4 +1,6 @@
-﻿@page "/app/send-email"
+﻿@attribute [Authorize]
+@page "/app/send-email"
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.DTOs
 @using RCA_StudyManagementSystem.Shared.Domain

@@ -1,5 +1,7 @@
-﻿@page "/app/reimbursemententities/edit/{ReimbursementEntityId:guid}"
+﻿@attribute [Authorize]
+@page "/app/reimbursemententities/edit/{ReimbursementEntityId:guid}"
 @page "/app/reimbursemententities/edit/{ReimbursementEntityId:guid}/{IsSaved:bool?}"
+@using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.Domain
 @using System.ComponentModel.DataAnnotations
