@@ -46,7 +46,7 @@
             <MudRadio T="int" Value="3" Class="ml-4" Dense="true">Show Past Year</MudRadio>
             <MudRadio T="int" Value="4" Class="ml-4" Dense="true">Show All</MudRadio>
         </MudRadioGroup>
-        
+
         <MudSpacer />
         @* <MudButton Class="mr-2" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="() => ClearStateItems()">Reset Filters</MudButton> *@
         <MudTextField @bind-Value="SearchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
@@ -160,7 +160,7 @@
                     </FilterOptions>
                 </FilterHeaderCell>
             </PropertyColumn>
-@*             <PropertyColumn Property="x => x.StudyName" Title="Study Name" Filterable="true">
+            @*             <PropertyColumn Property="x => x.StudyName" Title="Study Name" Filterable="true">
                 <FilterHeaderCell>
                     <FilterOptions>
                         <MudDataGridFilterOperator Operator="FilterOperator.String.Contains" />

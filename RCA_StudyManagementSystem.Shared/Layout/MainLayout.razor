@@ -7,6 +7,8 @@
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
 @inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthStateProvider
+
 
 <MudThemeProvider />
 <MudPopoverProvider />
@@ -23,7 +25,7 @@
         <div class="top-row px-4">
             <AuthorizeView>
                 <Authorized>
-                    <MudMenu Label="@GetDisplayName(context.User)" Dense="true">
+                    <MudMenu Label=@displayName Dense="true">
                         <ChildContent>
                             <NavLink href="/Account/Manage/ChangePassword" class="mud-menu-item">Change Password</NavLink>
                             <NavLink href="/Account/Logout" class="mud-menu-item">Logout</NavLink>
@@ -43,7 +45,7 @@
             <AuthorizeView>
                 <NotAuthorized>
                     <div class="alert alert-danger">
-                        Please log in to access the application.
+                        Please log in to access the application. Some pages require special access permissions even if you are logged in.
                     </div>
                 </NotAuthorized>
             </AuthorizeView>
@@ -53,6 +55,18 @@
 </div>
 
 @code {
+    private string displayName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            displayName = user.FindFirst("DisplayName")?.Value ?? user.Identity.Name ?? "User";
+        }
+    }
 
     private void Login(MouseEventArgs _)
     {
@@ -66,9 +80,4 @@
         Nav.NavigateTo($"/Account/Logout?returnUrl={returnUrl}", forceLoad: true);
     }
 
-    private static string GetDisplayName(ClaimsPrincipal user)
-        => user.Identity?.Name
-           ?? user.FindFirst("name")?.Value
-           ?? user.FindFirst(ClaimTypes.Email)?.Value
-           ?? "Account";
 }
