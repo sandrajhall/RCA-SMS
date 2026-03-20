@@ -1,7 +1,10 @@
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using RCA_StudyManagementSystem.Client.Pages;
@@ -11,11 +14,11 @@ using RCA_StudyManagementSystem.Components;
 using RCA_StudyManagementSystem.Components.Account;
 using RCA_StudyManagementSystem.Components.Account.Pages;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Shared;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
-using RCA_StudyManagementSystem.Shared;
 using System.Text.Json.Serialization;
-using RCA_StudyManagementSystem.Data;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -147,6 +150,10 @@ builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDataProtection()
+    .SetApplicationName("RCA_StudyManagementSystem")
+    .PersistKeysToFileSystem(new DirectoryInfo(
+        Path.Combine(builder.Environment.ContentRootPath, "dp_keys")));
 
 var app = builder.Build();
 
@@ -166,14 +173,12 @@ else
 }
 //app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
-app.MapGet("/", () => Results.Redirect("/Account/Login"));
-
-//app.MapGet("/", (HttpContext ctx) =>
-//{
-//    return ctx.User?.Identity?.IsAuthenticated == true
-//        ? Results.Redirect("/app/")
-//        : Results.Redirect("/Account/Login");
-//});
+app.MapGet("/", (HttpContext ctx) =>
+{
+    return ctx.User?.Identity?.IsAuthenticated == true
+        ? Results.Redirect("/app", permanent: false)
+        : Results.Redirect("/Account/Login", permanent: false);
+});
 
 app.MapPost("/account/login-post", async (
     HttpContext http,
@@ -203,39 +208,36 @@ app.MapPost("/account/login-post", async (
     return Results.Redirect("/Account/Login?error=InvalidLogin", permanent: false);
 }).DisableAntiforgery();
 
+app.MapGet("/logout", async (
+    HttpContext http,
+    SignInManager<ApplicationUser> signInManager) =>
+{
+    await signInManager.SignOutAsync();
+
+    var returnUrl = http.Request.Query["returnUrl"].ToString();
+    if (string.IsNullOrWhiteSpace(returnUrl))
+        returnUrl = "/";
+
+    if (!Uri.IsWellFormedUriString(returnUrl, UriKind.Relative))
+        returnUrl = "/";
+
+    return Results.LocalRedirect(returnUrl);
+});
+
 app.UseHttpsRedirection();
-
-
 app.MapStaticAssets();
 
-app.UseAntiforgery();
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Add additional endpoints required by the Identity /Account Razor components.
-app.MapAdditionalIdentityEndpoints();
+app.UseAntiforgery(); // <-- Put this here, before any endpoint mapping
 
+// Map endpoints
+app.MapAdditionalIdentityEndpoints();
 app.MapRazorPages();
 app.MapControllers();
-//app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments("/Account"), accountApp =>
-//{
-//    // Let the normal endpoint routing handle /Account/*.
-//    // IMPORTANT: do NOT map RazorComponents here.
-//    accountApp.UseRouting();
-//    accountApp.UseAuthentication();
-//    accountApp.UseAuthorization();
-//    accountApp.UseAntiforgery();
-
-//    accountApp.UseEndpoints(endpoints =>
-//    {
-//        // Map Identity endpoints and anything else needed under /Account
-//        endpoints.MapAdditionalIdentityEndpoints();
-//        endpoints.MapRazorPages();
-//        endpoints.MapControllers();
-//    });
-//});
-
 app.MapRazorComponents<RCA_StudyManagementSystem.Components.App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()

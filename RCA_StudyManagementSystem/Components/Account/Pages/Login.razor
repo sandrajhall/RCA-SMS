@@ -24,7 +24,7 @@
 <PageTitle>Log in</PageTitle>
 
 <h1>Log in</h1>
-<form method="post" action="/account/login-post">
+<form method="post" action="/account/login-post" style="width: 50%">
     @if (_tokens is not null)
     {
         <input type="hidden" name="__RequestVerificationToken" value="@_tokens.RequestToken" />
@@ -78,7 +78,7 @@
                 Register as a new user
             </a>
         </p>
-        <p><a href="Account/ResendEmailConfirmation">Resend email confirmation</a></p>
+       @*  <p><a href="Account/ResendEmailConfirmation">Resend email confirmation</a></p> *@
     </div>
 </form>
 

@@ -1,0 +1,28 @@
+﻿@page "/Account/Logout"
+@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager Nav
+
+<MudPaper Class="pa-6" MaxWidth="MaxWidth.Small">
+    <MudText Typo="Typo.h6">Signing you out…</MudText>
+    <MudProgressLinear Indeterminate="true" Class="mt-4" />
+</MudPaper>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Optional: /Account/Logout?returnUrl=/app
+        var uri = Nav.ToAbsoluteUri(Nav.Uri);
+        var returnUrl = "/";
+
+        var query = QueryHelpers.ParseQuery(uri.Query);
+        if (query.TryGetValue("returnUrl", out var v) && !string.IsNullOrWhiteSpace(v))
+            returnUrl = v.ToString();
+
+        // Prevent open redirects
+        if (!Uri.IsWellFormedUriString(returnUrl, UriKind.Relative))
+            returnUrl = "/";
+
+        // Force full page load so the server endpoint clears the Identity cookie
+        Nav.NavigateTo($"/logout?returnUrl={Uri.EscapeDataString(returnUrl)}", forceLoad: true);
+    }
+}

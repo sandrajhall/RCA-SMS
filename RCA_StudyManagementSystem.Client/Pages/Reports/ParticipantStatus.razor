@@ -98,7 +98,7 @@
             <EditTemplate>
                 <!-- Lines="0" allows the textfield to expand -->
                 <MudTextField @bind-Value="context.Item.Comments" @bind-Value:after="() => SaveCommentsAsync(context.Item)"
-                              Immediate="true" AutoGrow="true" Variant="Variant.Text" />
+                              Immediate="true" AutoGrow="true" Lines="3" Variant="Variant.Text" />
             </EditTemplate>
         </TemplateColumn>
     </Columns>

@@ -1,16 +1,15 @@
 ﻿@namespace RCA_StudyManagementSystem.Shared.Layout
 @inherits LayoutComponentBase
+
 @using MudBlazor
 @using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@inject NavigationManager Nav
 
-@* Required *@
 <MudThemeProvider />
 <MudPopoverProvider />
-
-@* Needed for dialogs *@
 <MudDialogProvider />
-
-@* Needed for snackbars *@
 <MudSnackbarProvider />
 
 <div class="page">
@@ -20,14 +19,22 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-            <MudButton Class="ml-1"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       OnClick="Login">
-                Login
-            </MudButton>
+            <AuthorizeView>
+                <Authorized>
+                    <MudMenu Label="@GetDisplayName(context.User)" Dense="true">
+                        <ChildContent>
+                            <NavLink href="/Account/Manage/ChangePassword" class="mud-menu-item">Change Password</NavLink>
+                            <NavLink href="/Account/Logout" class="mud-menu-item">Logout</NavLink>
+                        </ChildContent>
+                    </MudMenu>
+                </Authorized>
+
+                <NotAuthorized>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@Login">
+                        Login
+                    </MudButton>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
 
         <article class="content px-4">
@@ -36,15 +43,23 @@
     </main>
 </div>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">x</span>
-</div>
-
 @code {
-    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
-    private void Login()
-        => NavigationManager.NavigateTo("/Account/Login", forceLoad: true);
+    private void Login(MouseEventArgs _)
+    {
+        var returnUrl = Uri.EscapeDataString(Nav.Uri);
+        Nav.NavigateTo($"/Account/Login?returnUrl={returnUrl}", forceLoad: true);
+    }
+
+    private void Logout(MouseEventArgs _)
+    {
+        var returnUrl = Uri.EscapeDataString(Nav.Uri);
+        Nav.NavigateTo($"/Account/Logout?returnUrl={returnUrl}", forceLoad: true);
+    }
+
+    private static string GetDisplayName(ClaimsPrincipal user)
+        => user.Identity?.Name
+           ?? user.FindFirst("name")?.Value
+           ?? user.FindFirst(ClaimTypes.Email)?.Value
+           ?? "Account";
 }
