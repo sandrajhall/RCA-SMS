@@ -154,6 +154,59 @@ builder.Services.AddDataProtection()
 
 var app = builder.Build();
 
+// --- ROLE SEEDING HERE ---
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    string[] roleNames = { "Admin", "Business", "User" };
+    foreach (var roleName in roleNames)
+    {
+        var roleExists = await roleManager.RoleExistsAsync(roleName);
+        if (!roleExists)
+            await roleManager.CreateAsync(new IdentityRole(roleName));
+    }
+   
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var userGail = await userManager.FindByEmailAsync("gail.cooley@dhhs.nc.gov");
+    var userJenn = await userManager.FindByEmailAsync("jennifer.oneill@dhhs.nc.gov");
+    var userSandy = await userManager.FindByEmailAsync("shall@med.unc.edu");
+    var userHeather = await userManager.FindByEmailAsync("heather_tipaldos@unc.edu");
+    var userEmma = await userManager.FindByEmailAsync("emma_blackwell@med.unc.edu");
+    var userJanae = await userManager.FindByEmailAsync("janae_simons@med.unc.edu");
+    var userSystem = await userManager.FindByEmailAsync("system_user@system.user");
+
+    if (userGail != null)
+    {
+        await userManager.AddToRoleAsync(userGail, "User");
+    }
+    if (userJenn != null)
+    {
+        await userManager.AddToRoleAsync(userJenn, "User");
+    }
+    if (userSandy != null)
+    {
+        await userManager.AddToRoleAsync(userSandy, "Admin");
+    }
+    if (userHeather != null)
+    {
+        await userManager.AddToRoleAsync(userHeather, "Business");
+    }
+    if (userEmma != null)
+    {
+        await userManager.AddToRoleAsync(userEmma, "Business");
+    }
+    if (userJanae != null)
+    {
+        await userManager.AddToRoleAsync(userJanae, "Admin");
+    }
+    if (userSystem != null)
+    {
+        await userManager.AddToRoleAsync(userSystem, "Admin");
+    }
+}
+
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -241,3 +294,5 @@ app.MapRazorComponents<RCA_StudyManagementSystem.Components.App>()
     .AddAdditionalAssemblies(typeof(RCA_StudyManagementSystem.Shared.Layout.MainLayout).Assembly);
 
 app.Run();
+
+
