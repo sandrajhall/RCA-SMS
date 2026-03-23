@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,13 @@ namespace RCA_StudyManagementSystem.Controllers
     public class ReimbursementEntitiesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserContext _userContext;
 
-        public ReimbursementEntitiesController(ApplicationDbContext context)
+
+        public ReimbursementEntitiesController(ApplicationDbContext context, UserContext userContext)
         {
             _context = context;
+            _userContext = userContext;
         }
 
         // GET: api/ReimbursementEntities
@@ -72,9 +76,10 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // POST: api/ReimbursementEntities
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<ReimbursementEntity>> CreateReimbursementEntity(ReimbursementEntity reimbEntity)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<ReimbursementEntity>> CreateReimbursementEntity(string userId, ReimbursementEntity reimbEntity)
         {
+            _userContext.UserId = userId;
             _context.ReimbursementEntities.Add(reimbEntity);
             await _context.SaveChangesAsync();
 
@@ -83,9 +88,10 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // PUT: api/ReimbursementEntities/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateReimbursementEntity(Guid id, ReimbursementEntity reimbEntity)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateReimbursementEntity(Guid id, string userId, ReimbursementEntity reimbEntity)
         {
+            _userContext.UserId = userId;
             // Check if the incoming model data meets all validation rules (e.g., [Required], [StringLength])
             if (!ModelState.IsValid)
             {

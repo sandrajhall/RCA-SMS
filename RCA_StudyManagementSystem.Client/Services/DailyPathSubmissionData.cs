@@ -36,9 +36,9 @@ namespace RCA_StudyManagementSystem.Client.Services
             return await _httpClient.GetFromJsonAsync<List<MonthlyPathSubmissionView>>(_navigationManager.ToAbsoluteUri($"api/dailypathsubmissions/monthly/{year}/{month}/{studyId}"));
         }
 
-        public async Task<Guid> CreateDailyPathSubmissionAsync(DailyPathSubmission dailyPathSubmission)
+        public async Task<Guid> CreateDailyPathSubmissionAsync(string userId, DailyPathSubmission dailyPathSubmission)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/dailypathsubmissions"), dailyPathSubmission);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/dailypathsubmissions/{userId}"), dailyPathSubmission);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["dailyPathSubmissionId"];
@@ -46,14 +46,14 @@ namespace RCA_StudyManagementSystem.Client.Services
             return id;
         }
 
-        public async Task SaveDailyPathSubmissionAsync(DailyPathSubmission dailyPathSubmission)
+        public async Task SaveDailyPathSubmissionAsync(string userId, DailyPathSubmission dailyPathSubmission)
         {
-            await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/dailypathsubmissions/daily/"), dailyPathSubmission);
+            await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/dailypathsubmissions/daily/{userId}"), dailyPathSubmission);
 
         }
-        public async Task UpdateDailyPathSubmissionAsync(Guid id, DailyPathSubmission dailyPathSubmission)
+        public async Task UpdateDailyPathSubmissionAsync(Guid id, string userId, DailyPathSubmission dailyPathSubmission)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/dailypathsubmissions/{id}"), dailyPathSubmission);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/dailypathsubmissions/{id}/{userId}"), dailyPathSubmission);
         }
 
         public async Task DeleteDailyPathSubmissionAsync(Guid id)

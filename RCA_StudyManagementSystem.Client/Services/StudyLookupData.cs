@@ -73,9 +73,9 @@ namespace RCA_StudyManagementSystem.Client.Services
             return response;
         }
 
-        public async Task<Guid> CreateStudyLookupAsync(StudyLookup studyLookup)
+        public async Task<Guid> CreateStudyLookupAsync(string userId, StudyLookup studyLookup)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studylookups"), studyLookup);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studylookups/{userId}"), studyLookup);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["studyLookupId"];
@@ -84,9 +84,9 @@ namespace RCA_StudyManagementSystem.Client.Services
         }
 
 
-        public async Task UpdateStudyLookupAsync(Guid id, StudyLookup studyLookup)
+        public async Task UpdateStudyLookupAsync(Guid id, string userId, StudyLookup studyLookup)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studylookups/{id}"), studyLookup);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studylookups/{id}/{userId}"), studyLookup);
         }
 
 

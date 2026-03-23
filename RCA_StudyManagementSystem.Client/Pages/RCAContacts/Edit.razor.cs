@@ -175,8 +175,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
 
                 try
                 {
-                    // Make a GET request to the SampleController
-                    await RCAContactData.UpdateRCAContactAsync(RCAContact.RCAContactId, RCAContact);
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                    
+                    await RCAContactData.UpdateRCAContactAsync(RCAContact.RCAContactId, userId, RCAContact);
 
                     SaveMessage = "RCA Contact updated.";
                     severity = Severity.Success; // Set severity to Success if the form is valid

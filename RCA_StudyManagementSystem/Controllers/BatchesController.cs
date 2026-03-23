@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Controllers;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using System;
 using System.Collections.Generic;
@@ -17,12 +18,15 @@ namespace RCA_StudyManagementSystem.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<BatchesController> _logger;
+        private readonly UserContext _userContext;
 
 
-        public BatchesController(ApplicationDbContext context, ILogger<BatchesController> logger)
+
+        public BatchesController(ApplicationDbContext context, ILogger<BatchesController> logger, UserContext userContext)
         {
             _context = context;
             _logger = logger;
+            _userContext = userContext;
         }
 
         // GET: api/Batches
@@ -91,10 +95,11 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // POST: api/Batches
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Batch>> CreateBatch(Batch batch)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<Batch>> CreateBatch(string userId, Batch batch)
         {
             _context.Batches.Add(batch);
+            _userContext.UserId = userId;
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("CreateBatch", new { id = batch.BatchId }, batch);
@@ -102,8 +107,8 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // PUT: api/Batches/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBatch(Guid id, Batch batch)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateBatch(Guid id, string userId, Batch batch)
         {
             if (id != batch.BatchId)
             {
@@ -111,6 +116,7 @@ namespace RCA_StudyManagementSystem.Controllers
             }
 
             _context.Entry(batch).State = EntityState.Modified;
+            _userContext.UserId = userId;
 
             try
             {

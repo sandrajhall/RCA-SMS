@@ -93,7 +93,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
 
                 try
                 {
-                    id = await RCAContactData.CreateRCAContactAsync(RCAContact);
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    id = await RCAContactData.CreateRCAContactAsync(userId, RCAContact);
 
                     IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 

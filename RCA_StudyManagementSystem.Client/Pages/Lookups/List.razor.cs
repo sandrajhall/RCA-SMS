@@ -127,8 +127,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Lookups
         // This method is called when a lookup is modified on a per row basis - not in use currently
         private async Task<DataGridEditFormAction> HandleCommittedChanges(Lookup item)
         {
+            var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            await LookupData.UpdateLookupAsync(item.LookupId, item);
+            await LookupData.UpdateLookupAsync(item.LookupId, userId, item);
 
 
             Lookups = (List<Lookup>)await LookupData.ListLookupsAsync(); // Refresh the list
@@ -151,6 +153,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Lookups
 
         private async Task OnSubmitAsync()
         {
+            var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             foreach (var lookup in Lookups)
             {
@@ -162,13 +166,13 @@ namespace RCA_StudyManagementSystem.Client.Pages.Lookups
                         // Skip saving if required fields are empty
                         continue;
                     }
-                    await LookupData.CreateLookupAsync(lookup);
+                    await LookupData.CreateLookupAsync(userId, lookup);
                     lookup.IsNew = false; // Reset IsNew after creation
                     lookup.IsModified = false; // Reset IsModified after saving
                 }
                 else if (lookup.IsModified)
                 {
-                    await LookupData.UpdateLookupAsync(lookup.LookupId, lookup);
+                    await LookupData.UpdateLookupAsync(lookup.LookupId, userId, lookup);
                     lookup.IsModified = false; // Reset IsModified after saving
                 }
             }
@@ -229,7 +233,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Lookups
                         // Add the new lookups to the database
                         foreach (var lookup in LookupList)
                         {
-                            await LookupData.CreateLookupAsync(lookup);
+                            var userId = "039af482-6c73-4717-86aa-2919addb7a6d";
+                            await LookupData.CreateLookupAsync(userId, lookup);
                         }
 
                         // Refresh the list of lookups

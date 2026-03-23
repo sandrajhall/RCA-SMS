@@ -20,11 +20,10 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         [Required]
         public DateTime? ExportDate { get; set; } = null;
 
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-        public Guid CreatedUserId { get; set; } = Guid.Empty;
-
-        public DateTime? ModifiedDate { get; set; } = null;
-        public Guid? ModifiedUserId { get; set; } = null;
+        public DateTime CreatedDate { get; set; }
+        public Guid CreatedUserId { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public Guid? ModifiedUserId { get; set; }
 
         public ICollection<PathReportExport>? PathReportExports { get; set; }
     }

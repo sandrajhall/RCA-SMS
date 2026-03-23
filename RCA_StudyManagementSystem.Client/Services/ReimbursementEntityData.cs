@@ -35,18 +35,18 @@ namespace RCA_StudyManagementSystem.Client.Services
         }
 
 
-        public async Task<Guid> CreateReimbursementEntityAsync(ReimbursementEntity reimbEntity)
+        public async Task<Guid> CreateReimbursementEntityAsync(string userId, ReimbursementEntity reimbEntity)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/reimbursemententities"), reimbEntity);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/reimbursemententities/{userId}"), reimbEntity);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["reimbursementEntityId"];
 
             return id;
         }
-        public async Task UpdateReimbursementEntityAsync(Guid id, ReimbursementEntity reimbEntity)
+        public async Task UpdateReimbursementEntityAsync(Guid id, string userId, ReimbursementEntity reimbEntity)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/reimbursemententities/{id}"), reimbEntity);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/reimbursemententities/{id}/{userId}"), reimbEntity);
         }
 
         public async Task DeleteReimbursementEntityAsync(Guid id)

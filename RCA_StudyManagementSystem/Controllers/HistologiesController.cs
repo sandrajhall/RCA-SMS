@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using System;
 using System.Collections.Generic;
@@ -20,13 +21,16 @@ namespace RCA_StudyManagementSystem.Api.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HistologiesController> _logger;
         private readonly IOutputCacheStore _cacheStore;
+        private readonly UserContext _userContext;
 
 
-        public HistologiesController(ApplicationDbContext context, ILogger<HistologiesController> logger, IOutputCacheStore cacheStore)
+
+        public HistologiesController(ApplicationDbContext context, ILogger<HistologiesController> logger, IOutputCacheStore cacheStore, UserContext userContext)
         {
             _context = context;
             _logger = logger;
             _cacheStore = cacheStore;
+            _userContext = userContext;
         }
 
         // GET: api/Histologies
@@ -91,10 +95,11 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
         // POST: api/Histologies
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Histology>> CreateHistology(Histology histology)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<Histology>> CreateHistology(string userId, Histology histology)
         {
             _logger.LogInformation("Histology creation started...");
+            _userContext.UserId = userId;
 
             _context.Histologies.Add(histology);
             await _context.SaveChangesAsync();
@@ -108,10 +113,11 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
         // PUT: api/Histologies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateHistology(Guid id, Histology histology)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateHistology(Guid id, string userId, Histology histology)
         {
             _logger.LogInformation("Histology update started...");
+            _userContext.UserId = userId;
 
             if (id != histology.HistologyId)
             {

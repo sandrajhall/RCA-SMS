@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System;
@@ -17,10 +18,13 @@ namespace RCA_StudyManagementSystem.Controllers
     public class PatientStatusesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserContext _userContext;
 
-        public PatientStatusesController(ApplicationDbContext context)
+
+        public PatientStatusesController(ApplicationDbContext context, UserContext userContext)
         {
             _context = context;
+            _userContext = userContext;
         }
 
         // GET: api/PatientStatuses
@@ -148,9 +152,10 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // POST: api/PatientStatuses
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<PatientStatus>> CreatePatientStatus(PatientStatus patientStatus)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<PatientStatus>> CreatePatientStatus(string userId, PatientStatus patientStatus)
         {
+            _userContext.UserId = userId;
             _context.PatientStatuses.Add(patientStatus);
             await _context.SaveChangesAsync();
 
@@ -159,14 +164,15 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // PUT: api/PatientStatuses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePatientStatus(Guid id, PatientStatus patientStatus)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdatePatientStatus(Guid id, string userId, PatientStatus patientStatus)
         {
             if (id != patientStatus.PatientStatusId)
             {
                 return BadRequest();
             }
-
+            
+            _userContext.UserId = userId;
             var existingEntry = await _context.PatientStatuses.FindAsync(id);
 
             _context.Entry(existingEntry).CurrentValues.SetValues(patientStatus);

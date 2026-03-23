@@ -46,18 +46,18 @@ namespace RCA_StudyManagementSystem.Client.Services
             return response;
         }
 
-        public async Task<Guid> CreateRCAContactAsync(RCAContact rcaContact)
+        public async Task<Guid> CreateRCAContactAsync(string userId, RCAContact rcaContact)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/rcacontacts"), rcaContact);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/rcacontacts/{userId}"), rcaContact);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["rcaContactId"];
 
             return id;
         }
-        public async Task UpdateRCAContactAsync(Guid id, RCAContact rcaContact)
+        public async Task UpdateRCAContactAsync(Guid id, string userId, RCAContact rcaContact)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/rcacontacts/{id}"), rcaContact);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/rcacontacts/{id}/{userId}"), rcaContact);
         }
 
         public async Task DeleteRCAContactAsync(Guid id)

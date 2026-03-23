@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,13 @@ namespace RCA_StudyManagementSystem.Controllers
     public class HospitalsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserContext _userContext;
 
-        public HospitalsController(ApplicationDbContext context)
+
+        public HospitalsController(ApplicationDbContext context, UserContext userContext)
         {
             _context = context;
+            _userContext = userContext;
         }
 
         // GET: api/Hospitals
@@ -123,9 +127,10 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // POST: api/Hospitals
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Hospital>> CreateHospital(Hospital hospital)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<Hospital>> CreateHospital(string userId, Hospital hospital)
         {
+            _userContext.UserId = userId;
             _context.Hospitals.Add(hospital);
             await _context.SaveChangesAsync();
 
@@ -134,9 +139,11 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // PUT: api/Hospitals/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateHospital(Guid id, Hospital hospital)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateHospital(Guid id, string userId, Hospital hospital)
         {
+            _userContext.UserId = userId;
+
             if (id != hospital.HospitalId)
             {
                 return BadRequest();

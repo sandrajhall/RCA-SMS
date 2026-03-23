@@ -173,8 +173,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Histologies
         // This method is called when a histology is modified on a per row basis - not in use currently
         private async Task<DataGridEditFormAction> HandleCommittedChanges(Histology item)
         {
+            var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            await HistologyData.UpdateHistologyAsync(item.HistologyId, item);
+            await HistologyData.UpdateHistologyAsync(item.HistologyId, userId, item);
 
 
             Histologies = (List<Histology>)await HistologyData.ListHistologiesAsync(); // Refresh the list
@@ -197,6 +199,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Histologies
 
         private async Task OnSubmitAsync()
         {
+            var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             foreach (var histology in Histologies)
             {
@@ -208,13 +212,13 @@ namespace RCA_StudyManagementSystem.Client.Pages.Histologies
                         // Skip saving if required fields are empty
                         continue;
                     }
-                    await HistologyData.CreateHistologyAsync(histology);
+                    await HistologyData.CreateHistologyAsync(userId, histology);
                     histology.IsNew = false; // Reset IsNew after creation
                     histology.IsModified = false; // Reset IsModified after saving
                 }
                 else if (histology.IsModified)
                 {
-                    await HistologyData.UpdateHistologyAsync(histology.HistologyId, histology);
+                    await HistologyData.UpdateHistologyAsync(histology.HistologyId, userId, histology);
                     histology.IsModified = false; // Reset IsModified after saving
                 }
             }
@@ -282,7 +286,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Histologies
                         // Add the new histologies to the database
                         foreach (var histology in HistologyList)
                         {
-                            await HistologyData.CreateHistologyAsync(histology);
+                            var userid = "039af482-6c73-4717-86aa-2919addb7a6d";
+                            await HistologyData.CreateHistologyAsync(userid, histology);
                         }
 
                         // Refresh the list of lookups

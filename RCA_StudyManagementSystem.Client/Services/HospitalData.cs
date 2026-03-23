@@ -55,18 +55,18 @@ namespace RCA_StudyManagementSystem.Client.Services
         {
             return await _httpClient.GetStringAsync(_navigationManager.ToAbsoluteUri($"api/hospitals/shortname/{hospName}"));
         }
-        public async Task<Guid> CreateHospitalAsync(Hospital hospital)
+        public async Task<Guid> CreateHospitalAsync(string userId, Hospital hospital)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/hospitals"), hospital);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/hospitals/{userId}"), hospital);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["hospitalId"];
 
             return id;
         }
-        public async Task UpdateHospitalAsync(Guid id, Hospital hospital)
+        public async Task UpdateHospitalAsync(Guid id, string userId, Hospital hospital)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/hospitals/{id}"), hospital);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/hospitals/{id}/{userId}"), hospital);
         }
 
         public async Task DeleteHospitalAsync(Guid id)

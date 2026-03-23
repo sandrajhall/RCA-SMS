@@ -145,8 +145,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
 
                 try
                 {
-                    // Make a GET request to the SampleController
-                    await DoNotContactData.UpdateDoNotContactAsync(DoNotContact.DoNotContactId, DoNotContact);
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    await DoNotContactData.UpdateDoNotContactAsync(DoNotContact.DoNotContactId, userId, DoNotContact);
 
                     SaveMessage = "Do Not Contact updated.";
                     severity = Severity.Success; // Set severity to Success if the form is valid

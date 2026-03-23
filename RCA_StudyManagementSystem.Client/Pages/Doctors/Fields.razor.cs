@@ -39,6 +39,9 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
         protected override async Task OnInitializedAsync()
         {
+            var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
             GeoapifyApiKey = Configuration["Geoapify:ApiKey"]!;
 
             EditContext!.OnFieldChanged += HandleFieldChanged; // Subscribe to field change events
@@ -47,7 +50,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
             {
                 Doctor.IsVerified = false;
                 Doctor.VerifiedDate = null;
-                await DoctorData.UpdateDoctorAsync(Doctor.DoctorId, Doctor);
+                await DoctorData.UpdateDoctorAsync(Doctor.DoctorId, userId, Doctor);
             }
         }
 

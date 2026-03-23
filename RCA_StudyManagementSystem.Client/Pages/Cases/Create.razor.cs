@@ -130,7 +130,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
                 try
                 {
-                    id = await PatientData.CreatePatientAsync(Patient);
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    id = await PatientData.CreatePatientAsync(userId, Patient);
 
                     IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 

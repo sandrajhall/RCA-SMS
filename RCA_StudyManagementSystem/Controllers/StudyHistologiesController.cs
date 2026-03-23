@@ -1,15 +1,16 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
+using RCA_StudyManagementSystem.Shared.Domain;
+using RCA_StudyManagementSystem.Shared.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RCA_StudyManagementSystem.Data;
-using RCA_StudyManagementSystem.Shared.Domain;
-using Microsoft.Extensions.Logging;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using RCA_StudyManagementSystem.Shared.ViewModels;
 
 namespace RCA_StudyManagementSystem.Api.Controllers
 {
@@ -19,12 +20,15 @@ namespace RCA_StudyManagementSystem.Api.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<StudyHistologiesController> _logger;
+        private readonly UserContext _userContext;
 
 
-        public StudyHistologiesController(ApplicationDbContext context, ILogger<StudyHistologiesController> logger)
+
+        public StudyHistologiesController(ApplicationDbContext context, ILogger<StudyHistologiesController> logger, UserContext userContext)
         {
             _context = context;
             _logger = logger;
+            _userContext = userContext;
         }
 
 
@@ -181,9 +185,10 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
         // POST: api/StudyHistologies
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<StudyHistology>> CreateStudyHistology(StudyHistology studyHistology)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<StudyHistology>> CreateStudyHistology(string userId, StudyHistology studyHistology)
         {
+            _userContext.UserId = userId;
             _logger.LogInformation("StudyHistology creation started...");
 
             _context.StudyHistologies.Add(studyHistology);
@@ -198,9 +203,10 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
         // PUT: api/StudyHistologies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStudyHistology(Guid id, StudyHistology studyHistology)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateStudyHistology(Guid id, string userId, StudyHistology studyHistology)
         {
+            _userContext.UserId = userId;
             _logger.LogInformation("StudyHistology update started...");
 
             if (id != studyHistology.StudyHistologyId)

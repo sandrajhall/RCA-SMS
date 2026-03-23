@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RCA_StudyManagementSystem.Controllers
 {
@@ -15,10 +16,13 @@ namespace RCA_StudyManagementSystem.Controllers
     public class StudyReportHeadersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserContext _userContext;
 
-        public StudyReportHeadersController(ApplicationDbContext context)
+
+        public StudyReportHeadersController(ApplicationDbContext context, UserContext userContext)
         {
             _context = context;
+            _userContext = userContext;
         }
 
         // GET: api/StudyReportHeaders
@@ -53,9 +57,10 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // POST: api/StudyReportHeaders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<StudyReportHeader>> CreateStudyReportHeader(StudyReportHeader studyReportHeader)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<StudyReportHeader>> CreateStudyReportHeader(string userId, StudyReportHeader studyReportHeader)
         {
+            _userContext.UserId = userId;
             _context.StudyReportHeaders.Add(studyReportHeader);
             await _context.SaveChangesAsync();
 
@@ -64,9 +69,10 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // PUT: api/StudyReportHeaders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStudyReportHeader(Guid id, StudyReportHeader studyReportHeader)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateStudyReportHeader(Guid id, string userId, StudyReportHeader studyReportHeader)
         {
+            _userContext.UserId = userId;
             if (id != studyReportHeader.StudyReportHeaderId)
             {
                 return BadRequest();

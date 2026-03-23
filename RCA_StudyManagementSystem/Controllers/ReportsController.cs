@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System;
@@ -20,6 +21,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<StudiesController> _logger;
+
 
 
         public ReportsController(ApplicationDbContext context, ILogger<StudiesController> logger)

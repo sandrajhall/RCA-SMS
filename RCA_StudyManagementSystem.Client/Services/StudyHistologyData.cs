@@ -59,9 +59,9 @@ namespace RCA_StudyManagementSystem.Client.Services
             return await _httpClient.GetFromJsonAsync<Histology>(_navigationManager.ToAbsoluteUri($"api/studyhistologies/valuebyoldcode/{studyId}/{oldCode}"));
         }
 
-        public async Task<Guid> CreateStudyHistologyAsync(StudyHistology studyHistology)
+        public async Task<Guid> CreateStudyHistologyAsync(string userId, StudyHistology studyHistology)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studyhistologies"), studyHistology);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studyhistologies/{userId}"), studyHistology);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["studyHistologyId"];
@@ -70,9 +70,9 @@ namespace RCA_StudyManagementSystem.Client.Services
         }
 
 
-        public async Task UpdateStudyHistologyAsync(Guid id, StudyHistology studyHistology)
+        public async Task UpdateStudyHistologyAsync(Guid id, string userId, StudyHistology studyHistology)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studyhistologies/{id}"), studyHistology);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studyhistologies/{id}/{userId}"), studyHistology);
         }
 
 

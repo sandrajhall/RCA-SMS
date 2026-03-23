@@ -175,8 +175,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
 
                 try
                 {
-                    // Make a GET request to the SampleController
-                    await HospitalData.UpdateHospitalAsync(Hospital.HospitalId, Hospital);
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    await HospitalData.UpdateHospitalAsync(Hospital.HospitalId, userId, Hospital);
 
                     SaveMessage = "Hospital updated.";
                     severity = Severity.Success; // Set severity to Success if the form is valid

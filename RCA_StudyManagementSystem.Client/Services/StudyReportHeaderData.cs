@@ -28,15 +28,15 @@ namespace RCA_StudyManagementSystem.Client.Services
         {
             return await _httpClient.GetFromJsonAsync<StudyReportHeader>(_navigationManager.ToAbsoluteUri($"api/studyreportheaders/{id}"));
         }
-        public async Task<StudyReportHeader> CreateStudyReportHeaderAsync(StudyReportHeader studyReportHeader)
+        public async Task<StudyReportHeader> CreateStudyReportHeaderAsync(string userId, StudyReportHeader studyReportHeader)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studyreportheaders"), studyReportHeader);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studyreportheaders/{userId}"), studyReportHeader);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<StudyReportHeader>();
         }
-        public async Task UpdateStudyReportHeaderAsync(Guid id, StudyReportHeader studyReportHeader)
+        public async Task UpdateStudyReportHeaderAsync(Guid id, string userId, StudyReportHeader studyReportHeader)
         {
-            var response = await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studyreportheaders/{id}"), studyReportHeader);
+            var response = await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studyreportheaders/{id}/{userId}"), studyReportHeader);
             response.EnsureSuccessStatusCode();
         }
         public async Task DeleteStudyReportHeaderAsync(Guid id)

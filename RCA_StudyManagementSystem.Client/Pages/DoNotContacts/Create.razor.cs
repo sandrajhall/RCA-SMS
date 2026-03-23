@@ -110,7 +110,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
 
                 try
                 {
-                    id = await DoNotContactData.CreateDoNotContactAsync(DoNotContact);
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    id = await DoNotContactData.CreateDoNotContactAsync(userId, DoNotContact);
 
                     IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 

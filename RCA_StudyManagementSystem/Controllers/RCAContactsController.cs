@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RCA_StudyManagementSystem.Controllers
 {
@@ -15,10 +16,13 @@ namespace RCA_StudyManagementSystem.Controllers
     public class RCAContactsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserContext _userContext;
 
-        public RCAContactsController(ApplicationDbContext context)
+
+        public RCAContactsController(ApplicationDbContext context, UserContext userContext)
         {
             _context = context;
+            _userContext = userContext;
         }
 
         // GET: api/RCAContacts
@@ -94,9 +98,10 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // POST: api/RCAContacts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<RCAContact>> CreateRCAContact(RCAContact rcaContact)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<RCAContact>> CreateRCAContact(string userId, RCAContact rcaContact)
         {
+            _userContext.UserId = userId;
             _context.RCAContacts.Add(rcaContact);
             await _context.SaveChangesAsync();
 
@@ -105,13 +110,14 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // PUT: api/RCAContacts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRCAContact(Guid id, RCAContact rcaContact)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateRCAContact(Guid id, string userId, RCAContact rcaContact)
         {
             if (id != rcaContact.RCAContactId)
             {
                 return BadRequest();
             }
+            _userContext.UserId = userId;
 
             _context.Entry(rcaContact).State = EntityState.Modified;
 

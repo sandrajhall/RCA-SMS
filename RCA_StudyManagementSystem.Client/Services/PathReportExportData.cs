@@ -29,18 +29,18 @@ namespace RCA_StudyManagementSystem.Client.Services
             return await _httpClient.GetFromJsonAsync<PathReportExport>(_navigationManager.ToAbsoluteUri($"api/pathreportexports/{id}"));
         }
 
-        public async Task<Guid> CreatePathReportExportAsync(PathReportExport batch)
+        public async Task<Guid> CreatePathReportExportAsync(string userId, PathReportExport batch)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/pathreportexports"), batch);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/pathreportexports/{userId}"), batch);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["pathReportExportId"];
 
             return id;
         }
-        public async Task UpdatePathReportExportAsync(Guid id, PathReportExport pathReportExport)
+        public async Task UpdatePathReportExportAsync(Guid id, string userId, PathReportExport pathReportExport)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/pathreportexports/{id}"), pathReportExport);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/pathreportexports/{id}/{userId}"), pathReportExport);
         }
 
         public async Task DeletePathReportExportAsync(Guid id)

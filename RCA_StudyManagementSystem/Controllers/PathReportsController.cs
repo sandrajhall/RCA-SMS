@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Client.Services;
+using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System.Dynamic;
@@ -22,12 +23,15 @@ namespace RCA_StudyManagementSystem.Controllers
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserContext _userContext;
 
-        public PathReportsController(ApplicationDbContext context, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+
+        public PathReportsController(ApplicationDbContext context, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, UserContext userContext)
         {
             _context = context;
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
+            _userContext = userContext;
         }
 
         // GET: api/PathReports/5
@@ -208,18 +212,21 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // POST: api/PathReports
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<PathReport>> CreatePathReport(PathReport pathReport)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<PathReport>> CreatePathReport(string userId, PathReport pathReport)
         {
+            _userContext.UserId = userId;
             _context.PathReports.Add(pathReport);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPathReport", new { id = pathReport.PathReportId }, pathReport);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePathReport(Guid id, PathReport pathReport)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdatePathReport(Guid id, string userId, PathReport pathReport)
         {
+            _userContext.UserId = userId;
+
             if (id != pathReport.PathReportId)
             {
                 return BadRequest();

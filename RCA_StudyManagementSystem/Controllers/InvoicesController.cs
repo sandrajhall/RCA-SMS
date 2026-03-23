@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Client.Utilities;
+using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System;
@@ -21,16 +22,19 @@ namespace RCA_StudyManagementSystem.Controllers
     public class InvoicesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserContext _userContext;
+
 
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public InvoicesController(ApplicationDbContext context, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        public InvoicesController(ApplicationDbContext context, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, UserContext userContext)
         {
             _context = context;
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
+            _userContext = userContext;
         }
 
         // GET: api/Invoices/notsent
@@ -304,9 +308,10 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // POST: api/Invoices
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Invoice>> CreateInvoice(Invoice invoice)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<Invoice>> CreateInvoice(string userId, Invoice invoice)
         {
+            _userContext.UserId = userId;
             _context.Invoices.Add(invoice);
             await _context.SaveChangesAsync();
 
@@ -315,9 +320,11 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // PUT: api/Invoices/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateInvoice(Guid id, Invoice invoice)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateInvoice(Guid id, string userId, Invoice invoice)
         {
+            _userContext.UserId = userId;
+
             if (id != invoice.InvoiceId)
             {
                 return BadRequest();

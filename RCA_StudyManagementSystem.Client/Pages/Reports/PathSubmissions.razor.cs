@@ -180,6 +180,9 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
 
         private async Task OnCellValueChanged(MonthlyPathSubmissionView item, int day, string newValue)
         {
+            var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
             item.DailyValues[day] = newValue;
 
             var submissions = await DailyPathSubmissionData.ListDailyPathSubmissionsAsync(token);
@@ -201,7 +204,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
                     }
                     else
                     {
-                        await DailyPathSubmissionData.UpdateDailyPathSubmissionAsync(existingEntry.DailyPathSubmissionId, existingEntry);
+                        await DailyPathSubmissionData.UpdateDailyPathSubmissionAsync(existingEntry.DailyPathSubmissionId, userId, existingEntry);
                     }
                 }
                 else
@@ -218,7 +221,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
                         Value = d.Value
                     };
 
-                    await DailyPathSubmissionData.CreateDailyPathSubmissionAsync(newEntry);
+                    await DailyPathSubmissionData.CreateDailyPathSubmissionAsync(userId, newEntry);
                 }
             }
             StateHasChanged();

@@ -36,18 +36,18 @@ namespace RCA_StudyManagementSystem.Client.Services
         {
             return await _httpClient.GetFromJsonAsync<Histology>(_navigationManager.ToAbsoluteUri($"api/histologies/{id}"));
         }
-        public async Task<Guid> CreateHistologyAsync(Histology histology)
+        public async Task<Guid> CreateHistologyAsync(string userId, Histology histology)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/histologies"), histology);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/histologies/{userId}"), histology);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["histologyId"];
 
             return id;
         }
-        public async Task UpdateHistologyAsync(Guid id, Histology histology)
+        public async Task UpdateHistologyAsync(Guid id, string userId, Histology histology)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/histologies/{id}"), histology);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/histologies/{id}/{userId}"), histology);
         }
 
         public async Task DeleteHistologyAsync(Guid id)

@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
+using RCA_StudyManagementSystem.Shared.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RCA_StudyManagementSystem.Data;
-using RCA_StudyManagementSystem.Shared.Domain;
-using Microsoft.Extensions.Logging;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace RCA_StudyManagementSystem.Api.Controllers
@@ -18,12 +19,15 @@ namespace RCA_StudyManagementSystem.Api.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<LookupsController> _logger;
+        private readonly UserContext _userContext;
 
 
-        public LookupsController(ApplicationDbContext context, ILogger<LookupsController> logger)
+
+        public LookupsController(ApplicationDbContext context, ILogger<LookupsController> logger, UserContext userContext)
         {
             _context = context;
             _logger = logger;
+            _userContext = userContext;
         }
 
         // GET: api/Lookups
@@ -150,10 +154,11 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
         // POST: api/Lookups
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Lookup>> CreateLookup(Lookup lookup)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<Lookup>> CreateLookup(string userId, Lookup lookup)
         {
             _logger.LogInformation("Lookup creation started...");
+            _userContext.UserId = userId;
 
             _context.Lookups.Add(lookup);
             await _context.SaveChangesAsync();
@@ -166,10 +171,11 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
         // PUT: api/Lookups/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLookup(Guid id, Lookup lookup)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateLookup(Guid id, string userId, Lookup lookup)
         {
             _logger.LogInformation("Lookup update started...");
+            _userContext.UserId = userId;
 
             if (id != lookup.LookupId)
             {

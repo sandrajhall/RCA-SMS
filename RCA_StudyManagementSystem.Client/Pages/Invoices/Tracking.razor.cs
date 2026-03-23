@@ -221,9 +221,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Invoices
 
         private async Task OnSubmit()
         {
+            var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
             foreach (var item in _displayItems)
             {
-                await InvoiceData.UpdateInvoiceAsync(item.InvoiceId, item);
+                await InvoiceData.UpdateInvoiceAsync(item.InvoiceId, userId, item);
             }
             NavigationManager.NavigateTo("/app/invoices/tracking", forceLoad: true);
         }

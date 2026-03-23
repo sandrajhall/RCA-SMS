@@ -1,8 +1,9 @@
-﻿using RCA_StudyManagementSystem.Shared.Domain;
-using Microsoft.AspNetCore.Components;
-using MudBlazor;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using MudBlazor;
 using RCA_StudyManagementSystem.Client.Services;
+using RCA_StudyManagementSystem.Shared.Domain;
+using System.Security.Claims;
 
 namespace RCA_StudyManagementSystem.Client.Pages.Cases
 {
@@ -200,7 +201,11 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                     Patient.PathReports.ToList().ForEach(pr => pr.StudyPrefix = prefix); // Set the study prefix for each path report
                     Patient.PathReports.ToList().ForEach(pr => pr.StudyColor = StudyColor); // Set the study color for each path report
 
-                    await PatientData.UpdatePatientAsync(Patient.PatientId, Patient);
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+
+                    await PatientData.UpdatePatientAsync(Patient.PatientId, userId, Patient);
 
                     SaveMessage = "Case updated.";
                     severity = Severity.Success; // Set severity to Success if the form is valid

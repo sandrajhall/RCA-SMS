@@ -51,18 +51,18 @@ namespace RCA_StudyManagementSystem.Client.Services
         {
             return await _httpClient.GetStringAsync(_navigationManager.ToAbsoluteUri($"api/lookups/codebytype/{type}/{typeValue}"));
         }
-        public async Task<Guid> CreateLookupAsync(Lookup lookup)
+        public async Task<Guid> CreateLookupAsync(string userId, Lookup lookup)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/lookups"), lookup);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/lookups/{userId}"), lookup);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["lookupId"];
 
             return id;
         }
-        public async Task UpdateLookupAsync(Guid id, Lookup lookup)
+        public async Task UpdateLookupAsync(Guid id, string userId, Lookup lookup)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/lookups/{id}"), lookup);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/lookups/{id}/{userId}"), lookup);
         }
 
         public async Task DeleteLookupAsync(Guid id)

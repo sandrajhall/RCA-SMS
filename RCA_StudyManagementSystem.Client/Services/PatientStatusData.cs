@@ -46,9 +46,9 @@ namespace RCA_StudyManagementSystem.Client.Services
             return await _httpClient.GetStringAsync(_navigationManager.ToAbsoluteUri($"api/patientstatuses/patientstatusviewcsv/{studyId}/{startDate}/{endDate}"));
         }
 
-        public async Task<Guid> CreatePatientStatusAsync(PatientStatus patientStatus)
+        public async Task<Guid> CreatePatientStatusAsync(string userId, PatientStatus patientStatus)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/patientstatuses"), patientStatus);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/patientstatuses/{userId}"), patientStatus);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["patientStatusId"];
@@ -57,9 +57,9 @@ namespace RCA_StudyManagementSystem.Client.Services
         }
 
  
-        public async Task UpdatePatientStatusAsync(Guid id, PatientStatus patientStatus)
+        public async Task UpdatePatientStatusAsync(Guid id, string userId, PatientStatus patientStatus)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/patientstatuses/{id}"), patientStatus);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/patientstatuses/{id}/{userId}"), patientStatus);
         }
 
         public async Task DeletePatientStatusAsync(Guid id)

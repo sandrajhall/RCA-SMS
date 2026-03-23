@@ -110,7 +110,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
                 try
                 {
-                    id = await DoctorData.CreateDoctorAsync(Doctor);
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    id = await DoctorData.CreateDoctorAsync(userId, Doctor);
 
                     IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 

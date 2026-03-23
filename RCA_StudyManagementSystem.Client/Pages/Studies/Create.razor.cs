@@ -69,7 +69,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
                 try
                 {
-                    id = await StudyData.CreateStudyAsync(Study);
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    id = await StudyData.CreateStudyAsync(userId, Study);
 
                     //Logger.LogInformation("Study created. {Study}", System.Text.Json.JsonSerializer.Serialize(Study));
 

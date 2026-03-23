@@ -93,7 +93,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
 
                 try
                 {
-                    id = await HospitalData.CreateHospitalAsync(Hospital);
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    id = await HospitalData.CreateHospitalAsync(userId, Hospital);
 
                     IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 

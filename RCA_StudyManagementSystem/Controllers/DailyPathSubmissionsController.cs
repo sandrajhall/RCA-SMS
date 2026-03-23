@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Client.Services;
+using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System;
@@ -17,10 +18,13 @@ namespace RCA_StudyManagementSystem.Controllers
     public class DailyPathSubmissionsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserContext _userContext;
 
-        public DailyPathSubmissionsController(ApplicationDbContext context)
+
+        public DailyPathSubmissionsController(ApplicationDbContext context, UserContext userContext)
         {
             _context = context;
+            _userContext = userContext;
         }
 
         // GET: api/DailyPathSubmissions
@@ -74,18 +78,21 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // POST: api/DailyPathSubmissions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<DailyPathSubmission>> CreateDailyPathSubmission(DailyPathSubmission dailyPathSubmission)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<DailyPathSubmission>> CreateDailyPathSubmission(string userId, DailyPathSubmission dailyPathSubmission)
         {
             _context.DailyPathSubmissions.Add(dailyPathSubmission);
+            _userContext.UserId = userId;
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetDailyPathSubmission", new { id = dailyPathSubmission.DailyPathSubmissionId }, dailyPathSubmission);
         }
 
-        [HttpPost("daily")]
-        public async Task SaveDailyValue(DailyPathSubmission dailyPathSubmission)
+        [HttpPost("daily/{userId}")]
+        public async Task SaveDailyValue(string userId, DailyPathSubmission dailyPathSubmission)
         {
+            _userContext.UserId = userId;
             // 1. Try to find the existing entry for this specific day/hospital/study
             var entry = await _context.DailyPathSubmissions
                 .FirstOrDefaultAsync(x => x.HospitalId == dailyPathSubmission.HospitalId
@@ -116,8 +123,8 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // PUT: api/DailyPathSubmissions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDailyPathSubmission(Guid id, DailyPathSubmission dailyPathSubmission)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateDailyPathSubmission(Guid id, string userId, DailyPathSubmission dailyPathSubmission)
         {
             if (id != dailyPathSubmission.DailyPathSubmissionId)
             {
@@ -125,6 +132,8 @@ namespace RCA_StudyManagementSystem.Controllers
             }
 
             _context.Entry(dailyPathSubmission).State = EntityState.Modified;
+
+            _userContext.UserId = userId;
 
             try
             {

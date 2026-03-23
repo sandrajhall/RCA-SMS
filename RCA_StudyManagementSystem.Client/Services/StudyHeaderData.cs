@@ -28,15 +28,15 @@ namespace RCA_StudyManagementSystem.Client.Services
         {
             return await _httpClient.GetFromJsonAsync<StudyHeader>(_navigationManager.ToAbsoluteUri($"api/studyheaders/{id}"));
         }
-        public async Task<StudyHeader> CreateStudyHeaderAsync(StudyHeader studyHeader)
+        public async Task<StudyHeader> CreateStudyHeaderAsync(string userId, StudyHeader studyHeader)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studyheaders"), studyHeader);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studyheaders/{userId}"), studyHeader);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<StudyHeader>();
         }
-        public async Task UpdateStudyHeaderAsync(Guid id, StudyHeader studyHeader)
+        public async Task UpdateStudyHeaderAsync(Guid id, string userId, StudyHeader studyHeader)
         {
-            var response = await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studyheaders/{id}"), studyHeader);
+            var response = await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/studyheaders/{id}/{userId}"), studyHeader);
             response.EnsureSuccessStatusCode();
         }
         public async Task DeleteStudyHeaderAsync(Guid id)

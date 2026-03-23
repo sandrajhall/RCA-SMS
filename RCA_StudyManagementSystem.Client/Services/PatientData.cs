@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Newtonsoft.Json.Linq;
 using RCA_StudyManagementSystem.Shared.Domain;
+using System.Net;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using static System.Net.WebRequestMethods;
@@ -75,18 +77,18 @@ namespace RCA_StudyManagementSystem.Client.Services
             return await _httpClient.GetFromJsonAsync<bool>(_navigationManager.ToAbsoluteUri($"api/patients/name/{name}"));
         }
 
-        public async Task<Guid> CreatePatientAsync(Patient patient)
+        public async Task<Guid> CreatePatientAsync(string userId, Patient patient)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/patients"), patient);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/patients/{userId}"), patient);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["patientId"];
 
             return id;
         }
-        public async Task UpdatePatientAsync(Guid id, Patient patient)
+        public async Task UpdatePatientAsync(Guid id, string userId, Patient patient)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/patients/{id}"), patient);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/patients/{id}/{userId}"), patient);
         }
 
         public async Task DeletePatientAsync(Guid id)

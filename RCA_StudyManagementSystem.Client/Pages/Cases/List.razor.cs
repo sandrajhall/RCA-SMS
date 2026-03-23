@@ -45,7 +45,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         GridStateDto storedStateDto = new GridStateDto();
 
 
-
         private Func<PathReportView, object> _sortByHold => x =>
         {
             if (x.IsOnHold)
@@ -522,7 +521,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                     if (Study.IsPathMinAgeValid(path))
                     {
                         path.ExportStatus = "Ready";
-                        await PatientData.UpdatePatientAsync(patient.PatientId, patient);
+                        var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                        await PatientData.UpdatePatientAsync(patient.PatientId, userId, patient);
                     }
                 }
             }
@@ -775,7 +775,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                             foreach (var patient in PatientList)
                             {
                                 patient.CaseNumber = await GenerateCaseNumber.Generate("CBCS4");
-                                var id = await PatientData.CreatePatientAsync(patient);
+                                var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                                var id = await PatientData.CreatePatientAsync(userId, patient);
                             }
                         }
                     }
@@ -1055,7 +1056,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                             // Add the new paths to the database
                             foreach (var path in PathReportList)
                             {
-                                var id = await PathReportData.CreatePathReportAsync(path);
+                                var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                                var id = await PathReportData.CreatePathReportAsync(userId, path);
                             }
 
                             // Delete the placeholder pathreports
@@ -1254,7 +1256,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                             foreach (var patient in PatientList)
                             {
                                 patient.CaseNumber = await GenerateCaseNumber.Generate("CECS");
-                                var id = await PatientData.CreatePatientAsync(patient);
+                                var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                                var id = await PatientData.CreatePatientAsync(userId, patient);
                             }
                         }
                     }
@@ -1522,8 +1525,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.Reimbursement2 = ReimbursementHospital2.HospitalName;
                                 }
 
-
-                                var id = await PathReportData.CreatePathReportAsync(newPath);
+                                var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                                var id = await PathReportData.CreatePathReportAsync(userId, newPath);
                             }
 
                             // Delete the placeholder pathreports
@@ -1670,7 +1673,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                             foreach (var patient in PatientList)
                             {
                                 patient.CaseNumber = await GenerateCaseNumber.Generate("KID-COMM");
-                                var id = await PatientData.CreatePatientAsync(patient);
+                                var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                                var id = await PatientData.CreatePatientAsync(userId, patient);
                             }
                         }
                     }
@@ -1988,7 +1992,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                             // Add the new paths to the database
                             foreach (var path in PathReportList)
                             {
-                                var id = await PathReportData.CreatePathReportAsync(path);
+                                var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                                var id = await PathReportData.CreatePathReportAsync(userId, path);
                             }
 
                             // Delete the placeholder pathreports
@@ -2151,7 +2156,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                             foreach (var patient in PatientList)
                             {
                                 patient.CaseNumber = await GenerateCaseNumber.Generate("MTCSS");
-                                var id = await PatientData.CreatePatientAsync(patient);
+                                var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                                var id = await PatientData.CreatePatientAsync(userId, patient);
                             }
                         }
                     }
@@ -2442,7 +2448,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                             // Add the new paths to the database
                             foreach (var path in PathReportList)
                             {
-                                var id = await PathReportData.CreatePathReportAsync(path);
+                                var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                                var id = await PathReportData.CreatePathReportAsync(userId, path);
                             }
 
                             // Delete the placeholder pathreports

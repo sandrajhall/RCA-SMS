@@ -25,10 +25,10 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         public string? Comments { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
 
-        public Guid CreatedUserId { get; set; } = Guid.Empty;
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-        public Guid? ModifiedUserId { get; set; } = null;
-        public DateTime? ModifiedDate { get; set; } = null;
+        public DateTime CreatedDate { get; set; }
+        public Guid CreatedUserId { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public Guid? ModifiedUserId { get; set; }
 
         public ICollection<ReimbursementEntityRCAContact>? ReimbursementEntityRCAContacts { get; set; }
 

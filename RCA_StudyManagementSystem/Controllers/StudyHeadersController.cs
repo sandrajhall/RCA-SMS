@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RCA_StudyManagementSystem.Controllers
 {
@@ -15,10 +16,13 @@ namespace RCA_StudyManagementSystem.Controllers
     public class StudyHeadersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserContext _userContext;
 
-        public StudyHeadersController(ApplicationDbContext context)
+
+        public StudyHeadersController(ApplicationDbContext context, UserContext userContext)
         {
             _context = context;
+            _userContext = userContext;
         }
 
         // GET: api/StudyHeaders
@@ -53,9 +57,10 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // POST: api/StudyHeaders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<StudyHeader>> CreateStudyHeader(StudyHeader studyHeader)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<StudyHeader>> CreateStudyHeader(string userId, StudyHeader studyHeader)
         {
+            _userContext.UserId = userId;
             _context.StudyHeaders.Add(studyHeader);
             await _context.SaveChangesAsync();
 
@@ -64,9 +69,11 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // PUT: api/StudyHeaders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStudyHeader(Guid id, StudyHeader studyHeader)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateStudyHeader(Guid id, string userId, StudyHeader studyHeader)
         {
+            _userContext.UserId = userId;
+
             if (id != studyHeader.StudyHeaderId)
             {
                 return BadRequest();

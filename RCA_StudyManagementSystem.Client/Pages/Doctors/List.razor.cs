@@ -86,6 +86,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
         protected override async Task OnInitializedAsync()
         {
+            var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             Console.WriteLine("OnInitializedAsync method called!");
 
@@ -99,7 +101,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
                     {
                         doc.IsVerified = false;
                         doc.VerifiedDate = null;
-                        await DoctorData.UpdateDoctorAsync(doc.DoctorId, doc);
+                        await DoctorData.UpdateDoctorAsync(doc.DoctorId, userId, doc);
                     }
                 }
             }
@@ -496,7 +498,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
                         // Add the new doctors to the database
                         foreach (var doctor in DoctorList)
                         {
-                           var id =  await DoctorData.CreateDoctorAsync(doctor);
+                           var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                           var id =  await DoctorData.CreateDoctorAsync(userId, doctor);
                         }
 
                         // Refresh the list of lookups

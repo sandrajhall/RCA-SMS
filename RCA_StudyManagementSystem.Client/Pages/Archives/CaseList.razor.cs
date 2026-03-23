@@ -110,7 +110,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Archives
             foreach (var item in Patients)
             {
                 item.StudyColor = await StudyData.GetStudyColorAsync(item.StudyId);
-                await PathMinAgeCheck(item);
+                //await PathMinAgeCheck(item);  Don't do this in Archive
 
             }
             foreach (var pathReport in PathReports)
@@ -360,7 +360,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Archives
                     if (Study.IsPathMinAgeValid(path))
                     {
                         path.ExportStatus = "Ready";
-                        await PatientData.UpdatePatientAsync(patient.PatientId, patient);
+                        var userId = Guid.Empty.ToString();
+                        await PatientData.UpdatePatientAsync(patient.PatientId, userId, patient);
                     }
                 }
             }

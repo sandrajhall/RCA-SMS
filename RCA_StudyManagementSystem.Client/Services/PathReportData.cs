@@ -25,9 +25,9 @@ namespace RCA_StudyManagementSystem.Client.Services
             return response;
         }
 
-        public async Task<Guid> CreatePathReportAsync(PathReport pathReport)
+        public async Task<Guid> CreatePathReportAsync(string userId, PathReport pathReport)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/pathreports"), pathReport);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/pathreports/{userId}"), pathReport);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["pathReportId"];
@@ -35,9 +35,9 @@ namespace RCA_StudyManagementSystem.Client.Services
             return id;
         }
 
-        public async Task UpdatePathReportAsync(Guid id, PathReport pathReport)
+        public async Task UpdatePathReportAsync(Guid id, string userId, PathReport pathReport)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/pathreports/{id}"), pathReport);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/pathreports/{id}/{userId}"), pathReport);
         }
 
         public async Task UpdatePathReportExportStatusAsync(Guid id, PathReport pathReport)

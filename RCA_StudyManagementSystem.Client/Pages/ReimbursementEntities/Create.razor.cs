@@ -97,7 +97,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
 
                 try
                 {
-                    id = await ReimbursementEntityData.CreateReimbursementEntityAsync(ReimbursementEntity);
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    id = await ReimbursementEntityData.CreateReimbursementEntityAsync(userId, ReimbursementEntity);
                     
                     IsSaved = true; // Set IsSaved to true to indicate the form was submitted successfully
 

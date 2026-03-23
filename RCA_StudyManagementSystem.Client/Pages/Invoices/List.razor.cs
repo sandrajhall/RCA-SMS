@@ -292,10 +292,13 @@ namespace RCA_StudyManagementSystem.Client.Pages.Invoices
 
         private async Task OnMarkAsSent()
         {
+            var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
             foreach (var invoice in Invoices)
             {
                 invoice.DateEmailed = DateTime.Now;
-                await InvoiceData.UpdateInvoiceAsync(invoice.InvoiceId, invoice);
+                await InvoiceData.UpdateInvoiceAsync(invoice.InvoiceId, userId, invoice);
             }
 
             Invoices = await InvoiceData.ListInvoicesNotSentAsync(CancellationToken);

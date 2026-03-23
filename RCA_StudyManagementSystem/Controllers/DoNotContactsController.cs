@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RCA_StudyManagementSystem.Controllers
 {
@@ -15,10 +16,13 @@ namespace RCA_StudyManagementSystem.Controllers
     public class DoNotContactsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserContext _userContext;
 
-        public DoNotContactsController(ApplicationDbContext context)
+
+        public DoNotContactsController(ApplicationDbContext context, UserContext userContext)
         {
             _context = context;
+            _userContext = userContext;
         }
 
         // GET: api/DoNotContacts
@@ -49,10 +53,11 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // POST: api/DoNotContacts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<DoNotContact>> CreateDoNotContact(DoNotContact doNotContact)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<DoNotContact>> CreateDoNotContact(string userId, DoNotContact doNotContact)
         {
             _context.DoNotContacts.Add(doNotContact);
+            _userContext.UserId = userId;
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetDoNotContact", new { id = doNotContact.DoNotContactId }, doNotContact);
@@ -60,13 +65,14 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // PUT: api/DoNotContacts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDoNotContact(Guid id, DoNotContact doNotContact)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateDoNotContact(Guid id, string userId, DoNotContact doNotContact)
         {
             if (id != doNotContact.DoNotContactId)
             {
                 return BadRequest();
             }
+            _userContext.UserId = userId;
 
             _context.Entry(doNotContact).State = EntityState.Modified;
 

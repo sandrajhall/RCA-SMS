@@ -30,18 +30,18 @@ namespace RCA_StudyManagementSystem.Client.Services
             return await _httpClient.GetFromJsonAsync<DoNotContact>(_navigationManager.ToAbsoluteUri($"api/donotcontacts/{id}"));
         }
 
-        public async Task<Guid> CreateDoNotContactAsync(DoNotContact doNotContact)
+        public async Task<Guid> CreateDoNotContactAsync(string userId, DoNotContact doNotContact)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/donotcontacts"), doNotContact);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/donotcontacts/{userId}"), doNotContact);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["doNotContactId"];
 
             return id;
         }
-        public async Task UpdateDoNotContactAsync(Guid id, DoNotContact doNotContact)
+        public async Task UpdateDoNotContactAsync(Guid id, string userId, DoNotContact doNotContact)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/donotcontacts/{id}"), doNotContact);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/donotcontacts/{id}/{userId}"), doNotContact);
         }
 
         public async Task DeleteDoNotContactAsync(Guid id)

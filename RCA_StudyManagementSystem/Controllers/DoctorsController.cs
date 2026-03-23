@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using System;
 using System.Collections.Generic;
@@ -17,12 +18,15 @@ namespace RCA_StudyManagementSystem.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IOutputCacheStore _cacheStore;
+        private readonly UserContext _userContext;
 
 
-        public DoctorsController(ApplicationDbContext context, IOutputCacheStore cacheStore)
+
+        public DoctorsController(ApplicationDbContext context, IOutputCacheStore cacheStore, UserContext userContext)
         {
             _context = context;
             _cacheStore = cacheStore;
+            _userContext = userContext;
         }
 
         // GET: api/Doctors
@@ -117,10 +121,11 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // POST: api/Doctors
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Doctor>> CreateDoctor(Doctor doctor)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<Doctor>> CreateDoctor(string userId, Doctor doctor)
         {
             _context.Doctors.Add(doctor);
+            _userContext.UserId = userId;
             await _context.SaveChangesAsync();
             await _cacheStore.EvictByTagAsync("doctor-api", CancellationToken.None);
 
@@ -129,13 +134,14 @@ namespace RCA_StudyManagementSystem.Controllers
 
         // PUT: api/Doctors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDoctor(Guid id, Doctor doctor)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateDoctor(Guid id, string userId, Doctor doctor)
         {
             if (id != doctor.DoctorId)
             {
                 return BadRequest();
             }
+            _userContext.UserId = userId;
 
             _context.Entry(doctor).State = EntityState.Modified;
 

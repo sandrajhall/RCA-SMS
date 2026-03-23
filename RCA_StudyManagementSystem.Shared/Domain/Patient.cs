@@ -64,10 +64,10 @@ namespace RCA_StudyManagementSystem.Shared.Domain
 
         public bool IsActive { get; set; } = true; // Indicates if the patient is currently active
 
-        public Guid CreatedUserId { get; set; } = Guid.Empty;
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-        public Guid? ModifiedUserId { get; set; } = null;
-        public DateTime? ModifiedDate { get; set; } = null;
+        public Guid CreatedUserId { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public Guid? ModifiedUserId { get; set; }
+        public DateTime? ModifiedDate { get; set; }
 
         public Study? Study { get; set; } // Navigation property to the associated Study
 

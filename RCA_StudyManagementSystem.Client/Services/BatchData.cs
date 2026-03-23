@@ -35,18 +35,18 @@ namespace RCA_StudyManagementSystem.Client.Services
             return await _httpClient.GetFromJsonAsync<Batch>(_navigationManager.ToAbsoluteUri($"api/batches/{id}"));
         }
 
-        public async Task<Guid> CreateBatchAsync(Batch batch)
+        public async Task<Guid> CreateBatchAsync(string userId,Batch batch)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/batches"), batch);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/batches/{userId}"), batch);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["batchId"];
 
             return id;
         }
-        public async Task UpdateBatchAsync(Guid id, Batch batch)
+        public async Task UpdateBatchAsync(Guid id, string userId, Batch batch)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/batches/{id}"), batch);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/batches/{id}/{userId}"), batch);
         }
 
         public async Task DeleteBatchAsync(Guid id)

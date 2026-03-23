@@ -199,15 +199,18 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
 
             foreach (var item in PStatusList)
             {
+                var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
                 var existingStatus = await PatientStatusData.GetPatientStatusByCaseNumberAsync(item.CaseNumber);
                 if (existingStatus.CaseNumber != null)
                 {
                     item.PatientStatusId = existingStatus.PatientStatusId; // Ensure the ID is set for update
-                    await PatientStatusData.UpdatePatientStatusAsync(existingStatus.PatientStatusId, item);
+                    await PatientStatusData.UpdatePatientStatusAsync(existingStatus.PatientStatusId, userId, item);
                 }
                 else
                 {
-                    await PatientStatusData.CreatePatientStatusAsync(item);
+                    await PatientStatusData.CreatePatientStatusAsync(userId, item);
                 }
             }
             await LoadGrid();
@@ -217,10 +220,13 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
 
         public async Task<DataGridEditFormAction> SaveCommentsAsync(PatientStatusView item)
         {
+            var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
             var existingStatus = await PatientStatusData.GetPatientStatusByCaseNumberAsync(item.CaseNumber);
             existingStatus.Comments = item.Comments;
 
-            await PatientStatusData.UpdatePatientStatusAsync(existingStatus.PatientStatusId, existingStatus);
+            await PatientStatusData.UpdatePatientStatusAsync(existingStatus.PatientStatusId, userId, existingStatus);
             
             return DataGridEditFormAction.KeepOpen;
         }

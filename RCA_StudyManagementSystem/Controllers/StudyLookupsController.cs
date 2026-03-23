@@ -1,15 +1,16 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
+using RCA_StudyManagementSystem.Shared.Domain;
+using RCA_StudyManagementSystem.Shared.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RCA_StudyManagementSystem.Data;
-using RCA_StudyManagementSystem.Shared.Domain;
-using Microsoft.Extensions.Logging;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using RCA_StudyManagementSystem.Shared.ViewModels;
 
 namespace RCA_StudyManagementSystem.Api.Controllers
 {
@@ -19,12 +20,15 @@ namespace RCA_StudyManagementSystem.Api.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<StudyLookupsController> _logger;
+        private readonly UserContext _userContext;
 
 
-        public StudyLookupsController(ApplicationDbContext context, ILogger<StudyLookupsController> logger)
+
+        public StudyLookupsController(ApplicationDbContext context, ILogger<StudyLookupsController> logger, UserContext userContext)
         {
             _context = context;
             _logger = logger;
+            _userContext = userContext;
         }
 
 
@@ -252,10 +256,11 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
         // POST: api/StudyLookups
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<StudyLookup>> CreateStudyLookup(StudyLookup studyLookup)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<StudyLookup>> CreateStudyLookup(string userId, StudyLookup studyLookup)
         {
             _logger.LogInformation("StudyLookup creation started...");
+            _userContext.UserId = userId;
 
             _context.StudyLookups.Add(studyLookup);
             await _context.SaveChangesAsync();
@@ -269,10 +274,11 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
         // PUT: api/StudyLookups/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStudyLookup(Guid id, StudyLookup studyLookup)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdateStudyLookup(Guid id, string userId, StudyLookup studyLookup)
         {
             _logger.LogInformation("Study update started...");
+            _userContext.UserId = userId;
 
             if (id != studyLookup.StudyLookupId)
             {

@@ -48,18 +48,18 @@ namespace RCA_StudyManagementSystem.Client.Services
         }
 
 
-        public async Task<Guid> CreateInvoiceAsync(Invoice invoice)
+        public async Task<Guid> CreateInvoiceAsync(string userId, Invoice invoice)
         {
-            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/invoices"), invoice);
+            var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/invoices/{userId}"), invoice);
             var jsonString = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(jsonString);
             Guid id = (Guid)jsonObject["invoiceId"];
 
             return id;
         }
-        public async Task UpdateInvoiceAsync(Guid id, Invoice invoice)
+        public async Task UpdateInvoiceAsync(Guid id, string userId, Invoice invoice)
         {
-            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/invoices/{id}"), invoice);
+            await _httpClient.PutAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/invoices/{id}/{userId}"), invoice);
         }
 
         public async Task DeleteInvoiceAsync(Guid id)

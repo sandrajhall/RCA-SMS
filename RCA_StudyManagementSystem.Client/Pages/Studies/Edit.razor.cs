@@ -4,6 +4,7 @@ using MudBlazor;
 using Microsoft.AspNetCore.Components.Forms;
 using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Shared.ViewModels;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace RCA_StudyManagementSystem.Client.Pages.Studies
 {
@@ -73,10 +74,15 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
         private readonly DialogOptions _noHeader = new() { NoHeader = true };
         private MudDialog MudDialog { get; set; }
+        private AuthenticationState auth;
+        private string userId;
 
 
         protected override async Task OnInitializedAsync()
         {
+            auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
             EditContext = new EditContext(new Study()); // Initialize editContext with the Study
             EditContext.OnFieldChanged += HandleFieldChanged; // Subscribe to field change events
             try
@@ -327,7 +333,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     lookupRecord.Order = lookupView.Order;
                     lookupRecord.IsActive = true;
 
-                    await StudyLookupData.UpdateStudyLookupAsync(lookupRecord.StudyLookupId, lookupRecord); // Update the existing lookupView
+                    await StudyLookupData.UpdateStudyLookupAsync(lookupRecord.StudyLookupId, userId, lookupRecord); // Update the existing lookupView
                     continue; // Skip adding a new lookupView since it already exists
                 }
 
@@ -342,7 +348,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                         IsActive = true,
                     };
 
-                    await StudyLookupData.CreateStudyLookupAsync(newLookup); // Create a new lookupView
+                    await StudyLookupData.CreateStudyLookupAsync(userId, newLookup); // Create a new lookupView
                 }
             }
         }
@@ -379,7 +385,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     lookupRecord.Order = lookupView.Order;
                     lookupRecord.IsActive = true;
 
-                    await StudyLookupData.UpdateStudyLookupAsync(lookupRecord.StudyLookupId, lookupRecord); // Update the existing lookupView
+                    await StudyLookupData.UpdateStudyLookupAsync(lookupRecord.StudyLookupId, userId, lookupRecord); // Update the existing lookupView
                     continue; // Skip adding a new lookupView since it already exists
                 }
 
@@ -394,7 +400,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                         IsActive = true,
                     };
 
-                    await StudyLookupData.CreateStudyLookupAsync(newLookup); // Create a new lookupView
+                    await StudyLookupData.CreateStudyLookupAsync(userId, newLookup); // Create a new lookupView
                 }
             }
         }
@@ -431,7 +437,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     lookupRecord.Order = lookupView.Order;
                     lookupRecord.IsActive = true;
 
-                    await StudyLookupData.UpdateStudyLookupAsync(lookupRecord.StudyLookupId, lookupRecord); // Update the existing lookupView
+                    await StudyLookupData.UpdateStudyLookupAsync(lookupRecord.StudyLookupId, userId, lookupRecord); // Update the existing lookupView
                     continue; // Skip adding a new lookupView since it already exists
                 }
 
@@ -446,7 +452,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                         IsActive = true,
                     };
 
-                    await StudyLookupData.CreateStudyLookupAsync(newLookup); // Create a new lookupView
+                    await StudyLookupData.CreateStudyLookupAsync(userId, newLookup); // Create a new lookupView
                 }
             }
         }
@@ -483,7 +489,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     lookupRecord.Order = lookupView.Order;
                     lookupRecord.IsActive = true;
 
-                    await StudyLookupData.UpdateStudyLookupAsync(lookupRecord.StudyLookupId, lookupRecord); // Update the existing lookupView
+                    await StudyLookupData.UpdateStudyLookupAsync(lookupRecord.StudyLookupId, userId, lookupRecord); // Update the existing lookupView
                     continue; // Skip adding a new lookupView since it already exists
                 }
 
@@ -498,7 +504,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                         IsActive = true,
                     };
 
-                    await StudyLookupData.CreateStudyLookupAsync(newLookup); // Create a new lookupView
+                    await StudyLookupData.CreateStudyLookupAsync(userId, newLookup); // Create a new lookupView
                 }
             }
         }
@@ -535,7 +541,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     lookupRecord.Order = lookupView.Order;
                     lookupRecord.IsActive = true;
 
-                    await StudyLookupData.UpdateStudyLookupAsync(lookupRecord.StudyLookupId, lookupRecord); // Update the existing lookupView
+                    await StudyLookupData.UpdateStudyLookupAsync(lookupRecord.StudyLookupId, userId, lookupRecord); // Update the existing lookupView
                     continue; // Skip adding a new lookupView since it already exists
                 }
 
@@ -550,7 +556,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                         IsActive = true,
                     };
 
-                    await StudyLookupData.CreateStudyLookupAsync(newLookup); // Create a new lookupView
+                    await StudyLookupData.CreateStudyLookupAsync(userId, newLookup); // Create a new lookupView
                 }
             }
         }
@@ -587,7 +593,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     lookupRecord.Order = lookupView.Order;
                     lookupRecord.IsActive = true;
 
-                    await StudyLookupData.UpdateStudyLookupAsync(lookupRecord.StudyLookupId, lookupRecord); // Update the existing lookupView
+                    await StudyLookupData.UpdateStudyLookupAsync(lookupRecord.StudyLookupId, userId, lookupRecord); // Update the existing lookupView
                     continue; // Skip adding a new lookupView since it already exists
                 }
 
@@ -602,7 +608,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                         IsActive = true,
                     };
 
-                    await StudyLookupData.CreateStudyLookupAsync(newLookup); // Create a new lookupView
+                    await StudyLookupData.CreateStudyLookupAsync(userId, newLookup); // Create a new lookupView
                 }
             }
         }
@@ -639,7 +645,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     histologyRecord.Order = histologyView.Order;
                     histologyRecord.IsActive = true;
 
-                    await StudyHistologyData.UpdateStudyHistologyAsync(histologyRecord.StudyHistologyId, histologyRecord); // Update the existing histologyView
+                    await StudyHistologyData.UpdateStudyHistologyAsync(histologyRecord.StudyHistologyId, userId, histologyRecord); // Update the existing histologyView
                     continue; // Skip adding a new histologyView since it already exists
                 }
 
@@ -654,7 +660,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                         IsActive = true,
                     };
 
-                    await StudyHistologyData.CreateStudyHistologyAsync(newHistology); // Create a new histologyView
+                    await StudyHistologyData.CreateStudyHistologyAsync(userId, newHistology); // Create a new histologyView
                 }
             }
         }
@@ -692,7 +698,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     headerRecord.ExportTitle = headerRecord.ExportTitle ?? string.Empty; // Ensure ExportTitle is not null
                     headerRecord.IsActive = true;
 
-                    await StudyHeaderData.UpdateStudyHeaderAsync(headerRecord.StudyHeaderId, headerRecord); // Update the existing headerView
+                    await StudyHeaderData.UpdateStudyHeaderAsync(headerRecord.StudyHeaderId, userId, headerRecord); // Update the existing headerView
                     continue; // Skip adding a new headerView since it already exists
                 }
 
@@ -709,7 +715,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                         IsActive = true,
                     };
 
-                    await StudyHeaderData.CreateStudyHeaderAsync(newHeader); // Create a new header
+                    await StudyHeaderData.CreateStudyHeaderAsync(userId, newHeader); // Create a new header
                 }
             }
         }
@@ -747,7 +753,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     headerRecord.ExportTitle = headerRecord.ExportTitle ?? string.Empty; // Ensure ExportTitle is not null
                     headerRecord.IsActive = true;
 
-                    await StudyReportHeaderData.UpdateStudyReportHeaderAsync(headerRecord.StudyReportHeaderId, headerRecord); // Update the existing headerView
+                    await StudyReportHeaderData.UpdateStudyReportHeaderAsync(headerRecord.StudyReportHeaderId, userId, headerRecord); // Update the existing headerView
                     continue; // Skip adding a new headerView since it already exists
                 }
 
@@ -764,7 +770,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                         IsActive = true,
                     };
 
-                    await StudyReportHeaderData.CreateStudyReportHeaderAsync(newHeader); // Create a new header
+                    await StudyReportHeaderData.CreateStudyReportHeaderAsync(userId, newHeader); // Create a new header
                 }
             }
         }
@@ -783,7 +789,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
                 try
                 {
-                    await StudyData.UpdateStudyAsync(Study.StudyId, Study);
+                    await StudyData.UpdateStudyAsync(Study.StudyId, userId, Study);
 
                     // Set the StudyLookupViews based on the current Study
                     await SetStudyLookupViewsRaceAsync(StudyLookupViewsRace);

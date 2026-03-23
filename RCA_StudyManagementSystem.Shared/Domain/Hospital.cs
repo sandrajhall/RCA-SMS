@@ -38,10 +38,10 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         public bool IsDuplicate { get; set; } = false; // Flag to indicate if this hospital is a potential duplicate of another record
         public string? DuplicateOfHospitalId { get; set; } = null; // If IsDuplicate is true, this field can store the HospitalId of the record it is a duplicate of
 
-        public Guid CreatedUserId { get; set; } = Guid.Empty;
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-        public Guid? ModifiedUserId { get; set; } = null;
-        public DateTime? ModifiedDate { get; set; } = null;
+        public DateTime CreatedDate { get; set; }
+        public Guid CreatedUserId { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public Guid? ModifiedUserId { get; set; }
 
         public ICollection<DailyPathSubmission>? DailyPathSubmissions { get; set; }
     }

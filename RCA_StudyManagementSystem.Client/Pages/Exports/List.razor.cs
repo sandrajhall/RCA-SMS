@@ -399,7 +399,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
                     if (Study.IsPathMinAgeValid(path))
                     {
                         path.ExportStatus = "Ready";
-                        await PatientData.UpdatePatientAsync(patient.PatientId, patient);
+                        var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                        await PatientData.UpdatePatientAsync(patient.PatientId, userId, patient);
                     }
                 }
             }
@@ -507,8 +508,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
 
             if (IsExported)
             {
+                var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
                 // save the batch
-                var batchId = await BatchData.CreateBatchAsync(newBatch);
+                var batchId = await BatchData.CreateBatchAsync(userId, newBatch);
 
                 // set export status to exported, set export date to now, set batchnumber
                 foreach (var path in _displayItems)
@@ -519,7 +522,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
                     existingPath.RcaExportDate = DateTime.Now;
                     existingPath.BatchNumber = batchNumber;
 
-                    await PathReportData.UpdatePathReportAsync(path.PathReportId, existingPath);
+                    await PathReportData.UpdatePathReportAsync(path.PathReportId, userId, existingPath);
 
                     // create a new PathReportExport record
                     var pathReportExport = new PathReportExport
@@ -528,7 +531,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
                         BatchId = newBatch.BatchId,
                     };
 
-                    await PathReportExportData.CreatePathReportExportAsync(pathReportExport);
+                    await PathReportExportData.CreatePathReportExportAsync(userId, pathReportExport);
                 }
 
                 // update the UI

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Client.Services;
+using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System;
@@ -26,13 +28,15 @@ namespace RCA_StudyManagementSystem.Api.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger<PatientsController> _logger;
         private readonly IOutputCacheStore _cacheStore;
+        private readonly UserContext _userContext;
 
 
-        public PatientsController(ApplicationDbContext context, ILogger<PatientsController> logger, IOutputCacheStore cacheStore)
+        public PatientsController(ApplicationDbContext context, ILogger<PatientsController> logger, IOutputCacheStore cacheStore, UserContext userContext)
         {
             _context = context;
             _logger = logger;
             _cacheStore = cacheStore;
+            _userContext = userContext;
         }
 
         // GET: api/Patients
@@ -285,8 +289,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
         // POST: api/Patients
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Patient>> CreatePatient(Patient patient)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<Patient>> CreatePatient(string userId, Patient patient)
         {
             _logger.LogInformation("Patient creation started...");
 
@@ -299,7 +303,10 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
             _context.Patients.Add(patient);
 
-            try { 
+            _userContext.UserId = userId;
+
+            try
+            { 
                 await _context.SaveChangesAsync();
 
             }
@@ -318,10 +325,12 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
         // PUT: api/Patients/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePatient(Guid id, Patient patient)
+        [HttpPut("{id}/{userId}")]
+        public async Task<IActionResult> UpdatePatient(Guid id, Patient patient, string userId)
         {
             _logger.LogInformation("Patient update started...");
+
+            _userContext.UserId = userId;
 
             var existingEntity = await _context.Patients
                                 .Include(r => r.PathReports)
@@ -337,6 +346,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
             // Update scalar properties
             _context.Entry(existingEntity).CurrentValues.SetValues(patient);
+            
 
             // Update PatientPhoneNumbers (child collection)
             var incomingPhoneIds = patient.PatientPhoneNumbers.Select(c => c.PatientPhoneNumberId).ToList();

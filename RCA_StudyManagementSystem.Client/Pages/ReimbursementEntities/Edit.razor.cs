@@ -185,8 +185,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
 
                 try
                 {
-                    // Make a GET request to the SampleController
-                    await ReimbursementEntityData.UpdateReimbursementEntityAsync(ReimbursementEntity.ReimbursementEntityId, ReimbursementEntity);
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                    
+                    await ReimbursementEntityData.UpdateReimbursementEntityAsync(ReimbursementEntity.ReimbursementEntityId, userId, ReimbursementEntity);
 
                     SaveMessage = "Reimbursement Entity updated.";
                     severity = Severity.Success; // Set severity to Success if the form is valid

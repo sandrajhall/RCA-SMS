@@ -144,8 +144,11 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
                 try
                 {
+                    var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
                     // Make a GET request to the SampleController
-                    await DoctorData.UpdateDoctorAsync(Doctor.DoctorId, Doctor);
+                    await DoctorData.UpdateDoctorAsync(Doctor.DoctorId, userId, Doctor);
 
                     SaveMessage = "Doctor updated.";
                     severity = Severity.Success; // Set severity to Success if the form is valid
