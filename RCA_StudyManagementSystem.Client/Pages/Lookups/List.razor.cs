@@ -233,7 +233,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Lookups
                         // Add the new lookups to the database
                         foreach (var lookup in LookupList)
                         {
-                            var userId = "039af482-6c73-4717-86aa-2919addb7a6d";
+                            var userId = await UserData.GetIdByEmailAsync("system_user@system.user");
                             await LookupData.CreateLookupAsync(userId, lookup);
                         }
 

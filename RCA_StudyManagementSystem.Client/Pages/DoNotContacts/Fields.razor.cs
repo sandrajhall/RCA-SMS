@@ -28,7 +28,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
 
         private IEnumerable<Study> StudyList = new List<Study>();
         protected Study studySelectValue;
-
+        private DateTime? modDate;
+        private string? modUser;
 
 
         protected override async Task OnInitializedAsync()
@@ -46,6 +47,21 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
 
         }
 
+        protected override async Task OnParametersSetAsync()
+        {
+            if (DoNotContact != null && DoNotContact.ModifiedDate.HasValue && DoNotContact.ModifiedUserId.HasValue)
+            {
+                modDate = DoNotContact.ModifiedDate.Value.ToLocalTime();
+                modUser = await UserData.GetDisplayNameAsync(DoNotContact.ModifiedUserId.ToString());
+            }
+            else
+            {
+                modDate = default; // Or DateTime.MinValue, or null if modDate is nullable
+                modUser = null;    // Or string.Empty, as appropriate
+            }
+
+            await InvokeAsync(StateHasChanged); // Optional; may not be needed if you're already in lifecycle
+        }
 
         private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
         {

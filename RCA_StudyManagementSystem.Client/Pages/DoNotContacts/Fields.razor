@@ -13,6 +13,7 @@
 @inject IConfiguration Configuration
 @inject DoNotContactData DoNotContactData
 @inject StudyData StudyData
+@inject UserData UserData
 
 
 
@@ -136,6 +137,8 @@
                           OnlyValidateIfDirty="true"></MudTextField>
         </MudItem>
     </MudGrid>
+            <MudText Color="Color.Success">Do Not Contact record last modified on @modDate by @modUser.</MudText>
+
 </MudContainer>
 
 @* <pre>

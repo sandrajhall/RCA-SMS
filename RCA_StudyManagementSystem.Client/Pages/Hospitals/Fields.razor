@@ -12,6 +12,7 @@
 @inject IDialogService DialogService
 @inject IConfiguration Configuration
 @inject ReimbursementEntityData ReimbursementEntityData
+@inject UserData UserData
 
 
 
@@ -158,6 +159,8 @@
                           For="@(() => Hospital.HospitalComments)"></MudTextField>
         </MudItem>
     </MudGrid>
+            <MudText Color="Color.Success">Hospital record last modified on @modDate by @modUser.</MudText>
+
 </MudContainer>
 
 @* <pre>

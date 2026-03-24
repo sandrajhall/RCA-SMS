@@ -19,6 +19,7 @@
 @inject HospitalData HospitalData
 @inject PatientData PatientData
 @inject DoNotContactData DoNotContactData
+@inject UserData UserData
 
 
 
@@ -282,6 +283,9 @@
                             </EditTemplate>
                         </TemplateColumn>
                     </Columns>
+                    <PagerContent>
+                        <MudText Color="Color.Success">Phone records last modified on @modDatePhone by @modUserPhone</MudText>
+                    </PagerContent>
                 </MudDataGrid>
             </MudItem>
             <MudItem xs="12" sm="12" md="6" Class="my-n3">
@@ -291,7 +295,7 @@
             </MudItem>
             <MudItem xs="0" sm="6" md="6" Class="my-n3" />
         </MudGrid>
-
+        <MudText Color="Color.Success">Patient record last modified on @modDate by @modUser.</MudText>
 
     </MudTabPanel>
 
@@ -942,6 +946,8 @@
                                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(async () => DeletePathReport(pathReport))" />
                             </MudItem>
                         </MudExpansionPanel>
+                                <MudText Color="Color.Success">Path records last modified on @modDatePath by @modUserPath.</MudText>
+
                         </div>
                     }
 

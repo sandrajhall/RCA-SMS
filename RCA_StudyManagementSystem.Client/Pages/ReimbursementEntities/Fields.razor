@@ -12,6 +12,7 @@
 @inject IDialogService DialogService
 @inject IConfiguration Configuration
 @inject RCAContactData RCAContactData
+@inject UserData UserData
 
 
 
@@ -192,6 +193,8 @@
             </MudDataGrid>
         </MudItem>
     </MudGrid>
+            <MudText Color="Color.Success">Reimbursement Entity record last modified on @modDate by @modUser.</MudText>
+
 </MudContainer>
 
 @* <pre>

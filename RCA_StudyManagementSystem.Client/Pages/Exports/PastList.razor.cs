@@ -577,7 +577,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Exports
                     if (Study.IsPathMinAgeValid(path))
                     {
                         path.ExportStatus = "Ready";
-                        var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                        var userId = await UserData.GetIdByEmailAsync("system_user@system.user"); // System User Id
                         await PatientData.UpdatePatientAsync(patient.PatientId, userId, patient);
                     }
                 }

@@ -286,7 +286,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Histologies
                         // Add the new histologies to the database
                         foreach (var histology in HistologyList)
                         {
-                            var userid = "039af482-6c73-4717-86aa-2919addb7a6d";
+                            var userid = await UserData.GetIdByEmailAsync("system_user@system.user");
                             await HistologyData.CreateHistologyAsync(userid, histology);
                         }
 

@@ -498,7 +498,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
                         // Add the new doctors to the database
                         foreach (var doctor in DoctorList)
                         {
-                           var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                           var userId = await UserData.GetIdByEmailAsync("system_user@system.user"); // System User Id
                            var id =  await DoctorData.CreateDoctorAsync(userId, doctor);
                         }
 

@@ -30,7 +30,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
 
         private CancellationToken cancellationToken { get; set; } = new CancellationToken();
 
-
+        private DateTime? modDate;
+        private string? modUser;
 
 
 
@@ -39,6 +40,22 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
 
             EditContext!.OnFieldChanged += HandleFieldChanged; // Subscribe to field change events
 
+        }
+
+        protected override async Task OnParametersSetAsync()
+        {
+            if (RCAContact != null && RCAContact.ModifiedDate.HasValue && RCAContact.ModifiedUserId.HasValue)
+            {
+                modDate = RCAContact.ModifiedDate.Value.ToLocalTime();
+                modUser = await UserData.GetDisplayNameAsync(RCAContact.ModifiedUserId.ToString());
+            }
+            else
+            {
+                modDate = default; // Or DateTime.MinValue, or null if modDate is nullable
+                modUser = null;    // Or string.Empty, as appropriate
+            }
+
+            await InvokeAsync(StateHasChanged); // Optional; may not be needed if you're already in lifecycle
         }
 
 

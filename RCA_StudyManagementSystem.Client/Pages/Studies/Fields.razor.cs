@@ -82,6 +82,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
         private List<string> _events = new();
         private string? _searchString;
 
+        private DateTime? modDate;
+        private string? modUser;
 
         [Parameter]
         public List<StudyLookupView> StudyLookupViewsRace { get; set; } = new List<StudyLookupView>();
@@ -137,6 +139,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
         protected override async Task OnInitializedAsync()
         {
+
             //StudySiteList = await LookupData.ListLookupsByTypeAsync("Study Site");
 
             EditContext.OnFieldChanged += HandleFieldChanged; // Subscribe to field change events
@@ -283,6 +286,22 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
             IsLoading = false;
 
             await InvokeAsync(StateHasChanged);
+        }
+
+        protected override async Task OnParametersSetAsync()
+        {
+            if (Study != null && Study.ModifiedDate.HasValue && Study.ModifiedUserId.HasValue)
+            {
+                modDate = Study.ModifiedDate.Value.ToLocalTime();
+                modUser = await UserData.GetDisplayNameAsync(Study.ModifiedUserId.ToString());
+            }
+            else
+            {
+                modDate = default; // Or DateTime.MinValue, or null if modDate is nullable
+                modUser = null;    // Or string.Empty, as appropriate
+            }
+
+            await InvokeAsync(StateHasChanged); // Optional; may not be needed if you're already in lifecycle
         }
 
         private void SetColor(string color)

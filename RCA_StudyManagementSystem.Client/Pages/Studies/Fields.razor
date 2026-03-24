@@ -18,6 +18,7 @@
 @inject StudyHistologyData StudyHistologyData
 @inject PathReportData PathReportData
 @inject IDialogService DialogService
+@inject UserData UserData
 
 
 
@@ -187,6 +188,8 @@ else
                                   For="@(() => Study.Comments)"></MudTextField>
                 </MudItem>
             </MudGrid>
+            <MudText Color="Color.Success">Study record last modified on @modDate by @modUser.</MudText>
+
             <br />
             <br />
             <MudItem xs="12" sm="12" md="12" Class="my-n3">
@@ -285,6 +288,7 @@ else
                         </TemplateColumn>
                     </Columns>
                 </MudDataGrid>
+
             </MudItem>
 
         </MudTabPanel>

@@ -389,7 +389,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
                         // Add the new records to the database
                         foreach (var dnc in DNCList)
                         {
-                            var userId = "039af482-6c73-4717-86aa-2919addb7a6d"; // System User Id
+                            var userId = await UserData.GetIdByEmailAsync("system_user@system.user"); // System User Id
                             var id = await DoNotContactData.CreateDoNotContactAsync(userId, dnc);
                         }
 

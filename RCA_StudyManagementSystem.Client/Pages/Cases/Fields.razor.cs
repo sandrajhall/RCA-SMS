@@ -125,6 +125,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         private bool doctor2TextChanged = false;
         private bool pathologist2TextChanged = false;
 
+        private DateTime? modDate;
+        private string? modUser; 
+        private DateTime? modDatePhone;
+        private string? modUserPhone; 
+        private DateTime? modDatePath;
+        private string? modUserPath;
 
         protected override async Task OnInitializedAsync()
         {
@@ -136,6 +142,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             if (firstRender)
             {
                 IsLoading = true;
+
                 StudyColor = await StudyData.GetStudyColorAsync(StudyId); // Set the study color based on the Patient's StudyId
 
                 await InvokeAsync(StateHasChanged); // Force a re-render after initialization
@@ -310,13 +317,53 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
                 }
 
-                await InvokeAsync(StateHasChanged); // Force a re-render after initialization
 
                 Study = await StudyData.GetStudyAsync(Patient.StudyId);
+
+
+                await InvokeAsync(StateHasChanged); // Force a re-render after initialization
+
                 IsLoading = false;
             }
         }
 
+        protected override async Task OnParametersSetAsync()
+        {
+            if (Patient != null && Patient.ModifiedDate.HasValue && Patient.ModifiedUserId.HasValue)
+            {
+                modDate = Patient.ModifiedDate.Value.ToLocalTime();
+                modUser = await UserData.GetDisplayNameAsync(Patient.ModifiedUserId.ToString());
+            }
+            else
+            {
+                modDate = default; // Or DateTime.MinValue, or null if modDate is nullable
+                modUser = null;    // Or string.Empty, as appropriate
+            }
+
+            if (Patient.PatientPhoneNumbers != null && Patient.PatientPhoneNumbers.Any(p => p.ModifiedDate.HasValue && p.ModifiedUserId.HasValue))
+            {
+                modDatePhone = Patient.PatientPhoneNumbers.OrderByDescending(p => p.ModifiedDate).FirstOrDefault()?.ModifiedDate.Value.ToLocalTime();
+                modUserPhone = await UserData.GetDisplayNameAsync(Patient.PatientPhoneNumbers.OrderByDescending(p => p.ModifiedDate).FirstOrDefault()?.ModifiedUserId.ToString());
+            }
+            else
+            {
+                modDatePhone = default; // Or DateTime.MinValue, or null if modDate is nullable
+                modUserPhone = null;    // Or string.Empty, as appropriate
+            }
+
+            if (Patient.PathReports != null && Patient.PathReports.Any(p => p.ModifiedDate.HasValue && p.ModifiedUserId.HasValue))
+            {
+                modDatePath = Patient.PathReports.OrderByDescending(p => p.ModifiedDate).FirstOrDefault()?.ModifiedDate.Value.ToLocalTime();
+                modUserPath = await UserData.GetDisplayNameAsync(Patient.PathReports.OrderByDescending(p => p.ModifiedDate).FirstOrDefault()?.ModifiedUserId.ToString());
+            }
+            else
+            {
+                modDatePath = default; // Or DateTime.MinValue, or null if modDate is nullable
+                modUserPath = null;    // Or string.Empty, as appropriate
+            }
+
+            await InvokeAsync(StateHasChanged); // Optional; may not be needed if you're already in lifecycle
+        }
 
         private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
         {

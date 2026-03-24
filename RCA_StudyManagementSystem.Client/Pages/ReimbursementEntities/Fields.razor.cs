@@ -40,8 +40,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
         private List<RCAContact> rcaContacts = new();
         private CancellationToken token;
 
+        private DateTime? modDate;
+        private string? modUser;
+
         protected override async Task OnInitializedAsync()
         {
+
             GeoapifyApiKey = Configuration["Geoapify:ApiKey"]!;
 
             EditContext!.OnFieldChanged += HandleFieldChanged; // Subscribe to field change events
@@ -50,6 +54,21 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
             StateHasChanged();
         }
 
+        protected override async Task OnParametersSetAsync()
+        {
+            if (ReimbursementEntity != null && ReimbursementEntity.ModifiedDate.HasValue && ReimbursementEntity.ModifiedUserId.HasValue)
+            {
+                modDate = ReimbursementEntity.ModifiedDate.Value.ToLocalTime();
+                modUser = await UserData.GetDisplayNameAsync(ReimbursementEntity.ModifiedUserId.ToString());
+            }
+            else
+            {
+                modDate = default; // Or DateTime.MinValue, or null if modDate is nullable
+                modUser = null;    // Or string.Empty, as appropriate
+            }
+
+            await InvokeAsync(StateHasChanged); // Optional; may not be needed if you're already in lifecycle
+        }
 
         private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
         {

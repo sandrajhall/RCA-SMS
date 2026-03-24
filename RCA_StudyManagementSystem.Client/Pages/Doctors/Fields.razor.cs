@@ -35,12 +35,16 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
         private List<GeoapifySuggestion> Suggestions = new();
         private string SelectedAddress = "";
         private string GeoapifyApiKey = String.Empty; // Securely obtain API key in production
-
+        private DateTime? modDate;
+        private string? modUser;
 
         protected override async Task OnInitializedAsync()
         {
             var auth = await AuthStateProvider.GetAuthenticationStateAsync();
             var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            modDate = Doctor.ModifiedDate.Value.ToLocalTime();
+            modUser = await UserData.GetDisplayNameAsync(Doctor.ModifiedUserId.ToString());
 
             GeoapifyApiKey = Configuration["Geoapify:ApiKey"]!;
 
@@ -52,6 +56,22 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
                 Doctor.VerifiedDate = null;
                 await DoctorData.UpdateDoctorAsync(Doctor.DoctorId, userId, Doctor);
             }
+        }
+
+        protected override async Task OnParametersSetAsync()
+        {
+            if (Doctor != null && Doctor.ModifiedDate.HasValue && Doctor.ModifiedUserId.HasValue)
+            {
+                modDate = Doctor.ModifiedDate.Value.ToLocalTime();
+                modUser = await UserData.GetDisplayNameAsync(Doctor.ModifiedUserId.ToString());
+            }
+            else
+            {
+                modDate = default; // Or DateTime.MinValue, or null if modDate is nullable
+                modUser = null;    // Or string.Empty, as appropriate
+            }
+
+            await InvokeAsync(StateHasChanged); // Optional; may not be needed if you're already in lifecycle
         }
 
 

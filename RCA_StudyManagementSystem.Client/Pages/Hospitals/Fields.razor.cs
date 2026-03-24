@@ -38,11 +38,13 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
 
         private List<ReimbursementEntity> reimbursementEntities = new();
 
-
+        private DateTime? modDate;
+        private string? modUser;
 
 
         protected override async Task OnInitializedAsync()
         {
+
             GeoapifyApiKey = Configuration["Geoapify:ApiKey"]!;
 
             EditContext!.OnFieldChanged += HandleFieldChanged; // Subscribe to field change events
@@ -50,6 +52,21 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
 
         }
 
+        protected override async Task OnParametersSetAsync()
+        {
+            if (Hospital != null && Hospital.ModifiedDate.HasValue && Hospital.ModifiedUserId.HasValue)
+            {
+                modDate = Hospital.ModifiedDate.Value.ToLocalTime();
+                modUser = await UserData.GetDisplayNameAsync(Hospital.ModifiedUserId.ToString());
+            }
+            else
+            {
+                modDate = default; // Or DateTime.MinValue, or null if modDate is nullable
+                modUser = null;    // Or string.Empty, as appropriate
+            }
+
+            await InvokeAsync(StateHasChanged); // Optional; may not be needed if you're already in lifecycle
+        }
 
         private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
         {

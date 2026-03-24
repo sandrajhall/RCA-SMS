@@ -88,6 +88,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         protected override async Task OnInitializedAsync()
         {
+
+
             EditContext = new EditContext(new Patient()); // Initialize editContext with the Patient
             EditContext.OnFieldChanged += HandleFieldChanged; // Subscribe to field change events
             try
@@ -110,6 +112,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             prefix = Patient.PathReports.FirstOrDefault()?.StudyPrefix ?? string.Empty; // Set the prefix based on the first PathReport's StudyPrefix, or default to an empty string if not available
 
             //StudyColor = await StudyData.GetStudyColorAsync(Patient.StudyId); // Set the study color based on the Patient's StudyId
+
+
 
             await InvokeAsync(StateHasChanged);
         }

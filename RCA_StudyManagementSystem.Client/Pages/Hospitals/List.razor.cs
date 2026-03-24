@@ -382,7 +382,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
                         // Add the new hosptial to the database
                         foreach (var hospital in HospitalList)
                         {
-                            var userId = "039af482-6c73-4717-86aa-2919addb7a6d";
+                            var userId = await UserData.GetIdByEmailAsync("system_user@system.user");
                             var id = await HospitalData.CreateHospitalAsync(userId, hospital);
                         }
 

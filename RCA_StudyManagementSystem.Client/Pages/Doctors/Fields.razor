@@ -13,6 +13,7 @@
 @inject IConfiguration Configuration
 @inject DoctorData DoctorData
 @inject AuthenticationStateProvider AuthStateProvider
+@inject UserData UserData
 
 
 
@@ -211,6 +212,8 @@
         </MudItem>
 
     </MudGrid>
+    <MudText Color="Color.Success">Doctor record last modified on @modDate by @modUser.</MudText>
+
 </MudContainer>
 
 @* <pre>
