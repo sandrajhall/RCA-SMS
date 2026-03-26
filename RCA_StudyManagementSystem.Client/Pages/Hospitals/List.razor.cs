@@ -327,74 +327,89 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
 
         private async Task OnImport()
         {
-            string fileUrl = "https://localhost:7190/Hospitals.xlsx";
-            string fileContent = string.Empty;
-
-            string excelUrl = fileUrl; // Replace with your URL
-
-            using (HttpClient client = new HttpClient())
+            string fileUrl = "https://localhost:7150/Hospitals.xlsx";
+            using (var client = new HttpClient())
             {
-                using (Stream stream = await client.GetStreamAsync(excelUrl))
+                using (var stream = await client.GetStreamAsync(fileUrl))
                 {
-                    // Register encoding provider for older Excel formats if needed
-                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-                    using (var reader = ExcelReaderFactory.CreateReader(stream))
+                    // Copy to a seekable stream
+                    using (var ms = new MemoryStream())
                     {
-                        // Example: Convert to DataSet
-                        DataSet result = reader.AsDataSet();
+                        await stream.CopyToAsync(ms);
+                        ms.Position = 0;
 
-                        // You can now access the data in 'result.Tables'
-                        // For example, to iterate through the first sheet:
-                        var HospitalList = new List<Hospital>();
+                        // Register encoding provider for Excel files, if not already done
+                        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-                        if (result.Tables.Count > 0)
+                        using (var reader = ExcelReaderFactory.CreateReader(ms))
                         {
+                            // Example: Convert to DataSet
+                            DataSet result = reader.AsDataSet();
 
-                            DataTable firstSheet = result.Tables[0];
-                            foreach (DataRow row in firstSheet.Rows)
+                            // You can now access the data in 'result.Tables'
+                            // For example, to iterate through the first sheet:
+                            var HospitalList = new List<Hospital>();
+
+                            if (result.Tables.Count > 0)
                             {
-                                Console.WriteLine(string.Join(", ", row.ItemArray));
-                                if (row[0]?.ToString() == "ShortHospName") // Skip header row
-                                    continue;
-                                var newHospital = new Hospital();
-                                newHospital.MigratedHospitalId = row[1]?.ToString().Trim() ?? string.Empty;
-                                newHospital.HospitalShortName = row[0]?.ToString().Trim() ?? string.Empty;
-                                newHospital.HospitalCode = row[1]?.ToString().Trim() ?? string.Empty;
-                                newHospital.HospitalName = row[2]?.ToString().Trim() ?? string.Empty;
-                                newHospital.Address1 = row[3]?.ToString().Trim() ?? string.Empty;
-                                newHospital.Address2 = row[4]?.ToString().Trim() ?? string.Empty;
-                                newHospital.City = row[7]?.ToString().Trim() ?? string.Empty;
-                                newHospital.State = row[8]?.ToString().Trim() ?? string.Empty;
-                                newHospital.ZipCode = row[9]?.ToString().Trim() ?? string.Empty;
-                                newHospital.County = row[17]?.ToString().Trim() ?? string.Empty;
-                                newHospital.PhoneNumber = row[5]?.ToString().Trim() ?? string.Empty;
-                                newHospital.FaxNumber = row[6]?.ToString().Trim() ?? string.Empty;
-                                newHospital.ModifiedDate = DateTime.TryParse(row[13]?.ToString().Trim(), out DateTime tempDate) ? tempDate : (DateTime?)null;
-                                newHospital.HospitalComments = row[11]?.ToString().Trim() ?? string.Empty;
-                                newHospital.IsActive = true;
+
+                                DataTable firstSheet = result.Tables[0];
+                                foreach (DataRow row in firstSheet.Rows)
+                                {
+                                    Console.WriteLine(string.Join(", ", row.ItemArray));
+                                    if (row[0]?.ToString() == "ShortHospName") // Skip header row
+                                        continue;
+                                    var newHospital = new Hospital();
+                                    newHospital.MigratedHospitalId = row[1]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.HospitalShortName = row[0]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.HospitalCode = row[1]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.HospitalName = row[2]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.Address1 = row[3]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.Address2 = row[4]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.City = row[7]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.State = row[8]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.ZipCode = row[9]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.County = row[17]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.PhoneNumber = row[5]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.FaxNumber = row[6]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.HospitalComments = row[11]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.IsActive = true;
+
+                                    newHospital.CreatedDate = DateTime.TryParse(row[12]?.ToString().Trim(), out DateTime cDate) ? cDate : DateTime.UtcNow;
+                                    newHospital.ModifiedDate = DateTime.TryParse(row[13]?.ToString().Trim(), out DateTime tempDate) ? tempDate : (DateTime?)null;
+                                    var editedBy = row[14]?.ToString().Trim() + "@migrated.user";
+                                    var editedById = await UserData.GetIdByEmailAsync(editedBy);
+                                    newHospital.ModifiedUserId = Guid.Parse(editedById);
+                                    if (newHospital.ModifiedDate == newHospital.CreatedDate)
+                                    {
+                                        newHospital.CreatedUserId = (Guid)newHospital.ModifiedUserId;
+                                    }
+                                    else
+                                    {
+                                        newHospital.CreatedUserId = Guid.Empty;
+                                    }
 
 
-                                HospitalList.Add(newHospital);
+                                    HospitalList.Add(newHospital);
 
+                                }
                             }
-                        }
-                        // Add the new hosptial to the database
-                        foreach (var hospital in HospitalList)
-                        {
-                            var userId = await UserData.GetIdByEmailAsync("system_user@system.user");
-                            var id = await HospitalData.CreateHospitalAsync(userId, hospital);
-                        }
+                            // Add the new hosptial to the database
+                            foreach (var hospital in HospitalList)
+                            {
+                                var userId = await UserData.GetIdByEmailAsync("system_user@system.user");
+                                var id = await HospitalData.CreateHospitalAsync(userId, hospital);
+                            }
 
-                        // Refresh the list of lookups
-                        Hospitals = (List<Hospital>)await HospitalData.ListHospitalsAsync(token);
-                        await InvokeAsync(StateHasChanged);
+                            // Refresh the list of lookups
+                            Hospitals = (List<Hospital>)await HospitalData.ListHospitalsAsync(token);
+                            await InvokeAsync(StateHasChanged);
+                        }
                     }
                 }
             }
+
         }
-
-
 
     }
 }

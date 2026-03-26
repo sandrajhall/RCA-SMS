@@ -74,6 +74,14 @@ builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
 });
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddServerSideBlazor()
+    .AddHubOptions(options => {
+        options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB
+    })
+    .AddCircuitOptions(options => {
+        options.DetailedErrors = true; // Shows the real error in the browser console
+    });
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
         options.SignIn.RequireConfirmedAccount = true;

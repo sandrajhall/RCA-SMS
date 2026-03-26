@@ -359,158 +359,174 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
         private async Task OnImport()
         {
-            string fileUrl = "https://localhost:7190/Doctors.xlsx";
-            string fileContent = string.Empty;
-
-            string excelUrl = fileUrl; // Replace with your URL
-
-            using (HttpClient client = new HttpClient())
+            string fileUrl = "https://localhost:7150/Doctors.xlsx";
+            using (var client = new HttpClient())
             {
-                using (Stream stream = await client.GetStreamAsync(excelUrl))
+                using (var stream = await client.GetStreamAsync(fileUrl))
                 {
-                    // Register encoding provider for older Excel formats if needed
-                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-                    using (var reader = ExcelReaderFactory.CreateReader(stream))
+                    // Copy to a seekable stream
+                    using (var ms = new MemoryStream())
                     {
-                        // Example: Convert to DataSet
-                        DataSet result = reader.AsDataSet();
+                        await stream.CopyToAsync(ms);
+                        ms.Position = 0;
 
-                        // You can now access the data in 'result.Tables'
-                        // For example, to iterate through the first sheet:
-                        var DoctorList = new List<Doctor>();
+                        // Register encoding provider for Excel files, if not already done
+                        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-                        if (result.Tables.Count > 0)
+                        using (var reader = ExcelReaderFactory.CreateReader(ms))
                         {
+                            // Example: Convert to DataSet
+                            DataSet result = reader.AsDataSet();
 
-                            DataTable firstSheet = result.Tables[0];
-                            foreach (DataRow row in firstSheet.Rows)
+                            // You can now access the data in 'result.Tables'
+                            // For example, to iterate through the first sheet:
+                            var DoctorList = new List<Doctor>();
+
+                            if (result.Tables.Count > 0)
                             {
-                                Console.WriteLine(string.Join(", ", row.ItemArray));
-                                if (row[0]?.ToString() == "MDNo") // Skip header row
-                                    continue;
-                                var newDoctor = new Doctor();
-                                //newDoctor.DoctorId = Guid.NewGuid();
-                                newDoctor.MigratedDoctorId = row[0]?.ToString().Trim() ?? string.Empty;
-                                if (row[2] == null || string.IsNullOrWhiteSpace(row[2].ToString()))
-                                {
-                                    newDoctor.FirstName = "Not Entered";
-                                }
-                                else
-                                {
-                                    newDoctor.FirstName = row[2]?.ToString().Trim();
-                                }
-                                newDoctor.MiddleName = row[3]?.ToString().Trim() ?? string.Empty;
-                                if (row[1] == null || string.IsNullOrWhiteSpace(row[1].ToString()))
-                                {
-                                    newDoctor.LastName = "Not Entered";
-                                }
-                                else
-                                {
-                                    newDoctor.LastName = row[1]?.ToString().Trim();
-                                }
-                                newDoctor.Suffix = row[4]?.ToString().Trim() ?? string.Empty;
-                                if(row[9] == null || string.IsNullOrWhiteSpace(row[9].ToString()))
-                                {
-                                    newDoctor.Address1 = "Not Entered";
-                                }
-                                else
-                                {
-                                    newDoctor.Address1 = row[9]?.ToString().Trim();
-                                }
-                                newDoctor.Address2 = row[10]?.ToString().Trim() ?? string.Empty;
-                                newDoctor.Address3 = row[11]?.ToString().Trim() ?? string.Empty;
-                                if(row[12] == null || string.IsNullOrWhiteSpace(row[12].ToString()))
-                                {
-                                    newDoctor.City = "Not Entered";
-                                }
-                                else
-                                {
-                                    newDoctor.City = row[12]?.ToString().Trim();
-                                }
-                                if(row[13] == null || string.IsNullOrWhiteSpace(row[13].ToString()))
-                                {
-                                    newDoctor.State = "Not Entered";
-                                }
-                                else
-                                {
-                                    newDoctor.State = row[13]?.ToString().Trim();
-                                }
-                                if(row[14] == null || string.IsNullOrWhiteSpace(row[14].ToString()))
-                                {
-                                    newDoctor.County = "Not Entered";
-                                }
-                                else
-                                {
-                                    newDoctor.County = row[14]?.ToString().Trim();
-                                }
-                                if(row[15] == null || string.IsNullOrWhiteSpace(row[15].ToString()))
-                                {
-                                    newDoctor.ZipCode = "Not Entered";
-                                }
-                                else
-                                {
-                                    newDoctor.ZipCode = row[15]?.ToString().Trim();
-                                }
-                                if(row[16] == null || string.IsNullOrWhiteSpace(row[16].ToString()))
-                                {
-                                    newDoctor.PhoneNumber1 = "555-555-5555";
-                                }
-                                else
-                                {
-                                    newDoctor.PhoneNumber1 = row[16]?.ToString().Trim();
-                                }
-                                newDoctor.PhoneNumber2 = row[17]?.ToString().Trim() ?? string.Empty;
-                                newDoctor.FaxNumber = row[18]?.ToString().Trim() ?? string.Empty;
-                                newDoctor.Email = row[23]?.ToString().Trim() ?? string.Empty;
-                                newDoctor.ModifiedDate = DateTime.TryParse(row[20]?.ToString().Trim(), out DateTime tempDate) ? tempDate : (DateTime?)null;
-                                if (row[7] == null || string.IsNullOrWhiteSpace(row[7].ToString()))
-                                {
-                                    newDoctor.PrimarySpecialty = "Not Entered";
-                                }
-                                else
-                                {
-                                    newDoctor.PrimarySpecialty = row[7]?.ToString().Trim();
-                                }
-                                newDoctor.SecondarySpecialty = row[8]?.ToString().Trim() ?? string.Empty;
-                                if (row[5] == null || string.IsNullOrWhiteSpace(row[5].ToString()))
-                                {
-                                    newDoctor.LicenseType = "Not Entered";
-                                }
-                                else
-                                {
-                                    newDoctor.LicenseType = row[5]?.ToString().Trim();
-                                }
-                                newDoctor.IsPathologist = (row[6]?.ToString().Trim() ?? string.Empty).ToLower() == "y" ? true : false;
-                                newDoctor.DisplayName = $"{newDoctor.FirstName} {newDoctor.LastName}, {newDoctor.LicenseType}";
 
-                                newDoctor.IsActive = true;
-                                newDoctor.IsVerified = false;
-
-                                if (newDoctor.County.StartsWith("37"))
+                                DataTable firstSheet = result.Tables[0];
+                                foreach (DataRow row in firstSheet.Rows)
                                 {
-                                    newDoctor.County = await LookupData.GetCountyByFIPSAsync(newDoctor.County);
-                                }
-                                DoctorList.Add(newDoctor);
+                                    Console.WriteLine(string.Join(", ", row.ItemArray));
+                                    if (row[0]?.ToString() == "MDNo") // Skip header row
+                                        continue;
+                                    var newDoctor = new Doctor();
+                                    //newDoctor.DoctorId = Guid.NewGuid();
+                                    newDoctor.MigratedDoctorId = row[0]?.ToString().Trim() ?? string.Empty;
+                                    if (row[2] == null || string.IsNullOrWhiteSpace(row[2].ToString()))
+                                    {
+                                        newDoctor.FirstName = "Not Entered";
+                                    }
+                                    else
+                                    {
+                                        newDoctor.FirstName = row[2]?.ToString().Trim();
+                                    }
+                                    newDoctor.MiddleName = row[3]?.ToString().Trim() ?? string.Empty;
+                                    if (row[1] == null || string.IsNullOrWhiteSpace(row[1].ToString()))
+                                    {
+                                        newDoctor.LastName = "Not Entered";
+                                    }
+                                    else
+                                    {
+                                        newDoctor.LastName = row[1]?.ToString().Trim();
+                                    }
+                                    newDoctor.Suffix = row[4]?.ToString().Trim() ?? string.Empty;
+                                    if (row[9] == null || string.IsNullOrWhiteSpace(row[9].ToString()))
+                                    {
+                                        newDoctor.Address1 = "Not Entered";
+                                    }
+                                    else
+                                    {
+                                        newDoctor.Address1 = row[9]?.ToString().Trim();
+                                    }
+                                    newDoctor.Address2 = row[10]?.ToString().Trim() ?? string.Empty;
+                                    newDoctor.Address3 = row[11]?.ToString().Trim() ?? string.Empty;
+                                    if (row[12] == null || string.IsNullOrWhiteSpace(row[12].ToString()))
+                                    {
+                                        newDoctor.City = "Not Entered";
+                                    }
+                                    else
+                                    {
+                                        newDoctor.City = row[12]?.ToString().Trim();
+                                    }
+                                    if (row[13] == null || string.IsNullOrWhiteSpace(row[13].ToString()))
+                                    {
+                                        newDoctor.State = "Not Entered";
+                                    }
+                                    else
+                                    {
+                                        newDoctor.State = row[13]?.ToString().Trim();
+                                    }
+                                    if (row[14] == null || string.IsNullOrWhiteSpace(row[14].ToString()))
+                                    {
+                                        newDoctor.County = "Not Entered";
+                                    }
+                                    else
+                                    {
+                                        newDoctor.County = row[14]?.ToString().Trim();
+                                    }
+                                    if (row[15] == null || string.IsNullOrWhiteSpace(row[15].ToString()))
+                                    {
+                                        newDoctor.ZipCode = "Not Entered";
+                                    }
+                                    else
+                                    {
+                                        newDoctor.ZipCode = row[15]?.ToString().Trim();
+                                    }
+                                    if (row[16] == null || string.IsNullOrWhiteSpace(row[16].ToString()))
+                                    {
+                                        newDoctor.PhoneNumber1 = "555-555-5555";
+                                    }
+                                    else
+                                    {
+                                        newDoctor.PhoneNumber1 = row[16]?.ToString().Trim();
+                                    }
+                                    newDoctor.PhoneNumber2 = row[17]?.ToString().Trim() ?? string.Empty;
+                                    newDoctor.FaxNumber = row[18]?.ToString().Trim() ?? string.Empty;
+                                    newDoctor.Email = row[23]?.ToString().Trim() ?? string.Empty;
 
+                                    newDoctor.CreatedDate = DateTime.TryParse(row[19]?.ToString().Trim(), out DateTime cDate) ? cDate : DateTime.UtcNow;
+                                    newDoctor.ModifiedDate = DateTime.TryParse(row[20]?.ToString().Trim(), out DateTime tempDate) ? tempDate : (DateTime?)null;
+                                    var editedBy = row[21]?.ToString().Trim() + "@migrated.user";
+                                    var editedById = await UserData.GetIdByEmailAsync(editedBy);
+                                    newDoctor.ModifiedUserId = Guid.Parse(editedById);
+                                    if (newDoctor.ModifiedDate == newDoctor.CreatedDate)
+                                    {
+                                        newDoctor.CreatedUserId = (Guid)newDoctor.ModifiedUserId;
+                                    }
+                                    else
+                                    {
+                                        newDoctor.CreatedUserId = Guid.Empty;
+                                    }
+
+                                    if (row[7] == null || string.IsNullOrWhiteSpace(row[7].ToString()))
+                                    {
+                                        newDoctor.PrimarySpecialty = "Not Entered";
+                                    }
+                                    else
+                                    {
+                                        newDoctor.PrimarySpecialty = row[7]?.ToString().Trim();
+                                    }
+                                    newDoctor.SecondarySpecialty = row[8]?.ToString().Trim() ?? string.Empty;
+                                    if (row[5] == null || string.IsNullOrWhiteSpace(row[5].ToString()))
+                                    {
+                                        newDoctor.LicenseType = "Not Entered";
+                                    }
+                                    else
+                                    {
+                                        newDoctor.LicenseType = row[5]?.ToString().Trim();
+                                    }
+                                    newDoctor.IsPathologist = (row[6]?.ToString().Trim() ?? string.Empty).ToLower() == "y" ? true : false;
+                                    newDoctor.DisplayName = $"{newDoctor.FirstName} {newDoctor.LastName}, {newDoctor.LicenseType}";
+
+                                    newDoctor.IsActive = true;
+                                    newDoctor.IsVerified = false;
+
+                                    if (newDoctor.County.StartsWith("37"))
+                                    {
+                                        newDoctor.County = await LookupData.GetCountyByFIPSAsync(newDoctor.County);
+                                    }
+                                    DoctorList.Add(newDoctor);
+
+                                }
                             }
-                        }
-                        // Add the new doctors to the database
-                        foreach (var doctor in DoctorList)
-                        {
-                           var userId = await UserData.GetIdByEmailAsync("system_user@system.user"); // System User Id
-                           var id =  await DoctorData.CreateDoctorAsync(userId, doctor);
-                        }
+                            // Add the new doctors to the database
+                            foreach (var doctor in DoctorList)
+                            {
+                                var userId = await UserData.GetIdByEmailAsync("system_user@system.user"); // System User Id
+                                var id = await DoctorData.CreateDoctorAsync(userId, doctor);
+                            }
 
-                        // Refresh the list of lookups
-                        Doctors = (List<Doctor>)await DoctorData.ListDoctorsAsync(token);
-                        await InvokeAsync(StateHasChanged);
+                            // Refresh the list of lookups
+                            Doctors = (List<Doctor>)await DoctorData.ListDoctorsAsync(token);
+                            await InvokeAsync(StateHasChanged);
+                        }
                     }
                 }
             }
-        }
 
-    
+        }
     
     
     

@@ -336,67 +336,72 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
 
         private async Task OnImport()
         {
-            string fileUrl = "https://localhost:7190/donotcontact.xlsx";
-            string fileContent = string.Empty;
-
-            string excelUrl = fileUrl; // Replace with your URL
-
-            using (HttpClient client = new HttpClient())
+            string fileUrl = "https://localhost:7150/donotcontact.xlsx";
+            using (var client = new HttpClient())
             {
-                using (Stream stream = await client.GetStreamAsync(excelUrl))
+                using (var stream = await client.GetStreamAsync(fileUrl))
                 {
-                    // Register encoding provider for older Excel formats if needed
-                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-                    using (var reader = ExcelReaderFactory.CreateReader(stream))
+                    // Copy to a seekable stream
+                    using (var ms = new MemoryStream())
                     {
-                        // Example: Convert to DataSet
-                        DataSet result = reader.AsDataSet();
+                        await stream.CopyToAsync(ms);
+                        ms.Position = 0;
 
-                        // You can now access the data in 'result.Tables'
-                        // For example, to iterate through the first sheet:
-                        var DNCList = new List<DoNotContact>();
+                        // Register encoding provider for Excel files, if not already done
+                        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-                        if (result.Tables.Count > 0)
+                        using (var reader = ExcelReaderFactory.CreateReader(ms))
                         {
+                            // Example: Convert to DataSet
+                            DataSet result = reader.AsDataSet();
 
-                            DataTable firstSheet = result.Tables[0];
-                            foreach (DataRow row in firstSheet.Rows)
+                            // You can now access the data in 'result.Tables'
+                            // For example, to iterate through the first sheet:
+                            var DNCList = new List<DoNotContact>();
+
+                            if (result.Tables.Count > 0)
                             {
-                                Console.WriteLine(string.Join(", ", row.ItemArray));
-                                if (row[0]?.ToString() == "ID") // Skip header row
-                                    continue;
-                                var newDNC = new DoNotContact();
-                                newDNC.FirstName = row[2]?.ToString().Trim() ?? string.Empty;
-                                newDNC.MiddleName = row[3]?.ToString().Trim() ?? string.Empty;
-                                newDNC.LastName = row[1]?.ToString().Trim() ?? string.Empty;
-                                newDNC.DateOfBirth = DateTime.TryParse(row[6]?.ToString().Trim(), out DateTime dob) ? dob : DateTime.Parse("1/1/1000");
-                                newDNC.SocialSecurityNumber = row[5]?.ToString().Trim() ?? string.Empty;
-                                newDNC.StudyName = row[8]?.ToString().Trim() ?? string.Empty;
-                                newDNC.DateLastContact = DateTime.TryParse(row[12]?.ToString().Trim(), out DateTime dlc) ? dlc : DateTime.Parse("1/1/1000");
 
-                                newDNC.PhoneNumber = row[4]?.ToString().Trim() ?? string.Empty;
+                                DataTable firstSheet = result.Tables[0];
+                                foreach (DataRow row in firstSheet.Rows)
+                                {
+                                    Console.WriteLine(string.Join(", ", row.ItemArray));
+                                    if (row[0]?.ToString() == "ID") // Skip header row
+                                        continue;
+                                    var newDNC = new DoNotContact();
+                                    newDNC.FirstName = row[2]?.ToString().Trim() ?? string.Empty;
+                                    newDNC.MiddleName = row[3]?.ToString().Trim() ?? string.Empty;
+                                    newDNC.LastName = row[1]?.ToString().Trim() ?? string.Empty;
+                                    newDNC.DateOfBirth = DateTime.TryParse(row[6]?.ToString().Trim(), out DateTime dob) ? dob : DateTime.Parse("1/1/1000");
+                                    newDNC.SocialSecurityNumber = row[5]?.ToString().Trim() ?? string.Empty;
+                                    newDNC.StudyName = row[8]?.ToString().Trim() ?? string.Empty;
+                                    newDNC.DateLastContact = DateTime.TryParse(row[12]?.ToString().Trim(), out DateTime dlc) ? dlc : DateTime.Parse("1/1/1000");
+
+                                    newDNC.PhoneNumber = row[4]?.ToString().Trim() ?? string.Empty;
 
 
-                                newDNC.DisplayName = $"{newDNC.FirstName} {newDNC.LastName}";
+                                    newDNC.DisplayName = $"{newDNC.FirstName} {newDNC.LastName}";
+
+                                    newDNC.CreatedDate = DateTime.UtcNow;
+                                    newDNC.CreatedUserId = Guid.Empty;
 
 
 
-                                DNCList.Add(newDNC);
+                                    DNCList.Add(newDNC);
 
+                                }
                             }
-                        }
-                        // Add the new records to the database
-                        foreach (var dnc in DNCList)
-                        {
-                            var userId = await UserData.GetIdByEmailAsync("system_user@system.user"); // System User Id
-                            var id = await DoNotContactData.CreateDoNotContactAsync(userId, dnc);
-                        }
+                            // Add the new records to the database
+                            foreach (var dnc in DNCList)
+                            {
+                                var userId = await UserData.GetIdByEmailAsync("system_user@system.user"); // System User Id
+                                var id = await DoNotContactData.CreateDoNotContactAsync(userId, dnc);
+                            }
 
+                        }
                     }
                 }
             }
         }
-
     }
 }
