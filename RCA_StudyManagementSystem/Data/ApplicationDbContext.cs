@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
@@ -62,6 +63,30 @@ namespace RCA_StudyManagementSystem.Data
         {
             base.OnModelCreating(modelBuilder);
             // Configure your entity mappings here
+
+            modelBuilder.Entity<Patient>()
+                .ToTable("Patient", b => b.IsTemporal(ttb =>
+                {
+                    ttb.HasPeriodStart("PeriodStart");
+                    ttb.HasPeriodEnd("PeriodEnd");
+                    ttb.UseHistoryTable("PatientHistory");
+                }));
+
+            modelBuilder.Entity<PatientPhoneNumber>()
+                .ToTable("PatientPhoneNumber", b => b.IsTemporal(ttb =>
+                {
+                    ttb.HasPeriodStart("PeriodStart");
+                    ttb.HasPeriodEnd("PeriodEnd");
+                    ttb.UseHistoryTable("PatientPhoneNumberHistory");
+                }));
+
+            modelBuilder.Entity<PathReport>()
+                .ToTable("PathReport", b => b.IsTemporal(ttb =>
+                {
+                    ttb.HasPeriodStart("PeriodStart");
+                    ttb.HasPeriodEnd("PeriodEnd");
+                    ttb.UseHistoryTable("PathReportHistory");
+                }));
 
             modelBuilder.Entity<Patient>()
                 .HasIndex(p => p.CaseNumber)
