@@ -468,7 +468,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             if (string.IsNullOrWhiteSpace(path.AgeAtProcedure))
                 return "Age is required.";
 
-            // Optionally: check if Study or Patient is null
             if (Study == null || Patient == null)
                 return "Patient or Study not found.";
 
@@ -489,7 +488,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             if (string.IsNullOrWhiteSpace(path.AgeAtProcedure))
                 return "Age is required.";
 
-            // Optionally: check if Study or Patient is null
             if (Study == null || Patient == null)
                 return "Patient or Study not found.";
 
@@ -547,7 +545,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private string PathMaxAgeValidation(PathReport path)
         {
-            // Optionally: check if Study or Patient is null
             if (Study == null || Patient == null)
                 return "Patient or Study not found.";
             if (!Study.IsPathMaxAgeValid(path))
@@ -598,7 +595,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             }
 
             var fieldIdentifierAge = new FieldIdentifier(pathReport, nameof(PathReport.AgeAtProcedure));
-            EditContext!.NotifyFieldChanged(fieldIdentifierAge); // Refresh the UI to reflect the changes
+            EditContext!.NotifyFieldChanged(fieldIdentifierAge);
             StateHasChanged(); // Refresh the UI to reflect the changes
 
             errorMsgAge = MinAgeValidation(pathReport);
@@ -701,7 +698,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                 Patient.CountyCode = lookups.FirstOrDefault(x => x.LookupName == newValue)?.LookupCode ?? ""; // Reset CountyCode when County changes
 
                 var fieldIdentifierCounty = new FieldIdentifier(Patient, nameof(Patient.County));
-                EditContext!.NotifyFieldChanged(fieldIdentifierCounty); // Refresh the UI to reflect the changes
+                EditContext!.NotifyFieldChanged(fieldIdentifierCounty);
 
                 errorMsgCounty = CountyValidation(newValue);
             }

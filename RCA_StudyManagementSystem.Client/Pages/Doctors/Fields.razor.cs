@@ -43,7 +43,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
             var auth = await AuthStateProvider.GetAuthenticationStateAsync();
             var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            modDate = Doctor.ModifiedDate.Value.ToLocalTime();
+            modDate = Doctor.ModifiedDate?.ToLocalTime();
             modUser = await UserData.GetDisplayNameAsync(Doctor.ModifiedUserId.ToString());
 
             GeoapifyApiKey = Configuration["Geoapify:ApiKey"]!;

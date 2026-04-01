@@ -16,6 +16,7 @@ using RCA_StudyManagementSystem.Components.Account;
 using RCA_StudyManagementSystem.Components.Account.Pages;
 using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Data;
+using RCA_StudyManagementSystem.Middleware;
 using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared;
 using RCA_StudyManagementSystem.Shared.Domain;
@@ -306,6 +307,11 @@ app.UseHttpsRedirection();
 app.MapStaticAssets();
 
 app.UseRouting();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseMiddleware<AutoLoginMiddleware>();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();

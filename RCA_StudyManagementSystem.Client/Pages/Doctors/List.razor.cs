@@ -467,7 +467,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
                                     newDoctor.Email = row[23]?.ToString().Trim() ?? string.Empty;
 
                                     newDoctor.CreatedDate = DateTime.TryParse(row[19]?.ToString().Trim(), out DateTime cDate) ? cDate : DateTime.UtcNow;
-                                    newDoctor.ModifiedDate = DateTime.TryParse(row[20]?.ToString().Trim(), out DateTime tempDate) ? tempDate : (DateTime?)null;
+                                    newDoctor.ModifiedDate = DateTime.TryParse(row[20]?.ToString().Trim(), out DateTime tempDate) ? tempDate : newDoctor.CreatedDate;
                                     var editedBy = row[21]?.ToString().Trim() + "@migrated.user";
                                     var editedById = await UserData.GetIdByEmailAsync(editedBy);
                                     newDoctor.ModifiedUserId = Guid.Parse(editedById);
