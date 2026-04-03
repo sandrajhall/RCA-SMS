@@ -178,6 +178,69 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             return patientPhone.PhoneNumber;
         }
 
+        // GET: api/Patients/patienthistory/5
+        [OutputCache(PolicyName = "PatientTagPolicy")]
+        [HttpGet("patienthistory/{id:guid}")]
+        public async Task<ActionResult<List<Patient>>> GetPatientHistory(Guid id)
+        {
+            _logger.LogInformation("Patient history for {id} requested.", id);
+
+            var history = await _context.Patients
+                .TemporalAll()
+                .Where(p => p.PatientId == id)
+                .OrderByDescending(p => EF.Property<DateTime>(p, "PeriodStart"))
+                .ToListAsync();
+
+            if (history == null)
+            {
+                return NotFound();
+            }
+            _logger.LogInformation("Returning Patient history with id: {id}.", id);
+            return history;
+        }
+
+        // GET: api/Patients/patientphonenumberhistory/5
+        [OutputCache(PolicyName = "PatientTagPolicy")]
+        [HttpGet("patientphonenumberhistory/{id:guid}")]
+        public async Task<ActionResult<List<PatientPhoneNumber>>> GetPatientPhoneNumberHistory(Guid id)
+        {
+            _logger.LogInformation("PatientPhoneNumber history for {id} requested.", id);
+
+            var history = await _context.PatientPhoneNumbers
+                .TemporalAll()
+                .Where(p => p.PatientId == id)
+                .OrderByDescending(p => EF.Property<DateTime>(p, "PeriodStart"))
+                .ToListAsync();
+
+            if (history == null)
+            {
+                return NotFound();
+            }
+            _logger.LogInformation("Returning PatientPhoneNumber history with id: {id}.", id);
+            return history;
+        }
+
+        // GET: api/Patients/pathreporthistory/5
+        [OutputCache(PolicyName = "PatientTagPolicy")]
+        [HttpGet("pathreporthistory/{id:guid}")]
+        public async Task<ActionResult<List<PathReport>>> GetPathReportHistory(Guid id)
+        {
+            _logger.LogInformation("PathReport history for {id} requested.", id);
+
+            var history = await _context.PathReports
+                .TemporalAll()
+                .Where(p => p.PatientId == id)
+                .OrderByDescending(p => EF.Property<DateTime>(p, "PeriodStart"))
+                .ToListAsync();
+
+            if (history == null)
+            {
+                return NotFound();
+            }
+            _logger.LogInformation("Returning PathReport history with id: {id}.", id);
+            return history;
+        }
+
         // GET: api/Patients/exporthistory/5
         [OutputCache(PolicyName = "PatientTagPolicy")]
         [HttpGet("exporthistory/{id:guid}")]

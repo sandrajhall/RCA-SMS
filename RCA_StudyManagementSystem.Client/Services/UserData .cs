@@ -34,5 +34,11 @@ namespace RCA_StudyManagementSystem.Client.Services
             var response = await _httpClient.GetStringAsync(_navigationManager.ToAbsoluteUri($"api/users/displayname/{id}"));
             return response;
         }
+
+        public async Task<Dictionary<string, string>> GetAllUsersAsync()
+        {
+            var response = await _httpClient.GetFromJsonAsync<Dictionary<string, string>>(_navigationManager.ToAbsoluteUri($"api/users/all"));
+            return response;
+        }
     }
 }

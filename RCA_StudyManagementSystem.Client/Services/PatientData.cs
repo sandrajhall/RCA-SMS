@@ -40,6 +40,21 @@ namespace RCA_StudyManagementSystem.Client.Services
             return await _httpClient.GetFromJsonAsync<Patient>(_navigationManager.ToAbsoluteUri($"api/patients/casenumber/{caseNumber}"));
         }
 
+        public async Task<List<Patient>> GetPatientHistoryAsync(Guid id)
+        {
+            return await _httpClient.GetFromJsonAsync<List<Patient>>(_navigationManager.ToAbsoluteUri($"api/patients/patienthistory/{id}"));
+        }
+
+        public async Task<List<PatientPhoneNumber>> GetPatientPhoneNumberHistoryAsync(Guid id)
+        {
+            return await _httpClient.GetFromJsonAsync<List<PatientPhoneNumber>>(_navigationManager.ToAbsoluteUri($"api/patients/patientphonenumberhistory/{id}"));
+        }
+
+        public async Task<List<PathReport>> GetPathReportHistoryAsync(Guid id)
+        {
+            return await _httpClient.GetFromJsonAsync<List<PathReport>>(_navigationManager.ToAbsoluteUri($"api/patients/pathreporthistory/{id}"));
+        }
+
         public async Task<Patient> GetPatientExportHistoryAsync(Guid id)
         {
             return await _httpClient.GetFromJsonAsync<Patient>(_navigationManager.ToAbsoluteUri($"api/patients/exporthistory/{id}"));

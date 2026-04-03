@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RCA_StudyManagementSystem.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace RCA_StudyManagementSystem.Controllers
 {
@@ -33,5 +34,12 @@ namespace RCA_StudyManagementSystem.Controllers
             return user.DisplayName;
         }
 
+        [HttpGet("all")]
+        public async Task<Dictionary<string, string>> GetAllUsers()
+        {
+            return await _userManager.Users
+                .ToDictionaryAsync(u => u.Id, u => u.DisplayName ?? "Unknown");
+
+        }
     }
 }

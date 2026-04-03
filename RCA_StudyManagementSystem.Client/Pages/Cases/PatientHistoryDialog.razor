@@ -1,0 +1,238 @@
+﻿@using MudBlazor
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Pages.Cases
+
+@* @rendermode InteractiveAuto
+ *@
+@inject IDialogService DialogService
+@inject StudyData StudyData
+@inject BatchData BatchData 
+@inject PatientData PatientData
+@inject PathReportData PathReportData
+@inject UserData UserData
+
+
+@if (IsLoading)
+{
+    <div class="loader-container">
+        <div class="loader"></div>
+    </div>
+    <MudStack Justify="Justify.Center" Row="true">
+        <MudText Typo="Typo.h3">Loading...</MudText>
+    </MudStack>
+}
+else
+{
+    <MudDialog>
+        <DialogContent>
+
+            <MudPagination Color="Color.Primary" ShowFirstButton="true" ShowLastButton="true"
+                           Count="@totalPages"
+                           Selected="@currPage"
+                           SelectedChanged="OnPageChanged"
+                           Class="mt-4 d-flex justify-end" Style="position: fixed; top: 20px; right: 40px; z-index: 1500" />
+            @*         <MudCarousel Class="mud-width-full" ItemsSource="@CarouselRecords" @bind-SelectedIndex="InitialSelectedIndex"
+                     TData="@Patient" ShowArrows="true" ShowBullets="true" AutoCycle="false" Style="height:900px;">
+
+            <ItemTemplate Context="context"> *@
+
+            <div style=" height:900px; ">
+                <MudPaper Class="d-flex pa-2" Style="@($"background-color: {StudyColor} !important;")">
+                    <MudContainer Class="ml-2 mt-2">
+                        @if (Patient.Suffix.Length > 0)
+                        {
+                            <MudText Typo="Typo.h4">@Patient.LastName, @Patient.FirstName @Patient.MiddleName, @Patient.Suffix</MudText>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.h4">@Patient.LastName, @Patient.FirstName @Patient.MiddleName</MudText>
+                        }
+                        <div class="mt-n12 d-flex justify-end">
+                            <MudIconButton Size="@Size.Large" Icon="@Icons.Material.Outlined.Edit" Href="@($"/app/cases/edit/{Patient.PatientId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+                        </div>
+                    </MudContainer>
+                </MudPaper>
+                <br />
+
+                <MudTabs KeepPanelsAlive="true" Elevation="2" Rounded="true" ApplyEffectsToContainer="true"
+                         Style="@($"background-color:{Colors.BlueGray.Lighten5};")" PanelClass="pa-6">
+                    <MudTabPanel Text="General Info" Icon="@Icons.Material.Filled.ContactPage">
+@*                         <MudCard Style="@($"background-color:{Colors.BlueGray.Lighten5};")">
+ *@
+                            <div class="d-flex mx-10">
+                            <MudContainer Class="pa-2" Style="width: 21%">
+                                    <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Study:</MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                            <MudText Typo="Typo.body1"> @StudyPrefix</MudText>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Case #:</MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                            <MudText Typo="Typo.body1"> @Patient.CaseNumber</MudText>
+                                        </span>
+                                    </div>
+                                <div class="d-flex flex-row">
+                                    <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                        <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">MigCCR#:</MudText>
+                                    </span>
+@*                                     <span style="width: 65%">
+                                        <MudText Typo="Typo.body1"> @Patient.PathReports.FirstOrDefault().MigratedCCRNumber</MudText>
+                                    </span> *@
+                                </div>
+                                    <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">DOB:</MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                            <MudText Typo="Typo.body1"> @Patient.DateOfBirth?.ToShortDateString()</MudText>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">SSN:</MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                            <MudText Typo="Typo.body1"> @Patient.SocialSecurityNumber</MudText>
+                                        </span>
+                                    </div>
+                                    <br />
+
+
+                                </MudContainer>
+
+                            <MudContainer Class="pa-2" Style="width: 46%">
+                                    <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Address:</MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                            <MudText Typo="Typo.body1">@Patient.Address1</MudText>
+                                        </span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Patient.Address2))
+                                    {
+                                        <div class="d-flex flex-row">
+                                            <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
+                                            </span>
+                                            <span style="width: 65%">
+                                                <MudText Typo="Typo.body1">@Patient.Address2</MudText>
+                                            </span>
+                                        </div>
+                                    }
+                                    <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                            <MudText Typo="Typo.body1">@Patient.City, @Patient.State @Patient.ZipCode</MudText>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                            <MudText Typo="Typo.body1">@Patient.County County</MudText>
+                                        </span>
+                                    </div>
+
+                                   
+                                    @if (Patient.Email != null)
+                                    {
+                                        <div class="d-flex flex-row">
+                                            <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Email:</MudText>
+                                            </span>
+                                            <span style="width: 65%">
+                                                <MudText Typo="Typo.body1">@Patient.Email</MudText>
+                                            </span>
+                                        </div>
+                                    }
+                                </MudContainer>
+
+                            <MudContainer Class="pa-2" Style="width: 33%">
+
+                                    <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Gender:</MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                            <MudText Typo="Typo.body1"> @Patient.Gender</MudText>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Race:</MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                            <MudText Typo="Typo.body1"> @Patient.Race</MudText>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Ethnicity:</MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                            <MudText Typo="Typo.body1"> @Patient.Ethnicity</MudText>
+                                        </span>
+                                    </div>
+
+
+                                </MudContainer>
+
+                            </div>
+                            @if (!string.IsNullOrEmpty(Patient?.PatientComments))
+                            {
+                                <div class="d-flex flex-row">
+                                    <span style="width: 15%" class="mr-3 d-flex justify-end">
+                                        <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Comments:</MudText>
+                                    </span>
+                                    <span style="width: 85%">
+                                        <MudText Typo="Typo.body1"> @Patient?.PatientComments</MudText>
+                                    </span>
+                                </div>
+                            }
+                             <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Modified Date:</MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                            <MudText Typo="Typo.body1"> @Patient.ModifiedDate</MudText>
+                                        </span>
+                                    </div>
+                                     <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Modified By:</MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                    @if (UserLookup != null && UserLookup.Any())
+                                    {
+                                        <MudText Typo="Typo.body1">
+                                            @(UserLookup.TryGetValue(Patient.ModifiedUserId?.ToString() ?? "", out var name) 
+                                                ? name 
+                                                : "Unknown User")
+                                        </MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudProgressLinear Color="Color.Info" Indeterminate="true" Class="my-2" />
+                                    }                                        </span>
+                                    </div>
+
+@*                         </MudCard>
+ *@                    </MudTabPanel>
+
+                </MudTabs>
+            </div>
+        </DialogContent>
+
+    </MudDialog>
+}

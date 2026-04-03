@@ -36,20 +36,14 @@ else
                      TData="@Patient" ShowArrows="true" ShowBullets="true" AutoCycle="false" Style="height:900px;">
 
             <ItemTemplate Context="context"> *@
-
-            <div style=" height:900px; ">
-                <MudPaper Class="d-flex pa-2" Style="@($"background-color: {@Patient.PathReports.FirstOrDefault().StudyColor} !important;")">
+           <div style=" height:900px; ">
+                <MudPaper Class="d-flex pa-2" Style="@($"background-color: {PathReport.StudyColor} !important;")">
                     <MudContainer Class="ml-2 mt-2">
-                        @if (Patient.Suffix.Length > 0)
-                        {
-                            <MudText Typo="Typo.h4">@Patient.LastName, @Patient.FirstName @Patient.MiddleName, @Patient.Suffix</MudText>
-                        }
-                        else
-                        {
-                            <MudText Typo="Typo.h4">@Patient.LastName, @Patient.FirstName @Patient.MiddleName</MudText>
-                        }
+
+                            <MudText Typo="Typo.h4">@PathReport.SubmittingHospital</MudText>
+
                         <div class="mt-n12 d-flex justify-end">
-                            <MudIconButton Size="@Size.Large" Icon="@Icons.Material.Outlined.Edit" Href="@($"/app/cases/edit/{Patient.PatientId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+                            <MudIconButton Size="@Size.Large" Icon="@Icons.Material.Outlined.Edit" Href="@($"/app/cases/edit/{PathReport.PatientId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
                         </div>
                     </MudContainer>
                 </MudPaper>
@@ -57,215 +51,23 @@ else
 
                 <MudTabs KeepPanelsAlive="true" Elevation="2" Rounded="true" ApplyEffectsToContainer="true"
                          Style="@($"background-color:{Colors.BlueGray.Lighten5};")" PanelClass="pa-6">
-                    <MudTabPanel Text="General Info" Icon="@Icons.Material.Filled.ContactPage">
-@*                         <MudCard Style="@($"background-color:{Colors.BlueGray.Lighten5};")">
- *@
-                            <div class="d-flex mx-10">
-                            <MudContainer Class="pa-2" Style="width: 21%">
-                                    <div class="d-flex flex-row">
-                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Study:</MudText>
-                                        </span>
-                                        <span style="width: 65%">
-                                            @foreach (var path in PathReportViews)
-                                            {
-                                                if (path.PatientId == Patient.PatientId)
-                                                {
-                                                    StudyPrefix = path.StudyPrefix;
-                                                    break;
-                                                }
-                                            }
-                                            <MudText Typo="Typo.body1"> @StudyPrefix</MudText>
-                                        </span>
-                                    </div>
-                                    <div class="d-flex flex-row">
-                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Case #:</MudText>
-                                        </span>
-                                        <span style="width: 65%">
-                                            <MudText Typo="Typo.body1"> @Patient.CaseNumber</MudText>
-                                        </span>
-                                    </div>
-                                <div class="d-flex flex-row">
-                                    <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                        <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">MigCCR#:</MudText>
-                                    </span>
-                                    <span style="width: 65%">
-                                        <MudText Typo="Typo.body1"> @Patient.PathReports.FirstOrDefault().MigratedCCRNumber</MudText>
-                                    </span>
-                                </div>
-                                    <div class="d-flex flex-row">
-                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">DOB:</MudText>
-                                        </span>
-                                        <span style="width: 65%">
-                                            <MudText Typo="Typo.body1"> @Patient.DateOfBirth?.ToShortDateString()</MudText>
-                                        </span>
-                                    </div>
-                                    <div class="d-flex flex-row">
-                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">SSN:</MudText>
-                                        </span>
-                                        <span style="width: 65%">
-                                            <MudText Typo="Typo.body1"> @Patient.SocialSecurityNumber</MudText>
-                                        </span>
-                                    </div>
-                                    <br />
+                          <MudTabPanel Text="Path Report" Icon="@Icons.Material.Filled.ContactPage">
 
-
-                                </MudContainer>
-
-                            <MudContainer Class="pa-2" Style="width: 46%">
-                                    <div class="d-flex flex-row">
-                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Address:</MudText>
-                                        </span>
-                                        <span style="width: 65%">
-                                            <MudText Typo="Typo.body1">@Patient.Address1</MudText>
-                                        </span>
-                                    </div>
-                                    @if (!string.IsNullOrEmpty(Patient.Address2))
-                                    {
-                                        <div class="d-flex flex-row">
-                                            <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
-                                            </span>
-                                            <span style="width: 65%">
-                                                <MudText Typo="Typo.body1">@Patient.Address2</MudText>
-                                            </span>
-                                        </div>
-                                    }
-                                    <div class="d-flex flex-row">
-                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
-                                        </span>
-                                        <span style="width: 65%">
-                                            <MudText Typo="Typo.body1">@Patient.City, @Patient.State @Patient.ZipCode</MudText>
-                                        </span>
-                                    </div>
-                                    <div class="d-flex flex-row">
-                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
-                                        </span>
-                                        <span style="width: 65%">
-                                            <MudText Typo="Typo.body1">@Patient.County County</MudText>
-                                        </span>
-                                    </div>
-
-                                    @foreach (var phone in Patient.PatientPhoneNumbers.OrderByDescending(x => x.IsPrimary))
-                                    {
-                                        <div class="d-flex flex-row">
-                                            <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Phone:</MudText>
-                                            </span>
-                                            @if (phone.IsPrimary)
-                                            {
-                                                <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1">@FormatPhoneNumber(@phone.PhoneNumber) (@phone.PhoneType) (primary)</MudText>
-                                                </span>
-                                            }
-                                            else
-                                            {
-                                                <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1">@FormatPhoneNumber(@phone.PhoneNumber) (@phone.PhoneType)</MudText>
-                                                </span>
-                                            }
-                                        </div>
-
-                                    }
-                                    @if (Patient.Email != null)
-                                    {
-                                        <div class="d-flex flex-row">
-                                            <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Email:</MudText>
-                                            </span>
-                                            <span style="width: 65%">
-                                                <MudText Typo="Typo.body1">@Patient.Email</MudText>
-                                            </span>
-                                        </div>
-                                    }
-                                </MudContainer>
-
-                            <MudContainer Class="pa-2" Style="width: 33%">
-
-                                    <div class="d-flex flex-row">
-                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Gender:</MudText>
-                                        </span>
-                                        <span style="width: 65%">
-                                            <MudText Typo="Typo.body1"> @Patient.Gender</MudText>
-                                        </span>
-                                    </div>
-                                    <div class="d-flex flex-row">
-                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Race:</MudText>
-                                        </span>
-                                        <span style="width: 65%">
-                                            <MudText Typo="Typo.body1"> @Patient.Race</MudText>
-                                        </span>
-                                    </div>
-                                    <div class="d-flex flex-row">
-                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Ethnicity:</MudText>
-                                        </span>
-                                        <span style="width: 65%">
-                                            <MudText Typo="Typo.body1"> @Patient.Ethnicity</MudText>
-                                        </span>
-                                    </div>
-
-
-                                </MudContainer>
-
-                            </div>
-                            @if (!string.IsNullOrEmpty(Patient?.PatientComments))
-                            {
-                                <div class="d-flex flex-row">
-                                    <span style="width: 15%" class="mr-3 d-flex justify-end">
-                                        <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Comments:</MudText>
-                                    </span>
-                                    <span style="width: 85%">
-                                        <MudText Typo="Typo.body1"> @Patient?.PatientComments</MudText>
-                                    </span>
-                                </div>
-                            }
-
-                            @foreach (var pathReport in Patient.PathReports)
-                            {
-                                if (pathReport != null)
-                                {
 
                                     <div class="d-flex mx-5">
                                         <MudContainer Class="pa-3" Style="width: 25%">
                                             <div class="d-flex flex-row">
-                                                <MudText Typo="Typo.h6">Path Report @pathReport.PathIndex</MudText>
+                                                <MudText Typo="Typo.h6">Path Report @PathReport.PathIndex</MudText>
                                             </div>
                                             <div class="d-flex flex-row">
                                                 <span style="width: 40%" class="mr-3 d-flex justify-end">
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Export Date:</MudText>
                                                 </span>
                                                 <span style="width: 60%">
-                                                    <MudText Typo="Typo.body1">@pathReport.RcaExportDate?.ToShortDateString()</MudText>
+                                                    <MudText Typo="Typo.body1">@PathReport.RcaExportDate?.ToShortDateString()</MudText>
                                                 </span>
                                             </div>
-                                            <div class="d-flex flex-row">
-                                                @foreach (var path in PathReportViews)
-                                                {
-                                                    if (path.PathReportId == pathReport.PathReportId)
-                                                    {
-                                                        if (!string.IsNullOrEmpty(path.MaxAgeDiff.ToString()) && path.MaxAgeDiff > 0)
-                                                        {
-                                                            <span style="width: 40%" class="mr-3 d-flex justify-end">
-                                                                <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Age of Path:</MudText>
-                                                            </span>
-                                                            <span style="width: 60%">
-                                                                <MudText Typo="Typo.body1" Color="Color.Error">@path.MaxAgeDiff.ToString()</MudText>
-                                                            </span>
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-                                            </div>
-
+ 
                                         </MudContainer>
 
                                         <MudContainer Class="pa-5" Style="width: 40%">
@@ -274,7 +76,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Submitting Hospital:</MudText>
                                                 </span>
                                                 <span style="width: 55%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.SubmittingHospital</MudText>
+                                                    <MudText Typo="Typo.body1"> @PathReport.SubmittingHospital</MudText>
                                                 </span>
                                             </div>
 
@@ -283,17 +85,17 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Sub. Hosp. Path Rpt#:</MudText>
                                                 </span>
                                                 <span style="width: 55%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.SubmittingHospitalPathReportNumber</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.SubmittingHospitalPathReportNumber</MudText>
                                                 </span>
                                             </div>
-                                            @if (!string.IsNullOrEmpty(pathReport.OriginatingHospitalPathReportNumber))
+                            @if (!string.IsNullOrEmpty(PathReport.OriginatingHospitalPathReportNumber))
                                             {
                                                 <div class="d-flex flex-row">
                                                     <span style="width: 45%" class="mr-3 d-flex justify-end">
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Orig. Hosp. Path Rpt#:</MudText>
                                                     </span>
                                                     <span style="width: 55%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.OriginatingHospitalPathReportNumber</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.OriginatingHospitalPathReportNumber</MudText>
                                                     </span>
                                                 </div>
                                                 <div class="d-flex flex-row">
@@ -301,7 +103,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Orig. Hosp. Cmnts:</MudText>
                                                     </span>
                                                     <span style="width: 55%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.OriginatingHospitalComments</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.OriginatingHospitalComments</MudText>
                                                     </span>
                                                 </div>
 
@@ -312,7 +114,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Date of Proc.:</MudText>
                                                 </span>
                                                 <span style="width: 55%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.DateOfProcedure?.ToShortDateString()</MudText>
+                                                    <MudText Typo="Typo.body1"> @PathReport.DateOfProcedure?.ToShortDateString()</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -320,7 +122,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Age at Proc.:</MudText>
                                                 </span>
                                                 <span style="width: 55%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.AgeAtProcedure</MudText>
+                                                    <MudText Typo="Typo.body1"> @PathReport.AgeAtProcedure</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -328,7 +130,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Reimbursement 1:</MudText>
                                                 </span>
                                                 <span style="width: 55%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.Reimbursement1</MudText>
+                                                    <MudText Typo="Typo.body1"> @PathReport.Reimbursement1</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -336,7 +138,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Reimbursement 2:</MudText>
                                                 </span>
                                                 <span style="width: 55%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.Reimbursement2</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.Reimbursement2</MudText>
                                                 </span>
                                             </div>
                                             <br />
@@ -346,17 +148,17 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Patient Address at Dx:</MudText>
                                                 </span>
                                                 <span style="width: 55%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.DxAddress1</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.DxAddress1</MudText>
                                                 </span>
                                             </div>
-                                            @if (pathReport?.DxAddress2?.Length > 0)
+                            @if (PathReport?.DxAddress2?.Length > 0)
                                             {
                                                 <div class="d-flex flex-row">
                                                     <span style="width: 45%" class="mr-3 d-flex justify-end">
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
                                                     </span>
                                                     <span style="width: 55%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.DxAddress1</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.DxAddress1</MudText>
                                                     </span>
                                                 </div>
                                             }
@@ -365,7 +167,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
                                                 </span>
                                                 <span style="width: 55%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.DxCity, @pathReport.DxState @pathReport.DxZipCode</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.DxCity, @PathReport.DxState @PathReport.DxZipCode</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -373,7 +175,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
                                                 </span>
                                                 <span style="width: 55%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.DxCounty County</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.DxCounty County</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -381,7 +183,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")"></MudText>
                                                 </span>
                                                 <span style="width: 55%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.DxPhoneNumber</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.DxPhoneNumber</MudText>
                                                 </span>
                                             </div>
 
@@ -393,7 +195,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Site:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.Site</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.Site</MudText>
                                                 </span>
                                             </div>
 
@@ -402,7 +204,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Procedure:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.PathProcedure</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.PathProcedure</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -410,7 +212,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Report Cmnts:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.PathComments</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.PathComments</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -418,7 +220,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Auth. Provider:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.AuthorizingProvider</MudText>
+                                                    <MudText Typo="Typo.body1"> @PathReport.AuthorizingProvider</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -426,7 +228,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Prov. Cmnts:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.AuthorizingProviderComments</MudText>
+                                                    <MudText Typo="Typo.body1"> @PathReport.AuthorizingProviderComments</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -434,7 +236,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Address:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.MDAddress1, @pathReport.MDAddress2, @pathReport.MDAddress3, @pathReport.MDCity, @pathReport.MDState @pathReport.MDZipCode</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.MDAddress1, @PathReport.MDAddress2, @PathReport.MDAddress3, @PathReport.MDCity, @PathReport.MDState @PathReport.MDZipCode</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -442,7 +244,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Phone:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.MDPhoneNumber1, @pathReport.MDPhoneNumber2</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.MDPhoneNumber1, @PathReport.MDPhoneNumber2</MudText>
                                                 </span>
                                             </div>
                                             @*                                 @if(pathReport.PathIndex == 1)
@@ -472,7 +274,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Pathologist:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport?.Pathologist</MudText>
+                                                    <MudText Typo="Typo.body1"> @PathReport?.Pathologist</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -480,7 +282,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Path. Cmnts:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport?.PathologistComments</MudText>
+                                                    <MudText Typo="Typo.body1"> @PathReport?.PathologistComments</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -488,7 +290,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Address:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.PathAddress1, @pathReport.PathAddress2, @pathReport.PathAddress3, @pathReport.PathCity, @pathReport.PathState @pathReport.PathZipCode</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.PathAddress1, @PathReport.PathAddress2, @PathReport.PathAddress3, @PathReport.PathCity, @PathReport.PathState @PathReport.PathZipCode</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -496,7 +298,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Phone:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.PathPhoneNumber1, @pathReport.PathPhoneNumber2</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.PathPhoneNumber1, @PathReport.PathPhoneNumber2</MudText>
                                                 </span>
                                             </div>
                                             @*                                 @if (pathReport.PathIndex == 1)
@@ -526,7 +328,7 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Histology Dx.:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.HistologyCode1/@pathReport.HistologyBehavior1 @pathReport.HistologyDiagnosis1</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.HistologyCode1/@PathReport.HistologyBehavior1 @PathReport.HistologyDiagnosis1</MudText>
                                                 </span>
                                             </div>
                                             <div class="d-flex flex-row">
@@ -534,11 +336,11 @@ else
                                                     <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Dx. Comments:</MudText>
                                                 </span>
                                                 <span style="width: 65%">
-                                                    <MudText Typo="Typo.body1"> @pathReport.HistologyDiagnosisComments1</MudText>
+                                    <MudText Typo="Typo.body1"> @PathReport.HistologyDiagnosisComments1</MudText>
                                                 </span>
                                             </div>
 
-                                            @if (pathReport?.Site2?.Length > 0)
+                            @if (PathReport?.Site2?.Length > 0)
                                             {
                                                 <br />
                                                 <br />
@@ -547,7 +349,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Site2:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.Site2</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.Site2</MudText>
                                                     </span>
                                                 </div>
 
@@ -556,7 +358,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Procedure2:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.PathProcedure2</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.PathProcedure2</MudText>
                                                     </span>
                                                 </div>
                                                 <div class="d-flex flex-row">
@@ -564,7 +366,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Path Comments2:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.PathComments2</MudText>
+                                                        <MudText Typo="Typo.body1"> @PathReport.PathComments2</MudText>
                                                     </span>
                                                 </div>
                                                 <div class="d-flex flex-row">
@@ -572,7 +374,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Auth. Provider2:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.AuthorizingProvider2</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.AuthorizingProvider2</MudText>
                                                     </span>
                                                 </div>
                                                 <div class="d-flex flex-row">
@@ -580,7 +382,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Prov. Cmnts2:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.AuthorizingProviderComments2</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.AuthorizingProviderComments2</MudText>
                                                     </span>
                                                 </div>
                                                 <div class="d-flex flex-row">
@@ -588,7 +390,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Address:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.MD2Address1, @pathReport.MD2Address2, @pathReport.MD2Address3, @pathReport.MD2City, @pathReport.MD2State @pathReport.MD2ZipCode</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.MD2Address1, @PathReport.MD2Address2, @PathReport.MD2Address3, @PathReport.MD2City, @PathReport.MD2State @PathReport.MD2ZipCode</MudText>
                                                     </span>
                                                 </div>
                                                 <div class="d-flex flex-row">
@@ -596,7 +398,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Phone:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.MD2PhoneNumber1, @pathReport.MD2PhoneNumber2</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.MD2PhoneNumber1, @PathReport.MD2PhoneNumber2</MudText>
                                                     </span>
                                                 </div>
                                                 <div class="d-flex flex-row">
@@ -604,7 +406,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Pathologist2:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport?.Pathologist2</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport?.Pathologist2</MudText>
                                                     </span>
                                                 </div>
                                                 <div class="d-flex flex-row">
@@ -612,7 +414,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Path. Cmnts2:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport?.PathologistComments2</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport?.PathologistComments2</MudText>
                                                     </span>
                                                 </div>
                                                 <div class="d-flex flex-row">
@@ -620,7 +422,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Address:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.Path2Address1, @pathReport.Path2Address2, @pathReport.Path2Address3, @pathReport.Path2City, @pathReport.Path2State @pathReport.Path2ZipCode</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.Path2Address1, @PathReport.Path2Address2, @PathReport.Path2Address3, @PathReport.Path2City, @PathReport.Path2State @PathReport.Path2ZipCode</MudText>
                                                     </span>
                                                 </div>
                                                 <div class="d-flex flex-row">
@@ -628,7 +430,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Phone:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.Path2PhoneNumber1, @pathReport.Path2PhoneNumber2</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.Path2PhoneNumber1, @PathReport.Path2PhoneNumber2</MudText>
                                                     </span>
                                                 </div>
                                                 <div class="d-flex flex-row">
@@ -636,7 +438,7 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Histology Dx. 2:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.HistologyCode2/@pathReport.HistologyBehavior2 @pathReport.HistologyDiagnosis2</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.HistologyCode2/@PathReport.HistologyBehavior2 @PathReport.HistologyDiagnosis2</MudText>
                                                     </span>
                                                 </div>
                                                 <div class="d-flex flex-row">
@@ -644,100 +446,48 @@ else
                                                         <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Dx. 2 Comments:</MudText>
                                                     </span>
                                                     <span style="width: 65%">
-                                                        <MudText Typo="Typo.body1"> @pathReport.HistologyDiagnosisComments2</MudText>
+                                        <MudText Typo="Typo.body1"> @PathReport.HistologyDiagnosisComments2</MudText>
                                                     </span>
                                                 </div>
                                             }
                                         </MudContainer>
                                         <MudContainer Class="pa-2 d-flex justify-end" Style="width: 5%">
-                                            @if (pathReport.IsOnHold)
+                            @if (PathReport.IsOnHold)
                                             {
                                                 <MudText Typo="Typo.h4" Color="Color.Error">Hold</MudText>
                                             }
-
-
                                         </MudContainer>
                                     </div>
-                                }
-                            }
 @*                         </MudCard>
  *@                    </MudTabPanel>
-
-                    <MudTabPanel Text="Export History" Icon="@Icons.Material.Filled.CloudDownload">
-                        <MudTable Items="exportItems" Hover="true" Breakpoint="Breakpoint.Sm">
-                            <HeaderContent>
-                                <MudTh>Path ID</MudTh>
-                                <MudTh>Batch Number</MudTh>
-                                <MudTh>Export Date</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="Path ID">@context.PathId</MudTd>
-                                <MudTd DataLabel="Batch Number">@context.BatchNumber</MudTd>
-                                <MudTd DataLabel="Export Date">@context.CreatedDate</MudTd>
-                            </RowTemplate>
-                        </MudTable>
-                    </MudTabPanel>
-
-                     <MudTabPanel Text="Change History" Icon="@Icons.Material.Filled.ChangeHistory">
-                        <br />
-                        <br />
-                        <MudText Typo="Typo.h6">Patient History</MudText>
-                        <MudTable Items="patientHistory" Hover="true" Breakpoint="Breakpoint.Sm">
-                            <HeaderContent>
-                                <MudTh>Last Name</MudTh>
-                                <MudTh>First Name</MudTh>
-                                <MudTh>Modified Date</MudTh>
-                                <MudTh>Modified By</MudTh>
-                                <MudTh>View</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="Last Name">@context.LastName</MudTd>
-                                <MudTd DataLabel="First Name">@context.FirstName</MudTd>
-                                <MudTd DataLabel="Modified Date">@context.ModifiedDate</MudTd>
-                                <MudTd DataLabel="Modified By">@UserLookup[context.ModifiedUserId.ToString()]</MudTd>
-                              <MudTd DataLabel="View"><MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewPatientHistory(context, patientHistory.ToList().IndexOf(context))) Variant="Variant.Text" Color="Color.Primary">View</MudIconButton></MudTd>                 
-
-                            </RowTemplate>
-                        </MudTable>
-                        <br />
-                        <br />
-                         <MudText Typo="Typo.h6">Phone Number History</MudText>
-                         <MudTable Items="patientPhoneNumberHistory" Hover="true" Breakpoint="Breakpoint.Sm">
-                            <HeaderContent>
-                                <MudTh>Phone Number</MudTh>
-                                <MudTh>Phone Number Type</MudTh>
-                                <MudTh>Comments</MudTh>
-                                <MudTh>Modified Date</MudTh>
-                                <MudTh>Modified By</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="Phone Number">@context.PhoneNumber</MudTd>
-                                <MudTd DataLabel="Phone Number Type">@context.PhoneType</MudTd>
-                                <MudTd DataLabel="Comments">@context.PhoneNumberComments</MudTd>
-                                <MudTd DataLabel="Modified Date">@context.ModifiedDate</MudTd>
-                                <MudTd DataLabel="Modified By">@UserLookup[context.ModifiedUserId.ToString()]</MudTd>
-                            </RowTemplate>
-                        </MudTable>
-                        <br />
-                        <br />
-                         <MudText Typo="Typo.h6">Path Report History</MudText>
-                        <MudTable Items="pathReportHistory" Hover="true" Breakpoint="Breakpoint.Sm">
-                            <HeaderContent>
-                                <MudTh>Hospital Name</MudTh>
-                                <MudTh>Modified Date</MudTh>
-                                <MudTh>Modified By</MudTh>
-                                <MudTh>View</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="Hospital Name">@context.SubmittingHospital</MudTd>
-                                <MudTd DataLabel="Modified Date">@context.ModifiedDate</MudTd>
-                                <MudTd DataLabel="Modified By">@UserLookup[context.ModifiedUserId.ToString()]</MudTd>
-                                <MudTd DataLabel="View"><MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewPathReportHistory(context, pathReportHistory.ToList().IndexOf(context))) Variant="Variant.Text" Color="Color.Primary">View</MudIconButton></MudTd>                 
-
-                            </RowTemplate>
-                        </MudTable>
-
-                    </MudTabPanel>
+ <MudContainer Class="pa-3" Style="width: 50%">
+                                   <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Modified Date:</MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                            <MudText Typo="Typo.body1"> @PathReport.ModifiedDate</MudText>
+                                        </span>
+                                    </div>
+                                     <div class="d-flex flex-row">
+                                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Modified By:</MudText>
+                                        </span>
+                                        <span style="width: 65%">
+                                    @if (UserLookup != null && UserLookup.Any())
+                                    {
+                                        <MudText Typo="Typo.body1">
+                                            @(UserLookup.TryGetValue(PathReport.ModifiedUserId?.ToString() ?? "", out var name) 
+                                                ? name 
+                                                : "Unknown User")
+                                        </MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudProgressLinear Color="Color.Info" Indeterminate="true" Class="my-2" />
+                                    }                                        </span>
+                                    </div>
+                                        </MudContainer>
 
                 </MudTabs>
             </div>

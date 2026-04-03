@@ -1,27 +1,39 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System.Drawing;
 using System.Linq;
+using static MudBlazor.CategoryTypes;
 
 namespace RCA_StudyManagementSystem.Client.Pages.Cases
 {
-    public partial class ViewDialog : ComponentBase
+    public partial class ViewDialog : Microsoft.AspNetCore.Components.ComponentBase
     {
         [CascadingParameter]
         private IMudDialogInstance MudDialog { get; set; }
 
         private void Cancel() => MudDialog.Cancel();
 
+        private readonly DialogOptions _options = new() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
         [Parameter]
         public Patient Patient { get; set; } = new Patient();
 
+
+        [Parameter]
+        public PathReport PathReport { get; set; } = new PathReport();
         [Parameter]
         public List<Patient> CarouselRecords { get; set; } = new List<Patient>(); // Receives the filtered items
         [Parameter]
         public int InitialSelectedIndex { get; set; }
+
+        [Parameter]
+        public List<PathReport> PathCarouselRecords { get; set; } = new List<PathReport>(); // Receives the filtered items
+        [Parameter]
+        public int PathInitialSelectedIndex { get; set; }
 
         public string StudyPrefix { get; set; } = string.Empty;
 
@@ -33,6 +45,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         private IEnumerable<PathReportView> PathReportViews { get; set; } = new List<PathReportView>();
         private IEnumerable<ExportView> exportItems { get; set; } = new List<ExportView>();
+        private IEnumerable<Patient> patientHistory { get; set; } = new List<Patient>();
+        private IEnumerable<PatientPhoneNumber> patientPhoneNumberHistory { get; set; } = new List<PatientPhoneNumber>();
+        private IEnumerable<PathReport> pathReportHistory { get; set; } = new List<PathReport>();
+
 
         private int Index = 0;
 
@@ -51,11 +67,20 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
         private DateTime? path1VerifiedDate = null;
         private DateTime? path2VerifiedDate = null;
 
+        private Dictionary<string, string> UserLookup = new();
+
+
         protected override async void OnInitialized()
         {
             if (Patient == null)
             {
                 await UpdateDisplayedRecords();
+            }
+
+            var response = await UserData.GetAllUsersAsync();
+            if (response != null)
+            {
+                UserLookup = response;
             }
         }
 
@@ -111,6 +136,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                             exportItems = exportItems.Append(export);
                     }
 
+                    patientHistory = await PatientData.GetPatientHistoryAsync(Patient.PatientId);
+                    patientPhoneNumberHistory = await PatientData.GetPatientPhoneNumberHistoryAsync(Patient.PatientId);
+                    pathReportHistory = await PatientData.GetPathReportHistoryAsync(Patient.PatientId);
+                    
                 }
 
             }
@@ -126,6 +155,40 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
             await UpdateDisplayedRecords();
 
             await InvokeAsync(StateHasChanged);
+        }
+
+        async Task<IDialogReference> ViewPatientHistory(Patient args, int index)
+        {
+            //int index = patientHistory
+            //    .Select((item, idx) => new { item, idx })
+            //    .FirstOrDefault(x => x.item.PatientId == args.PatientId)?.idx ?? 0;
+
+            var parameters = new DialogParameters<PatientHistoryDialog>();
+            // Pass the filtered items and the index of the clicked item
+            parameters.Add(p => p.CarouselRecords, patientHistory.ToList()); // Pass filtered items
+            parameters.Add(p => p.InitialSelectedIndex, index); // Set initial position
+
+            var options = _options;
+
+            return await DialogService.ShowAsync<PatientHistoryDialog>("Patient History View", parameters, options);
+
+        }
+
+        async Task<IDialogReference> ViewPathReportHistory(PathReport args, int index)
+        {
+            //int index = patientHistory
+            //    .Select((item, idx) => new { item, idx })
+            //    .FirstOrDefault(x => x.item.PatientId == args.PatientId)?.idx ?? 0;
+
+            var parameters = new DialogParameters<PathReportHistoryDialog>();
+            // Pass the filtered items and the index of the clicked item
+            parameters.Add(p => p.PathCarouselRecords, pathReportHistory.ToList()); // Pass filtered items
+            parameters.Add(p => p.PathInitialSelectedIndex, index); // Set initial position
+
+            var options = _options;
+
+            return await DialogService.ShowAsync<PathReportHistoryDialog>("PathReport History View", parameters, options);
+
         }
 
 
