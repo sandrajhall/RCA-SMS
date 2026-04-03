@@ -209,18 +209,31 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
             await InvokeAsync(StateHasChanged);
             NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
         }
-        private async void OnCurrentPageChanged(int page)
+        private async Task OnCurrentPageChanged(int page) // Changed to Task
         {
+            if (DncGridStateView == null) return;
+
             DncGridStateView.CurrentPage = page;
 
-            var storedStateDto = await LocalStorage.GetItemAsync<GridStateDto>(GridStateStorageKey);
-            if (storedStateDto == null)
+            try
             {
-                storedStateDto = new GridStateDto();
+                var storedStateDto = await LocalStorage.GetItemAsync<GridStateDto>(GridStateStorageKey);
+
+                if (storedStateDto == null)
+                {
+                    storedStateDto = new GridStateDto();
+                }
+
+                storedStateDto.CurrentPage = page;
+
+                await LocalStorage.SetItemAsync(GridStateStorageKey, storedStateDto);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Storage error: {ex.Message}");
             }
 
-            storedStateDto.CurrentPage = page;
-            StateHasChanged(); // Update the UI to show the new page number
+            StateHasChanged();
         }
 
 
@@ -356,7 +369,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
                             DataSet result = reader.AsDataSet();
 
                             // You can now access the data in 'result.Tables'
-                            // For example, to iterate through the first sheet:
                             var DNCList = new List<DoNotContact>();
 
                             if (result.Tables.Count > 0)
@@ -372,10 +384,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
                                     newDNC.FirstName = row[2]?.ToString().Trim() ?? string.Empty;
                                     newDNC.MiddleName = row[3]?.ToString().Trim() ?? string.Empty;
                                     newDNC.LastName = row[1]?.ToString().Trim() ?? string.Empty;
-                                    newDNC.DateOfBirth = DateTime.TryParse(row[6]?.ToString().Trim(), out DateTime dob) ? dob : DateTime.Parse("1/1/1000");
+                                    newDNC.DateOfBirth = DateTime.TryParse(row[6]?.ToString().Trim(), out DateTime dob) ? dob : (DateTime?)null;
                                     newDNC.SocialSecurityNumber = row[5]?.ToString().Trim() ?? string.Empty;
                                     newDNC.StudyName = row[8]?.ToString().Trim() ?? string.Empty;
-                                    newDNC.DateLastContact = DateTime.TryParse(row[12]?.ToString().Trim(), out DateTime dlc) ? dlc : DateTime.Parse("1/1/1000");
+                                    newDNC.DateLastContact = DateTime.TryParse(row[12]?.ToString().Trim(), out DateTime dlc) ? dlc : (DateTime?)null;
 
                                     newDNC.PhoneNumber = row[4]?.ToString().Trim() ?? string.Empty;
 
@@ -395,6 +407,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
                             foreach (var dnc in DNCList)
                             {
                                 var userId = await UserData.GetIdByEmailAsync("system_user@system.user"); // System User Id
+                                dnc.CreatedUserId = Guid.Parse(userId);
                                 var id = await DoNotContactData.CreateDoNotContactAsync(userId, dnc);
                             }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Services;
@@ -116,6 +117,24 @@ namespace RCA_StudyManagementSystem.Controllers
                 .Take(50); // Important: Limit the number of records returned
 
             return await query.ToListAsync();
+        }
+
+        // GET: api/Doctors/doctorhistory/5
+        [OutputCache(PolicyName = "DoctorTagPolicy")]
+        [HttpGet("doctorhistory/{id:guid}")]
+        public async Task<ActionResult<List<Doctor>>> GetDoctorHistory(Guid id)
+        {
+            var history = await _context.Doctors    
+                .TemporalAll()
+                .Where(p => p.DoctorId == id)
+                .OrderByDescending(p => EF.Property<DateTime>(p, "PeriodStart"))
+                .ToListAsync();
+
+            if (history == null)
+            {
+                return NotFound();
+            }
+            return history;
         }
 
 

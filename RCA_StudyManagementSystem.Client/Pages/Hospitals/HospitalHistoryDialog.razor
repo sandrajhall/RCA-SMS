@@ -8,7 +8,6 @@
 @inject IDialogService DialogService
 @inject StudyData StudyData
 @inject UserData UserData
-@inject HospitalData HospitalData
 
 <MudDialog>
     <DialogContent>
@@ -30,9 +29,8 @@
             </MudPaper>
             <br />
 
-             <MudTabs KeepPanelsAlive="true" Elevation="2" Rounded="true" ApplyEffectsToContainer="true"
-                         Style="@($"background-color:{Colors.BlueGray.Lighten5};")" PanelClass="pa-6">
-                    <MudTabPanel Text="General Info" Icon="@Icons.Material.Filled.ContactPage">
+            <MudCard Style="@($"background-color:{Colors.BlueGray.Lighten5};")">
+
                 <div class="d-flex mx-10">
 
 
@@ -116,29 +114,36 @@
                     </MudContainer>
 
                 </div>
-            </MudTabPanel>
-                <MudTabPanel Text="Change History" Icon="@Icons.Material.Filled.ChangeHistory">
-                    <br />
-                    <br />
-                    <MudText Typo="Typo.h6">Hospital History</MudText>
-                    <MudTable Items="hospitalHistory" Hover="true" Breakpoint="Breakpoint.Sm">
-                        <HeaderContent>
-                            <MudTh>Hospital Name</MudTh>
-                            <MudTh>Modified Date</MudTh>
-                            <MudTh>Modified By</MudTh>
-                            <MudTh>View</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd DataLabel="Hospital Name">@context.HospitalName</MudTd>
-                            <MudTd DataLabel="Modified Date">@context.ModifiedDate</MudTd>
-                            <MudTd DataLabel="Modified By">@UserLookup[context.ModifiedUserId.ToString()]</MudTd>
-                            <MudTd DataLabel="View"><MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewHospitalHistory(context, hospitalHistory.ToList().IndexOf(context))) Variant="Variant.Text" Color="Color.Primary">View</MudIconButton></MudTd>
-
-                        </RowTemplate>
-                    </MudTable>
-
-                </MudTabPanel>
-        </MudTabs>
+                <MudContainer Class="pa-3" Style="width: 50%">
+                    <div class="d-flex flex-row">
+                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Modified Date:</MudText>
+                        </span>
+                        <span style="width: 65%">
+                            <MudText Typo="Typo.body1"> @Hospital.ModifiedDate</MudText>
+                        </span>
+                    </div>
+                    <div class="d-flex flex-row">
+                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Modified By:</MudText>
+                        </span>
+                        <span style="width: 65%">
+                            @if (UserLookup != null && UserLookup.Any())
+                            {
+                                <MudText Typo="Typo.body1">
+                                    @(UserLookup.TryGetValue(Hospital.ModifiedUserId?.ToString() ?? "", out var name)
+                                        ? name
+                                        : "Unknown User")
+                                </MudText>
+                            }
+                            else
+                            {
+                                <MudProgressLinear Color="Color.Info" Indeterminate="true" Class="my-2" />
+                            }
+                        </span>
+                    </div>
+                </MudContainer>
+            </MudCard>
         </div>
     </DialogContent>
 

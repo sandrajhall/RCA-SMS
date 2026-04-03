@@ -88,6 +88,22 @@ namespace RCA_StudyManagementSystem.Data
                     ttb.UseHistoryTable("PathReportHistory");
                 }));
 
+            modelBuilder.Entity<Doctor>()
+                .ToTable("Doctor", b => b.IsTemporal(ttb =>
+                {
+                    ttb.HasPeriodStart("PeriodStart");
+                    ttb.HasPeriodEnd("PeriodEnd");
+                    ttb.UseHistoryTable("DoctorHistory");
+                }));
+
+            modelBuilder.Entity<Hospital>()
+                .ToTable("Hospital", b => b.IsTemporal(ttb =>
+                {
+                    ttb.HasPeriodStart("PeriodStart");
+                    ttb.HasPeriodEnd("PeriodEnd");
+                    ttb.UseHistoryTable("HospitalHistory");
+                }));
+
             modelBuilder.Entity<Patient>()
                 .HasIndex(p => p.CaseNumber)
                 .IsUnique();

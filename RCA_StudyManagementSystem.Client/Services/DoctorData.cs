@@ -56,6 +56,11 @@ namespace RCA_StudyManagementSystem.Client.Services
             return await _httpClient.GetFromJsonAsync<IEnumerable<Doctor>>(_navigationManager.ToAbsoluteUri($"api/doctors/pathsearch/{searchTerm}"));
         }
 
+        public async Task<List<Doctor>> GetDoctorHistoryAsync(Guid id)
+        {
+            return await _httpClient.GetFromJsonAsync<List<Doctor>>(_navigationManager.ToAbsoluteUri($"api/doctors/doctorhistory/{id}"));
+        }
+
         public async Task<Guid> CreateDoctorAsync(string userId, Doctor doctor)
         {
             var response = await _httpClient.PostAsJsonAsync(_navigationManager.ToAbsoluteUri($"api/doctors/{userId}"), doctor);

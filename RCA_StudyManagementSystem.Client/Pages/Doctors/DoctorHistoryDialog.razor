@@ -7,7 +7,6 @@
 
 @inject IDialogService DialogService
 @inject UserData UserData
-@inject DoctorData DoctorData
 
 <MudDialog>
     <DialogContent>
@@ -29,9 +28,7 @@
             </MudPaper>
             <br />
 
-             <MudTabs KeepPanelsAlive="true" Elevation="2" Rounded="true" ApplyEffectsToContainer="true"
-                         Style="@($"background-color:{Colors.BlueGray.Lighten5};")" PanelClass="pa-6">
-                    <MudTabPanel Text="General Info" Icon="@Icons.Material.Filled.ContactPage">
+            <MudCard Style="@($"background-color:{Colors.BlueGray.Lighten5};")">
 
                 <div class="d-flex mx-10">
 
@@ -152,33 +149,38 @@
                                     <MudText Typo="Typo.h3" Color="Color.Tertiary">Pathologist</MudText>
                         }
                     </MudContainer>
+
                 </div>
-             </MudTabPanel>
-                <MudTabPanel Text="Change History" Icon="@Icons.Material.Filled.ChangeHistory">
-                    <br />
-                    <br />
-                    <MudText Typo="Typo.h6">Doctor History</MudText>
-                    <MudTable Items="doctorHistory" Hover="true" Breakpoint="Breakpoint.Sm">
-                        <HeaderContent>
-                            <MudTh>Last Name</MudTh>
-                            <MudTh>First Name</MudTh>
-                            <MudTh>Modified Date</MudTh>
-                            <MudTh>Modified By</MudTh>
-                            <MudTh>View</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd DataLabel="Last Name">@context.LastName</MudTd>
-                            <MudTd DataLabel="First Name">@context.FirstName</MudTd>
-                            <MudTd DataLabel="Modified Date">@context.ModifiedDate</MudTd>
-                            <MudTd DataLabel="Modified By">@UserLookup[context.ModifiedUserId.ToString()]</MudTd>
-                            <MudTd DataLabel="View"><MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewDoctorHistory(context, doctorHistory.ToList().IndexOf(context))) Variant="Variant.Text" Color="Color.Primary">View</MudIconButton></MudTd>
-
-                        </RowTemplate>
-                    </MudTable>
-
-                </MudTabPanel>
-          </MudTabs>
-
+                <MudContainer Class="pa-3" Style="width: 50%">
+                    <div class="d-flex flex-row">
+                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Modified Date:</MudText>
+                        </span>
+                        <span style="width: 65%">
+                            <MudText Typo="Typo.body1"> @Doctor.ModifiedDate</MudText>
+                        </span>
+                    </div>
+                    <div class="d-flex flex-row">
+                        <span style="width: 35%" class="mr-3 d-flex justify-end">
+                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Modified By:</MudText>
+                        </span>
+                        <span style="width: 65%">
+                            @if (UserLookup != null && UserLookup.Any())
+                            {
+                                <MudText Typo="Typo.body1">
+                                    @(UserLookup.TryGetValue(Doctor.ModifiedUserId?.ToString() ?? "", out var name)
+                                        ? name
+                                        : "Unknown User")
+                                </MudText>
+                            }
+                            else
+                            {
+                                <MudProgressLinear Color="Color.Info" Indeterminate="true" Class="my-2" />
+                            }
+                        </span>
+                    </div>
+                </MudContainer>
+            </MudCard>
         </div>
     </DialogContent>
 

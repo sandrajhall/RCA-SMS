@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Services;
@@ -122,6 +123,23 @@ namespace RCA_StudyManagementSystem.Controllers
             }
 
             return shortName;
+        }
+
+        // GET: api/Hospitals/hospitalhistory/5
+        [HttpGet("hospitalhistory/{id:guid}")]
+        public async Task<ActionResult<List<Hospital>>> GetHospitalHistory(Guid id)
+        {
+            var history = await _context.Hospitals
+                .TemporalAll()
+                .Where(p => p.HospitalId == id)
+                .OrderByDescending(p => EF.Property<DateTime>(p, "PeriodStart"))
+                .ToListAsync();
+
+            if (history == null)
+            {
+                return NotFound();
+            }
+            return history;
         }
 
 

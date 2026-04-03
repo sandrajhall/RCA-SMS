@@ -1,21 +1,17 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using RCA_StudyManagementSystem.Client.Pages.Doctors;
 using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using System.Drawing;
 
 namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
 {
-    public partial class ViewDialog : ComponentBase
+    public partial class HospitalHistoryDialog : ComponentBase
     {
         [CascadingParameter]
         private IMudDialogInstance MudDialog { get; set; }
 
         private void Cancel() => MudDialog.Cancel();
-
-        private readonly DialogOptions _options = new() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
-
 
         [Parameter]
         public Hospital Hospital { get; set; } = new Hospital();
@@ -36,7 +32,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
         private int pageSize = 1; // Number of records per page
         private int totalPages => (int)Math.Ceiling((double)CarouselRecords.Count / pageSize);
 
-        private IEnumerable<Hospital> hospitalHistory { get; set; } = new List<Hospital>();
         private Dictionary<string, string> UserLookup = new();
 
 
@@ -44,15 +39,11 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
         {
             UpdateDisplayedRecords();
 
-
             var response = await UserData.GetAllUsersAsync();
             if (response != null)
             {
                 UserLookup = response;
             }
-
-            hospitalHistory = await HospitalData.GetHospitalHistoryAsync(Hospital.HospitalId);
-
         }
 
         private void UpdateDisplayedRecords()
@@ -74,33 +65,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
         {
             Hospital = CarouselRecords[InitialSelectedIndex];
             OnPageChanged(InitialSelectedIndex + 1);
-
-        }
-
-
-        private string FormatPhoneNumber(string number)
-        {
-            if (string.IsNullOrEmpty(number) || number.Length != 10)
-            {
-                return number; // Return as is if not a valid 10-digit number
-            }
-            return $"({number.Substring(0, 3)}) {number.Substring(3, 3)}-{number.Substring(6, 4)}";
-        }
-
-        async Task<IDialogReference> ViewHospitalHistory(Hospital args, int index)
-        {
-            //int index = hospitalHistory
-            //    .Select((item, idx) => new { item, idx })
-            //    .FirstOrDefault(x => x.item.HospitalId == args.HospitalId)?.idx ?? 0;
-
-            var parameters = new DialogParameters<HospitalHistoryDialog>();
-            // Pass the filtered items and the index of the clicked item
-            parameters.Add(p => p.CarouselRecords, hospitalHistory.ToList()); // Pass filtered items
-            parameters.Add(p => p.InitialSelectedIndex, index); // Set initial position
-
-            var options = _options;
-
-            return await DialogService.ShowAsync<HospitalHistoryDialog>("Hospital History View", parameters, options);
 
         }
 

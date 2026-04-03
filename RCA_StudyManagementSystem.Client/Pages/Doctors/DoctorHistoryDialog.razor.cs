@@ -1,21 +1,17 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using RCA_StudyManagementSystem.Client.Pages.Cases;
 using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using System.Drawing;
 
 namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 {
-    public partial class ViewDialog : ComponentBase
+    public partial class DoctorHistoryDialog : ComponentBase
     {
         [CascadingParameter]
         private IMudDialogInstance MudDialog { get; set; }
 
         private void Cancel() => MudDialog.Cancel();
-
-        private readonly DialogOptions _options = new() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
-
 
         [Parameter]
         public Doctor Doctor { get; set; } = new Doctor();
@@ -27,11 +23,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
         private Transition Transition = Transition.Fade; // Example transition
 
-        private IEnumerable<Doctor> doctorHistory { get; set; } = new List<Doctor>();
-
-        private Dictionary<string, string> UserLookup = new();
-
-
 
         private int Index = 0;
 
@@ -40,6 +31,9 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
         private int currPage = 1; // Current page number
         private int pageSize = 1; // Number of records per page
         private int totalPages => (int)Math.Ceiling((double)CarouselRecords.Count / pageSize);
+
+        private Dictionary<string, string> UserLookup = new();
+
 
         protected override async Task OnInitializedAsync()
         {
@@ -50,9 +44,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
             {
                 UserLookup = response;
             }
-
-            doctorHistory = await DoctorData.GetDoctorHistoryAsync(Doctor.DoctorId);
-
         }
 
         private void UpdateDisplayedRecords()
@@ -74,23 +65,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
         {
             Doctor = CarouselRecords[InitialSelectedIndex];
             OnPageChanged(InitialSelectedIndex + 1);
-
-        }
-
-        async Task<IDialogReference> ViewDoctorHistory(Doctor args, int index)
-        {
-            //int index = doctorHistory
-            //    .Select((item, idx) => new { item, idx })
-            //    .FirstOrDefault(x => x.item.DoctorId == args.DoctorId)?.idx ?? 0;
-
-            var parameters = new DialogParameters<DoctorHistoryDialog>();
-            // Pass the filtered items and the index of the clicked item
-            parameters.Add(p => p.CarouselRecords, doctorHistory.ToList()); // Pass filtered items
-            parameters.Add(p => p.InitialSelectedIndex, index); // Set initial position
-
-            var options = _options;
-
-            return await DialogService.ShowAsync<DoctorHistoryDialog>("Doctor History View", parameters, options);
 
         }
 

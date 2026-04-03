@@ -53,8 +53,11 @@
             </CellTemplate>
         </TemplateColumn> *@
         <PropertyColumn Property="x => x.StudyName" Title="Study" Filterable="false" />
-        <PropertyColumn Property="x => x.DateLastContact.Value.ToShortDateString()" Title="Date of Last Contact" Filterable="false" />
-
+        <TemplateColumn Tag="@("DateLastContact")" Title="Date Last Contact" SortBy="x => x.DateLastContact" Context="dateContext" Sortable="true">
+            <CellTemplate>
+                <MudText Typo="Typo.body2">@dateContext.Item.DateLastContact?.ToShortDateString()</MudText>
+            </CellTemplate>
+        </TemplateColumn>
         <TemplateColumn HeaderText="Actions">
             <CellTemplate>
                 <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item, context.Item)) Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
