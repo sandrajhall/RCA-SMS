@@ -103,6 +103,8 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         public int? PrimGleason2 { get; set; }
         public int? SecGleason2 { get; set; }
         public int? GleasonSum2 { get; set; }
+        public string? P16 { get; set; } = string.Empty;
+        public string? HPV_Value { get; set; } = string.Empty;
 
 
 
