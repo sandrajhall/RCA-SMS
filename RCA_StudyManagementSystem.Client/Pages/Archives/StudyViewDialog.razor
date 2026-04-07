@@ -1,5 +1,6 @@
 ﻿@using MudBlazor
 @using RCA_StudyManagementSystem.Client.Services;
+@using RCA_StudyManagementSystem.Shared.Domain;
 
 @rendermode InteractiveAuto
 @inject IDialogService DialogService
@@ -24,229 +25,309 @@
         <MudPaper Class="d-flex pa-2 rca-study-header">
 
             <style>
-                .rca-study-header {
-                    background-color: @Study.ColorLight !important;
-                }
+                            .rca-study-header {
+                                background-color: @Study.ColorLight !important;
+                            }
             </style>
             <MudContainer Class="ml-2 mt-2">
                 <MudText Typo="Typo.h4">@Study.Name</MudText>
                 <div class="mt-n12 d-flex justify-end">
-                    @*                     <MudIconButton Size="@Size.Large" Icon="@Icons.Material.Outlined.Edit" Href="@($"/app/studies/edit/{Study.StudyId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
- *@                </div>
+                    <MudIconButton Size="@Size.Large" Icon="@Icons.Material.Outlined.Edit" Href="@($"/app/studies/edit/{Study.StudyId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+                </div>
             </MudContainer>
         </MudPaper>
         <br />
+        <MudTabs KeepPanelsAlive="true" Elevation="2" Rounded="true" ApplyEffectsToContainer="true">
 
-        <MudCard Style="@($"background-color:{Colors.BlueGray.Lighten5};")">
-
-
-
-            <div class="d-flex mx-10">
-                <MudContainer Class="pa-2">
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Prefix:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.Prefix</MudText>
-                        </span>
-                    </div>
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Start Date:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.StartDate?.ToShortDateString()</MudText>
-                        </span>
-                    </div>
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">End Date:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.EndDate?.ToShortDateString()</MudText>
-                        </span>
-                    </div>
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">PI:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.PrincipalInvestigator</MudText>
-                        </span>
-                    </div>
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">PM:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.ProjectManager</MudText>
-                        </span>
-                    </div>
-                </MudContainer>
-
-                <MudContainer Class="pa-2">
-
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Min Age:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.MinAge</MudText>
-                        </span>
-                    </div>
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Max Age:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.MaxAge</MudText>
-                        </span>
-                    </div>
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Path Min Age:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.PathMinAge</MudText>
-                        </span>
-                    </div>
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Path Max Age:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.PathMaxAge</MudText>
-                        </span>
-                    </div>
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Path Max Num:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.PathMaxNum</MudText>
-                        </span>
-                    </div>
-
-                </MudContainer>
-
-                <MudContainer Class="pa-2">
-
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Color:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.MudColorLight.Value</MudText>
-                        </span>
-                    </div>
-
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Site:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.StudySite</MudText>
-                        </span>
-                    </div>
-
-                    <div class="d-flex flex-row">
-                        <span style="width: 35%" class="mr-3 d-flex justify-end">
-                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">CCR F14 Appr.:</MudText>
-                        </span>
-                        <span style="width: 65%">
-                            <MudText Typo="Typo.body1"> @Study.CCR_F14_ApprovalDate?.ToShortDateString()</MudText>
-                        </span>
-                    </div>
+            <MudTabPanel Class="mt-2" Text="General Info" Value="1" Icon="@Icons.Material.Filled.Hive">
+                <MudCard Style="@($"background-color:{Colors.BlueGray.Lighten5};")">
 
 
-                </MudContainer>
 
-
-            </div>
-            <div class="d-flex flex-row">
-                <span style="width: 15%" class="mr-3 d-flex justify-end">
-                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Design:</MudText>
-                </span>
-                <span style="width: 85%">
-                    <MudText Typo="Typo.body1"> @Study.Design</MudText>
-                </span>
-            </div>
-            <div class="d-flex flex-row">
-                <span style="width: 15%" class="mr-3 d-flex justify-end">
-                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Comments:</MudText>
-                </span>
-                <span style="width: 85%">
-                    <MudText Typo="Typo.body1"> @Study.Comments</MudText>
-                </span>
-            </div>
-
-            <div class="d-flex mx-10">
-                <MudTabs KeepPanelsAlive="true" Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-
-                    <MudTabPanel Class="mt-2" Text="Gender" Value="1">
-
-                        @foreach (var gender in StudyGender)
-                        {
-                            <MudText Typo="Typo.body1">@gender.LookupName</MudText>
-                        }
-
-                    </MudTabPanel>
-                    <MudTabPanel Class="mt-2" Text="Race" Value="1">
-
-                        @foreach (var race in StudyRace)
-                        {
-                            <MudText Typo="Typo.body1">@race.LookupName</MudText>
-                        }
-
-                    </MudTabPanel>
-
-                    <MudTabPanel Class="mt-2" Text="Ethnicity" Value="1">
-
-                        @foreach (var ethnicity in StudyEthnicity)
-                        {
-                            <MudText Typo="Typo.body1">@ethnicity.LookupName</MudText>
-                        }
-
-                    </MudTabPanel>
-                    <MudTabPanel Class="mt-2" Text="Procedure" Value="1">
-
-                        @foreach (var procedure in StudyProcedure)
-                        {
-                            <MudText Typo="Typo.body1">@procedure.LookupName</MudText>
-                        }
-
-                    </MudTabPanel>
-                    <MudTabPanel Class="mt-2" Text="Counties" Value="1">
-                        <MudContainer class="newspaper-columns">
-                            @foreach (var county in StudyCounty)
-                            {
-                                <MudText Typo="Typo.body1">@county.LookupName</MudText>
-                            }
+                    <div class="d-flex mx-10">
+                        <MudContainer Class="pa-2">
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Prefix:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.Prefix</MudText>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Inv. Desig.:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.InvoiceDesignation</MudText>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Start Date:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.StartDate?.ToShortDateString()</MudText>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">End Date:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.EndDate?.ToShortDateString()</MudText>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">PI:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.PrincipalInvestigator</MudText>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">PM:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.ProjectManager</MudText>
+                                </span>
+                            </div>
                         </MudContainer>
 
+                        <MudContainer Class="pa-2">
 
-                    </MudTabPanel>
-                    <MudTabPanel Class="mt-2" Text="Site" Value="1">
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Min Age:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.MinAge</MudText>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Max Age:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.MaxAge</MudText>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Path Min Age:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.PathMinAge</MudText>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Path Max Age:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.PathMaxAge</MudText>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Path Max Num:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.PathMaxNum</MudText>
+                                </span>
+                            </div>
 
-                        @foreach (var site in StudySite)
-                        {
-                            <MudText Typo="Typo.body1">@site.LookupName</MudText>
-                        }
+                        </MudContainer>
 
-                    </MudTabPanel>
-                    <MudTabPanel Class="mt-2" Text="Histologies" Value="1">
+                        <MudContainer Class="pa-2">
 
-                        @foreach (var histology in StudyHistologies)
-                        {
-                            <MudText Typo="Typo.body1">@histology.HistologyCode/@histology.HistologyBehavior - @histology.HistologyName</MudText>
-                        }
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Color:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.MudColorLight.Value</MudText>
+                                </span>
+                            </div>
 
-                    </MudTabPanel>
-                </MudTabs>
-            </div>
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Site:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.StudySite</MudText>
+                                </span>
+                            </div>
 
-        </MudCard>
+                            <div class="d-flex flex-row">
+                                <span style="width: 35%" class="mr-3 d-flex justify-end">
+                                    <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">CCR F14 Appr.:</MudText>
+                                </span>
+                                <span style="width: 65%">
+                                    <MudText Typo="Typo.body1"> @Study.CCR_F14_ApprovalDate?.ToShortDateString()</MudText>
+                                </span>
+                            </div>
+
+
+                        </MudContainer>
+                    </div>
+                    <div class="d-flex flex-row">
+                        <span style="width: 15%" class="mr-3 d-flex justify-end">
+                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Design:</MudText>
+                        </span>
+                        <span style="width: 85%">
+                            <MudText Typo="Typo.body1"> @Study.Design</MudText>
+                        </span>
+                    </div>
+                    <div class="d-flex flex-row">
+                        <span style="width: 15%" class="mr-3 d-flex justify-end">
+                            <MudText Typo="Typo.body1" Style="@($"color:{Colors.BlueGray.Lighten1};")">Comments:</MudText>
+                        </span>
+                        <span style="width: 85%">
+                            <MudText Typo="Typo.body1"> @Study.Comments</MudText>
+                        </span>
+                    </div>
+
+                    
+
+                    <div class="d-flex mx-10">
+                        <MudTabs KeepPanelsAlive="true" Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+
+                            <MudTabPanel Class="mt-2" Text="Gender" Value="1">
+
+                                @foreach (var gender in StudyGender)
+                                {
+                                    <MudText Typo="Typo.body1">@gender.LookupName</MudText>
+                                }
+
+                            </MudTabPanel>
+                            <MudTabPanel Class="mt-2" Text="Race" Value="1">
+
+                                @foreach (var race in StudyRace)
+                                {
+                                    <MudText Typo="Typo.body1">@race.LookupName</MudText>
+                                }
+
+                            </MudTabPanel>
+
+                            <MudTabPanel Class="mt-2" Text="Ethnicity" Value="1">
+
+                                @foreach (var ethnicity in StudyEthnicity)
+                                {
+                                    <MudText Typo="Typo.body1">@ethnicity.LookupName</MudText>
+                                }
+
+                            </MudTabPanel>
+                            <MudTabPanel Class="mt-2" Text="Procedure" Value="1">
+
+                                @foreach (var procedure in StudyProcedure)
+                                {
+                                    <MudText Typo="Typo.body1">@procedure.LookupName</MudText>
+                                }
+
+                            </MudTabPanel>
+                            <MudTabPanel Class="mt-2" Text="Counties" Value="1">
+                                <MudContainer class="newspaper-columns">
+                                    @foreach (var county in StudyCounty)
+                                    {
+                                        <MudText Typo="Typo.body1">@county.LookupName</MudText>
+                                    }
+                                </MudContainer>
+
+
+                            </MudTabPanel>
+                            <MudTabPanel Class="mt-2" Text="Site" Value="1">
+
+                                @foreach (var site in StudySite)
+                                {
+                                    <MudText Typo="Typo.body1">@site.LookupName</MudText>
+                                }
+
+                            </MudTabPanel>
+                            <MudTabPanel Class="mt-2" Text="Histologies" Value="1">
+
+                                @foreach (var histology in StudyHistologies)
+                                {
+                                    <MudText Typo="Typo.body1">@histology.HistologyCode/@histology.HistologyBehavior - @histology.HistologyName</MudText>
+                                }
+
+                            </MudTabPanel>
+                        </MudTabs>
+                    </div>
+
+                </MudCard>
+            </MudTabPanel>
+            <MudTabPanel Class="mt-2" Text="Contacts" Value="1" Icon="@Icons.Material.Filled.Contacts">
+                <MudContainer Class="py-2">
+
+                    <MudTable T="StudyContact" Items="@Study.StudyContacts">
+                        <HeaderContent>
+                            <MudTh>First Name</MudTh>
+                            <MudTh>Last Name</MudTh>
+                            <MudTh>Role</MudTh>
+                            <MudTh>Phone</MudTh>
+                            <MudTh>Email</MudTh>
+                            <MudTh>Active</MudTh>
+                            <MudTh>Conf. Agreement</MudTh>
+                            <MudTh>On Teams Channel</MudTh>
+                            <MudTh>Receives Export Email</MudTh>
+                            <MudTh>Comments</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="First Name">@context.FirstName</MudTd>
+                            <MudTd DataLabel="Last Name">@context.LastName</MudTd>
+                            <MudTd DataLabel="Role">@context.Role</MudTd>
+                            <MudTd DataLabel="Phone">@context.PhoneNumber</MudTd>
+                            <MudTd DataLabel="Email">@context.Email</MudTd>
+                            <MudTd DataLabel="Active">
+                                @if (context.IsActive)
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
+                                }
+                                else
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.Clear" Color="Color.Error" />
+                                }
+                            </MudTd>
+                            <MudTd DataLabel="Conf. Agreement">
+                                @if (context.IsConfidentialAgreementSigned)
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
+                                }
+                                else
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.Clear" Color="Color.Error" />
+                                }
+                            </MudTd>
+                            <MudTd DataLabel="On Teams Channel">
+                                @if (context.IsOnTeamsChannel)
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
+                                }
+                                else
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.Clear" Color="Color.Error" />
+                                }
+                            </MudTd>
+                            <MudTd DataLabel="Receives Export Email">
+                                @if (context.IsExportEmailReceived)
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
+                                }
+                                else
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.Clear" Color="Color.Error" />
+                                }
+                            </MudTd>
+                            <MudTd DataLabel="Comments">@context.Comments</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudContainer>
+     
+            </MudTabPanel>
+        </MudTabs>
     </DialogContent>
 
 </MudDialog>
