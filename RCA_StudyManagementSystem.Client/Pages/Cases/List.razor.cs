@@ -7,6 +7,7 @@ using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.DTOs;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -2237,7 +2238,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     {
                                         newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
                                         {
-                                            PhoneNumber = row[12].ToString().Trim(),
+                                            PhoneNumber = row[13].ToString().Trim(),
                                             PhoneType = "Other",
                                             IsPrimary = true,
                                             CreatedDate = newPatient.CreatedDate,
@@ -2251,7 +2252,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     {
                                         newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
                                         {
-                                            PhoneNumber = row[13].ToString().Trim(),
+                                            PhoneNumber = row[14].ToString().Trim(),
                                             PhoneType = "Other",
                                             IsPrimary = false,
                                             CreatedDate = newPatient.CreatedDate,
@@ -2596,6 +2597,428 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     }
                                     newPath.HistologicDiff = histologicDiffValue;
                                     newPath.HistologicGrade = histologicGradeValue;
+
+
+                                    PathReportList.Add(newPath);
+                                }
+
+                                // Add the new paths to the database
+                                foreach (var path in PathReportList)
+                                {
+                                    var userId = await UserData.GetIdByEmailAsync("system_user@system.user"); // System User Id
+                                    var id = await PathReportData.CreatePathReportAsync(userId, path);
+                                }
+
+                                // Delete the placeholder pathreports
+                                await PathReportData.DeletePlaceholderPathReportsAsync();
+                                await PatientData.ClearCCRNosAsync();
+
+                            }
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+        private async Task OnCHANCE2Import()
+        {
+            string fileUrl = "https://localhost:7150/chance-2-cases.xlsx";
+            using (var client = new HttpClient())
+            {
+                using (var stream = await client.GetStreamAsync(fileUrl))
+                {
+                    // Copy to a seekable stream
+                    using (var ms = new MemoryStream())
+                    {
+                        await stream.CopyToAsync(ms);
+                        ms.Position = 0;
+
+                        // Register encoding provider for Excel files, if not already done
+                        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+                        using (var reader = ExcelReaderFactory.CreateReader(ms))
+                        {
+                            // Example: Convert to DataSet
+                            DataSet result = reader.AsDataSet();
+
+                            // You can now access the data in 'result.Tables'
+                            // For example, to iterate through the first sheet:
+                            var PatientList = new List<Patient>();
+                            var PatientPhoneList = new List<PatientPhoneNumber>();
+                            var PatientPathReportList = new List<PathReport>();
+
+                            if (result.Tables.Count > 0)
+                            {
+                                var index = 1;
+
+                                DataTable firstSheet = result.Tables[0];
+                                foreach (DataRow row in firstSheet.Rows)
+                                {
+                                    Console.WriteLine(string.Join(", ", row.ItemArray));
+                                    if (row[0]?.ToString() == "CCRNo") // Skip header row
+                                        continue;
+                                    var newPatient = new Patient();
+                                    newPatient.StudyId = Guid.Parse("E75C6CA6-FECF-4923-270C-08DE94EA6BC8");  // CHANCE-2 StudyId
+                                    newPatient.MigratedCCRNo = row[0]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.FirstName = row[2]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.MiddleName = row[3]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.LastName = row[1]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.Suffix = row[4]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.Address1 = row[6]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.Address2 = row[7]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.PatientComments = row[8]?.ToString().Trim() + " ";
+                                    newPatient.City = row[9]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.State = row[10]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.County = await LookupData.GetCountyByFIPSAsync(row[12]?.ToString().Trim()) ?? string.Empty;
+                                    newPatient.CountyCode = row[12]?.ToString().Trim().Remove(0, 2) ?? string.Empty;
+                                    newPatient.ZipCode = row[11]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.DateOfBirth = DateTime.TryParse(row[15]?.ToString().Trim(), out DateTime dob) ? dob : (DateTime?)null;
+                                    Console.WriteLine("RACECODE: " + row[16]?.ToString().Trim().PadLeft(2, '0'));
+
+                                    var race = row[16]?.ToString().Trim().PadLeft(2, '0');
+                                    var raceCode = ""; switch (race)
+                                    {
+                                        case "1":
+                                            raceCode = "01";
+                                            break;
+                                        case "2":
+                                            raceCode = "02";
+                                            break;
+                                        case "98":
+                                            raceCode = "99";
+                                            break;
+                                        case "100":
+                                            raceCode = "99";
+                                            break;
+                                        default:
+                                            raceCode = "99";
+                                            break;
+                                    }
+                                    newPatient.Race = await LookupData.GetTypeByCodeAsync("Race", raceCode) ?? string.Empty;
+                                    newPatient.RaceCode = raceCode ?? string.Empty;
+                                    newPatient.Gender = await LookupData.GetTypeByCodeAsync("Gender", row[17]?.ToString().Trim()) ?? string.Empty;
+                                    newPatient.GenderCode = row[17]?.ToString().Trim() ?? string.Empty;
+
+                                    //var ethnicity = row[16]?.ToString().Trim();
+                                    //var ethnicityCode = "9";
+                                    //switch (ethnicity)
+                                    //{
+                                    //    case "Hispanic":
+                                    //        ethnicityCode = "6";
+                                    //        break;
+                                    //    case "Non-Hispanic":
+                                    //        ethnicityCode = "0";
+                                    //        break;
+                                    //    case "Unknown":
+                                    //        ethnicityCode = "9";
+                                    //        break;
+                                    //    default:
+                                    //        ethnicityCode = "9";
+                                    //        break;
+                                    //}
+
+                                    newPatient.Ethnicity = await LookupData.GetTypeByCodeAsync("Ethnicity", "9"); // No ethnicity data, default to "Unknown"
+                                    newPatient.EthnicityCode = "9";
+                                    newPatient.SocialSecurityNumber = row[18]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.PatientComments += row[19]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.Email = row[37]?.ToString().Trim() ?? string.Empty;
+                                    newPatient.PreferredName = string.Empty;
+                                    newPatient.DisplayName = $"{newPatient.LastName}, {newPatient.FirstName}";
+                                    newPatient.IsActive = true;
+
+
+                                    newPatient.CreatedDate = DateTime.TryParse(row[21]?.ToString().Trim(), out DateTime cDate) ? cDate : DateTime.UtcNow;
+                                    newPatient.ModifiedDate = DateTime.TryParse(row[22]?.ToString().Trim(), out DateTime tempDate) ? tempDate : (DateTime?)null;
+                                    var editedBy = row[23]?.ToString().Trim() + "@migrated.user";
+                                    var editedById = await UserData.GetIdByEmailAsync(editedBy);
+                                    newPatient.ModifiedUserId = Guid.Parse(editedById);
+                                    if (newPatient.ModifiedDate == newPatient.CreatedDate)
+                                    {
+                                        newPatient.CreatedUserId = (Guid)newPatient.ModifiedUserId;
+                                    }
+                                    else
+                                    {
+                                        newPatient.CreatedUserId = Guid.Empty;
+                                    }
+
+                                    // Initialize the list so it's not null
+                                    newPatient.PatientPhoneNumbers = new List<PatientPhoneNumber>();
+
+                                    if (!string.IsNullOrWhiteSpace(row[13]?.ToString()))
+                                    {
+                                        newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
+                                        {
+                                            PhoneNumber = row[13].ToString().Trim(),
+                                            PhoneType = "Other",
+                                            IsPrimary = true,
+                                            CreatedDate = newPatient.CreatedDate,
+                                            CreatedUserId = newPatient.CreatedUserId,
+                                            ModifiedDate = newPatient.ModifiedDate,
+                                            ModifiedUserId = newPatient.ModifiedUserId
+                                        });
+                                    }
+
+                                    if (!string.IsNullOrWhiteSpace(row[14]?.ToString()))
+                                    {
+                                        newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
+                                        {
+                                            PhoneNumber = row[14].ToString().Trim(),
+                                            PhoneType = "Other",
+                                            IsPrimary = false,
+                                            CreatedDate = newPatient.CreatedDate,
+                                            CreatedUserId = newPatient.CreatedUserId,
+                                            ModifiedDate = newPatient.ModifiedDate,
+                                            ModifiedUserId = newPatient.ModifiedUserId
+                                        });
+                                    }
+
+                                    //newPatient.PatientPhoneNumbers = PatientPhoneList;
+
+
+                                    PatientPhoneList = new List<PatientPhoneNumber>();
+
+                                    var newPath = new PathReport();
+                                    newPath.MigratedCCRNumber = newPatient.MigratedCCRNo;
+                                    newPath.AgeAtProcedure = "0";
+                                    newPath.AuthorizingProvider = "Placeholder";
+                                    newPath.SubmittingHospital = "UNC Health Care";
+                                    newPath.HospCity = "Chapel Hill";
+                                    newPath.SubmittingHospitalPathReportNumber = "Placeholder" + index.ToString();
+                                    newPath.DateOfProcedure = DateTime.Now;
+                                    newPath.Site = "Placeholder";
+                                    newPath.PathProcedure = "Placeholder";
+                                    newPath.HistologyDiagnosis1 = "Placeholder";
+                                    newPath.HistologyCode1 = "0";
+                                    newPath.HistologyBehavior1 = "0";
+                                    newPath.HospAddress1 = "Placeholder";
+                                    newPath.PathIndex = 1;
+
+                                    PatientPathReportList.Add(newPath);
+
+                                    newPatient.PathReports = PatientPathReportList;
+
+                                    PatientPathReportList = new List<PathReport>();
+
+
+                                    PatientList.Add(newPatient);
+                                    index++;
+                                }
+
+                                // Add the new patients to the database
+                                foreach (var patient in PatientList)
+                                {
+                                    patient.CaseNumber = await GenerateCaseNumber.Generate("CHANCE-2");
+                                    var userId = await UserData.GetIdByEmailAsync("system_user@system.user"); // System User Id
+                                    var id = await PatientData.CreatePatientAsync(userId, patient);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task OnCHANCE2PathImport()
+        {
+            string fileUrl = "https://localhost:7150/chance-2-pathreports.xlsx";
+            using (var client = new HttpClient())
+            {
+                using (var stream = await client.GetStreamAsync(fileUrl))
+                {
+                    // Copy to a seekable stream
+                    using (var ms = new MemoryStream())
+                    {
+                        await stream.CopyToAsync(ms);
+                        ms.Position = 0;
+
+                        // Register encoding provider for Excel files, if not already done
+                        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+                        using (var reader = ExcelReaderFactory.CreateReader(ms))
+                        {
+                            // Example: Convert to DataSet
+                            DataSet result = reader.AsDataSet();
+
+                            // You can now access the data in 'result.Tables'
+                            // For example, to iterate through the first sheet:
+
+                            var PathReportList = new List<PathReport>();
+
+                            if (result.Tables.Count > 0)
+                            {
+                                var index = 1;
+
+                                DataTable firstSheet = result.Tables[0];
+                                foreach (DataRow row in firstSheet.Rows)
+                                {
+                                    Console.WriteLine(string.Join(", ", row.ItemArray));
+                                    if (row[0]?.ToString() == "CCRPathRptKey") // Skip header row
+                                        continue;
+                                    var newPath = new PathReport();
+                                    newPath.PathIndex = 1;
+                                    newPath.MigratedCCRNumber = row[1]?.ToString().Trim() ?? string.Empty;
+                                    newPath.PatientId = await PatientData.GetPatientIdByCCRNoAsync(newPath.MigratedCCRNumber);
+                                    await Task.Delay(50);
+
+                                    var study = await StudyData.GetStudyAsync(Guid.Parse("E75C6CA6-FECF-4923-270C-08DE94EA6BC8"));  // CHANCE-2 StudyId
+                                    newPath.StudyPrefix = study.Prefix;
+                                    newPath.StudyColor = study.ColorLight;
+
+                                    var patient = await PatientData.GetPatientAsync(newPath.PatientId);
+                                    await Task.Delay(50);
+                                    newPath.CaseNumber = patient.CaseNumber;
+                                    newPath.DxAddress1 = patient != null ? patient.Address1 : "Unknown";
+                                    newPath.DxAddress2 = patient != null ? patient.Address2 : "Unknown";
+                                    newPath.DxCity = patient != null ? patient.City : "Unknown";
+                                    newPath.DxState = patient != null ? patient.State : "Unknown";
+                                    newPath.DxZipCode = patient != null ? patient.ZipCode : "Unknown";
+                                    newPath.DxPhoneNumber = await PatientData.GetPatientPrimaryPhoneAsync(newPath.PatientId);
+                                    newPath.DxCounty = patient != null ? patient.County : "Unknown";
+                                    newPath.DxCountyCode = patient != null ? patient.CountyCode : "Unknown";
+
+                                    newPath.DateOfProcedure = DateTime.TryParse(row[4]?.ToString().Trim(), out DateTime dop) ? dop : (DateTime?)null;
+                                    newPath.AgeAtProcedure = row[5]?.ToString().Trim() ?? string.Empty;
+
+                                    var hospital = await HospitalData.GetHospitalByMigratedIdAsync(row[2]?.ToString().Trim().TrimStart('0') ?? string.Empty);
+                                    await Task.Delay(50);
+                                    if (hospital.IsDuplicate)
+                                    {
+                                        hospital = await HospitalData.GetHospitalByMigratedIdAsync(hospital.DuplicateOfHospitalId);
+                                    }
+                                    newPath.HospitalId = hospital != null ? hospital.HospitalId : Guid.Empty;
+                                    newPath.SubmittingHospital = hospital != null ? hospital.HospitalName : "Unknown Hospital";
+                                    newPath.HospAddress1 = hospital != null ? hospital.Address1 : "Unknown";
+                                    newPath.HospAddress2 = hospital != null ? hospital.Address2 : "Unknown";
+                                    newPath.HospCity = hospital != null ? hospital.City : "Unknown";
+                                    newPath.HospState = hospital != null ? hospital.State : "Unknown";
+                                    newPath.HospZipCode = hospital != null ? hospital.ZipCode : "Unknown";
+                                    newPath.HospPhoneNumber = hospital != null ? hospital.PhoneNumber : "Unknown";
+                                    newPath.HospFaxNumber = hospital != null ? hospital.FaxNumber : "Unknown";
+
+                                    newPath.SubmittingHospitalPathReportNumber = row[7]?.ToString().Trim() ?? string.Empty;
+
+                                    var doctor = await DoctorData.GetDoctorByMigratedIdAsync(row[8]?.ToString().Trim());
+                                    await Task.Delay(50);
+                                    if (doctor.IsDuplicate)
+                                    {
+                                        doctor = await DoctorData.GetDoctorByMigratedIdAsync(doctor.DuplicateOfDoctorId);
+                                    }
+                                    newPath.AuthorizingProvider = doctor != null ? doctor.DisplayName : "Unknown Provider";
+                                    newPath.DoctorId = doctor != null ? doctor.DoctorId : Guid.Empty;
+                                    newPath.MDAddress1 = doctor != null ? doctor.Address1 : "Unknown";
+                                    newPath.MDAddress2 = doctor != null ? doctor.Address2 : "Unknown";
+                                    newPath.MD2Address3 = doctor != null ? doctor.Address2 : "Unknown";
+                                    newPath.MDCity = doctor != null ? doctor.City : "Unknown";
+                                    newPath.MDState = doctor != null ? doctor.State : "Unknown";
+                                    newPath.MDZipCode = doctor != null ? doctor.ZipCode : "Unknown";
+                                    newPath.MDCounty = doctor != null ? doctor.County : "Unknown";
+                                    newPath.MDPhoneNumber1 = doctor != null ? doctor.PhoneNumber1 : "Unknown";
+                                    newPath.MDPhoneNumber2 = doctor != null ? doctor.PhoneNumber2 : "Unknown";
+                                    newPath.MDFaxNumber = doctor != null ? doctor.FaxNumber : "Unknown";
+                                    newPath.MDEmail = doctor != null ? doctor.Email : "Unknown";
+
+                                    newPath.AuthorizingProviderComments = string.Empty;
+
+
+
+                                    var studyId = Guid.Parse("B4C7A525-42CD-4931-75CA-08DDEF2BF95E");  // MTCSS StudyId
+
+                                    if (!string.IsNullOrEmpty(row[11]?.ToString().Trim()))
+                                    {
+                                        var site1 = await StudyLookupData.GetValueByOldCodeAsync(studyId, "Site", Int32.Parse(row[11]?.ToString().Trim()));
+                                        await Task.Delay(50);
+                                        newPath.Site = site1 ?? "Unknown Site";
+                                        newPath.SiteCode = await StudyLookupData.GetCodeByValueAsync(studyId, "Site", site1);
+                                        await Task.Delay(50);
+                                    }
+                                    else
+                                    {
+                                        newPath.Site = "Unknown Site";
+                                        newPath.SiteCode = string.Empty;
+                                    }
+
+
+                                    if (!string.IsNullOrEmpty(row[9]?.ToString().Trim()))
+                                    {
+                                        var proc1 = await StudyLookupData.GetValueByOldCodeAsync(studyId, "Procedure", Int32.Parse(row[9]?.ToString().Trim()));
+                                        await Task.Delay(50);
+                                        newPath.PathProcedure = proc1 ?? "Unknown Procedure";
+                                    }
+                                    else
+                                    {
+                                        newPath.PathProcedure = "Unknown Procedure";
+                                    }
+
+
+                                    newPath.PathComments = row[10]?.ToString().Trim() ?? string.Empty;
+                                    newPath.IsOutsidePathReport = row[13]?.ToString().Trim().ToLower() == "n" ? false : true;
+                                    newPath.SlidesResideAtSubmittingHospital = row[13]?.ToString().Trim().ToLower() == "n" ? "Yes" : "No";
+
+                                    if (!string.IsNullOrEmpty(row[14].ToString()))
+                                    {
+                                        var outsideHospital = await HospitalData.GetHospitalByMigratedIdAsync(row[14].ToString().Trim().TrimStart('0'));
+                                        await Task.Delay(50);
+                                        if (outsideHospital.IsDuplicate)
+                                        {
+                                            outsideHospital = await HospitalData.GetHospitalByMigratedIdAsync(outsideHospital.DuplicateOfHospitalId);
+                                        }
+                                        newPath.OriginatingHospitalName = outsideHospital.HospitalName ?? "Unknown";
+                                        newPath.OrigHospitalId = outsideHospital.HospitalId;
+                                        newPath.OrigHospAddress1 = outsideHospital.Address1;
+                                        newPath.OrigHospAddress2 = outsideHospital.Address2;
+                                        newPath.OrigHospCity = outsideHospital.City;
+                                        newPath.OrigHospState = outsideHospital.State;
+                                        newPath.OrigHospZipCode = outsideHospital.ZipCode;
+                                        newPath.OrigHospPhoneNumber = outsideHospital.PhoneNumber;
+                                        newPath.OrigHospFaxNumber = outsideHospital.FaxNumber;
+
+                                    }
+
+                                    newPath.OriginatingHospitalPathReportNumber = row[16]?.ToString().Trim() ?? string.Empty;
+                                    newPath.OriginatingHospitalComments = row[17]?.ToString().Trim() ?? string.Empty;
+                                    newPath.PathComments += row[31]?.ToString().Trim() ?? string.Empty;
+                                    newPath.IsOnHold = row[32]?.ToString().Trim().ToLower() == "true" ? true : false;
+
+                                    newPath.CreatedDate = DateTime.TryParse(row[33]?.ToString().Trim(), out DateTime cDate) ? cDate : DateTime.UtcNow;
+                                    newPath.ModifiedDate = DateTime.TryParse(row[34]?.ToString().Trim(), out DateTime tempDate) ? tempDate : (DateTime?)null;
+                                    var editedBy = row[35]?.ToString().Trim() + "@migrated.user";
+                                    var editedById = await UserData.GetIdByEmailAsync(editedBy);
+                                    newPath.ModifiedUserId = Guid.Parse(editedById);
+                                    if (newPath.ModifiedDate == newPath.CreatedDate)
+                                    {
+                                        newPath.CreatedUserId = (Guid)newPath.ModifiedUserId;
+                                    }
+                                    else
+                                    {
+                                        newPath.CreatedUserId = Guid.Empty;
+                                    }
+                                    if (string.IsNullOrEmpty(row[36]?.ToString().Trim()))
+                                    {
+                                        newPath.RcaExportDate = null;
+                                        newPath.ExportStatus = "Unknown";
+                                    }
+                                    else
+                                    {
+                                        newPath.RcaExportDate = DateTime.Parse(row[36]?.ToString().Trim());
+                                        newPath.ExportStatus = "Exported";
+                                    }
+
+                                    if (!string.IsNullOrEmpty(row[44].ToString().Trim()))
+                                    {
+                                        var histCode = Int32.Parse(row[44].ToString().Trim());
+                                        var histology = await StudyHistologyData.GetValueByOldCodeAsync(studyId, histCode);
+                                        await Task.Delay(50);
+                                        newPath.HistologyDiagnosis1 = histology.HistologyName;
+                                        newPath.HistologyCode1 = histology.HistologyCode;
+                                        newPath.HistologyBehavior1 = histology.HistologyBehavior;
+                                    }
+
+                                    newPath.HistologyDiagnosisComments1 = row[45]?.ToString().Trim() ?? string.Empty;
+
+                                    newPath.P16 = row[74]?.ToString().Trim() ?? string.Empty;
+                                    newPath.HPV_Value = row[75]?.ToString().Trim() ?? string.Empty;
 
 
                                     PathReportList.Add(newPath);

@@ -53,7 +53,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
             
             if (x.FirstName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
                 return true;
-            if(x.MigratedDoctorId.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            if(x.MigratedDoctorId!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
                 return true;
 
             if (x.DisplayName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
