@@ -119,7 +119,7 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         public string? MDState { get; set; } = string.Empty;
         public string? MDZipCode { get; set; } = string.Empty;
         public string? MDCounty { get; set; } = string.Empty;
-        public string MDPhoneNumber1 { get; set; } = string.Empty;
+        public string? MDPhoneNumber1 { get; set; } = string.Empty;
         public string? MDPhoneNumber2 { get; set; } = string.Empty;
         public string? MDFaxNumber { get; set; } = string.Empty;
         public string? MDEmail { get; set; } = string.Empty;
@@ -171,7 +171,7 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         public string? Path2State { get; set; } = string.Empty;
         public string? Path2ZipCode { get; set; } = string.Empty;
         public string? Path2County { get; set; } = string.Empty;
-        public string Path2PhoneNumber1 { get; set; } = string.Empty;
+        public string? Path2PhoneNumber1 { get; set; } = string.Empty;
         public string? Path2PhoneNumber2 { get; set; } = string.Empty;
         public string? Path2FaxNumber { get; set; } = string.Empty;
         public string? Path2Email { get; set; } = string.Empty;

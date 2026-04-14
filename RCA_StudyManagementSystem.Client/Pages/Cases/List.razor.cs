@@ -1049,6 +1049,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                         newPath.HistologyCode1 = histology.HistologyCode;
                                         newPath.HistologyBehavior1 = histology.HistologyBehavior;
                                     }
+                                    else
+                                    {
+                                        newPath.HistologyDiagnosis1 = "Unknown";
+                                        newPath.HistologyCode1 = "0000";
+                                        newPath.HistologyBehavior1 = "0";
+                                    }
 
                                     newPath.HistologyDiagnosisComments1 = row[50]?.ToString().Trim() ?? string.Empty;
 
@@ -1068,6 +1074,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                         newPath.HistologyDiagnosis2 = histology.HistologyName;
                                         newPath.HistologyCode2 = histology.HistologyCode;
                                         newPath.HistologyBehavior2 = histology.HistologyBehavior;
+                                    }
+                                    else
+                                    {
+                                        newPath.HistologyDiagnosis1 = "Unknown";
+                                        newPath.HistologyCode1 = "0000";
+                                        newPath.HistologyBehavior1 = "0";
                                     }
 
                                     newPath.HistologyDiagnosisComments2 = row[52]?.ToString().Trim() ?? string.Empty;
@@ -1558,6 +1570,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                         newPath.HistologyCode1 = histology.HistologyCode;
                                         newPath.HistologyBehavior1 = histology.HistologyBehavior;
                                     }
+                                    else
+                                    {
+                                        newPath.HistologyDiagnosis1 = "Unknown";
+                                        newPath.HistologyCode1 = "0000";
+                                        newPath.HistologyBehavior1 = "0";
+                                    }
 
                                     newPath.HistologyDiagnosisComments1 = row[30]?.ToString().Trim() ?? string.Empty;
 
@@ -1577,6 +1595,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                         newPath.HistologyDiagnosis2 = histology.HistologyName;
                                         newPath.HistologyCode2 = histology.HistologyCode;
                                         newPath.HistologyBehavior2 = histology.HistologyBehavior;
+                                    }
+                                    else
+                                    {
+                                        newPath.HistologyDiagnosis1 = "Unknown";
+                                        newPath.HistologyCode1 = "0000";
+                                        newPath.HistologyBehavior1 = "0";
                                     }
 
                                     newPath.HistologyDiagnosisComments2 = row[32]?.ToString().Trim() ?? string.Empty;
@@ -1678,8 +1702,44 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPatient.DateOfBirth = DateTime.TryParse(row[14]?.ToString().Trim(), out DateTime dob) ? dob : (DateTime?)null;
                                     Console.WriteLine("RACECODE: " + row[15]?.ToString().Trim().PadLeft(2, '0'));
 
-                                    newPatient.Race = await LookupData.GetTypeByCodeAsync("Race", row[15]?.ToString().Trim().PadLeft(2, '0')) ?? string.Empty;
-                                    newPatient.RaceCode = row[15]?.ToString().Trim().PadLeft(2, '0') ?? string.Empty;
+                                    var race = row[15]?.ToString().Trim().PadLeft(2, '0');
+                                    var raceCode = "";
+                                    switch (race)
+                                    {
+                                        case "01":
+                                            raceCode = "01";
+                                            break;
+                                        case "02":
+                                            raceCode = "02";
+                                            break;
+                                        case "03":
+                                            raceCode = "03";
+                                            break;
+                                        case "04":
+                                            raceCode = "96";
+                                            break;
+                                        case "05":
+                                            raceCode = "98";
+                                            break;
+                                        case "06":
+                                            raceCode = "07";
+                                            break;
+                                        case "08":
+                                            raceCode = "98";
+                                            break;
+                                        case "09":
+                                            raceCode = "99";
+                                            break;
+                                        case "10":
+                                            raceCode = "98";
+                                            break;
+                                        default:
+                                            raceCode = "99";
+                                            break;
+                                    }
+
+                                    newPatient.Race = await LookupData.GetTypeByCodeAsync("Race", raceCode) ?? string.Empty;
+                                    newPatient.RaceCode = raceCode ?? string.Empty;
                                     newPatient.Gender = await LookupData.GetTypeByCodeAsync("Gender", row[16]?.ToString().Trim()) ?? string.Empty;
                                     newPatient.GenderCode = row[16]?.ToString().Trim() ?? string.Empty;
 
@@ -2031,6 +2091,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                         newPath.HistologyCode1 = histology.HistologyCode;
                                         newPath.HistologyBehavior1 = histology.HistologyBehavior;
                                     }
+                                    else
+                                    {
+                                        newPath.HistologyDiagnosis1 = "Unknown";
+                                        newPath.HistologyCode1 = "0000";
+                                        newPath.HistologyBehavior1 = "0";
+                                    }
 
                                     newPath.HistologyDiagnosisComments1 = row[50]?.ToString().Trim() ?? string.Empty;
 
@@ -2059,6 +2125,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                         newPath.HistologyDiagnosis2 = histology.HistologyName;
                                         newPath.HistologyCode2 = histology.HistologyCode;
                                         newPath.HistologyBehavior2 = histology.HistologyBehavior;
+                                    }
+                                    else
+                                    {
+                                        newPath.HistologyDiagnosis1 = "Unknown";
+                                        newPath.HistologyCode1 = "0000";
+                                        newPath.HistologyBehavior1 = "0";
                                     }
 
                                     newPath.HistologyDiagnosisComments2 = row[52]?.ToString().Trim() ?? string.Empty;
@@ -2511,6 +2583,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                         newPath.HistologyCode1 = histology.HistologyCode;
                                         newPath.HistologyBehavior1 = histology.HistologyBehavior;
                                     }
+                                    else
+                                    {
+                                        newPath.HistologyDiagnosis1 = "Unknown";
+                                        newPath.HistologyCode1 = "0000";
+                                        newPath.HistologyBehavior1 = "0";
+                                    }
 
                                     newPath.HistologyDiagnosisComments1 = row[17]?.ToString().Trim() ?? string.Empty;
 
@@ -2522,6 +2600,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                         newPath.HistologyDiagnosis2 = histology.HistologyName;
                                         newPath.HistologyCode2 = histology.HistologyCode;
                                         newPath.HistologyBehavior2 = histology.HistologyBehavior;
+                                    }
+                                    else
+                                    {
+                                        newPath.HistologyDiagnosis1 = "Unknown";
+                                        newPath.HistologyCode1 = "0000";
+                                        newPath.HistologyBehavior1 = "0";
                                     }
 
                                     newPath.HistologyDiagnosisComments2 = row[19]?.ToString().Trim() ?? string.Empty;
@@ -2921,9 +3005,29 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
                                     newPath.AuthorizingProviderComments = string.Empty;
 
+                                    var pathologist = await DoctorData.GetDoctorByMigratedIdAsync(row[53]?.ToString().Trim());
+                                    await Task.Delay(50);
+                                    if (pathologist.IsDuplicate)
+                                    {
+                                        pathologist = await DoctorData.GetDoctorByMigratedIdAsync(pathologist.DuplicateOfDoctorId);
+                                    }
+                                    newPath.Pathologist = pathologist != null ? pathologist.DisplayName : "Unknown Pathologist";
+                                    newPath.PathologistId = pathologist != null ? pathologist.DoctorId : Guid.Empty;
+                                    newPath.PathAddress1 = pathologist != null ? pathologist.Address1 : "Unknown";
+                                    newPath.PathAddress2 = pathologist != null ? pathologist.Address2 : "Unknown";
+                                    newPath.PathAddress3 = pathologist != null ? pathologist.Address2 : "Unknown";
+                                    newPath.PathCity = pathologist != null ? pathologist.City : "Unknown";
+                                    newPath.PathState = pathologist != null ? pathologist.State : "Unknown";
+                                    newPath.PathZipCode = pathologist != null ? pathologist.ZipCode : "Unknown";
+                                    newPath.PathCounty = pathologist != null ? pathologist.County : "Unknown";
+                                    newPath.PathPhoneNumber1 = pathologist != null ? pathologist.PhoneNumber1 : "Unknown";
+                                    newPath.PathPhoneNumber2 = pathologist != null ? pathologist.PhoneNumber2 : "Unknown";
+                                    newPath.PathFaxNumber = pathologist != null ? pathologist.FaxNumber : "Unknown";
+                                    newPath.PathEmail = pathologist != null ? pathologist.Email : "Unknown";
 
 
-                                    var studyId = Guid.Parse("B4C7A525-42CD-4931-75CA-08DDEF2BF95E");  // MTCSS StudyId
+
+                                    var studyId = Guid.Parse("E75C6CA6-FECF-4923-270C-08DE94EA6BC8");  // CHANCE-2 StudyId
 
                                     if (!string.IsNullOrEmpty(row[11]?.ToString().Trim()))
                                     {
@@ -3014,6 +3118,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                         newPath.HistologyCode1 = histology.HistologyCode;
                                         newPath.HistologyBehavior1 = histology.HistologyBehavior;
                                     }
+                                    else
+                                    {
+                                        newPath.HistologyDiagnosis1 = "Unknown";
+                                        newPath.HistologyCode1 = "0000";
+                                        newPath.HistologyBehavior1 = "0";
+                                    }
 
                                     newPath.HistologyDiagnosisComments1 = row[45]?.ToString().Trim() ?? string.Empty;
 
@@ -3043,6 +3153,72 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
             }
         }
+
+        private async Task OnCHANCE2SiteImport()
+        {
+            string fileUrl = "https://localhost:7150/chance-2-sites.xlsx";
+            using (var client = new HttpClient())
+            {
+                using (var stream = await client.GetStreamAsync(fileUrl))
+                {
+                    // Copy to a seekable stream
+                    using (var ms = new MemoryStream())
+                    {
+                        await stream.CopyToAsync(ms);
+                        ms.Position = 0;
+
+                        // Register encoding provider for Excel files, if not already done
+                        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+                        using (var reader = ExcelReaderFactory.CreateReader(ms))
+                        {
+                            // Example: Convert to DataSet
+                            DataSet result = reader.AsDataSet();
+
+                            // You can now access the data in 'result.Tables'
+                            // For example, to iterate through the first sheet:
+
+                            var Lookups = new List<Lookup>();
+
+                            if (result.Tables.Count > 0)
+                            {
+                                var index = 1;
+
+                                DataTable firstSheet = result.Tables[0];
+                                foreach (DataRow row in firstSheet.Rows)
+                                {
+                                    var newLookup = new Lookup();
+                                    newLookup.LookupType = "Site";
+                                    var existingLookups = await LookupData.ListLookupsByTypeAsync("Site");
+
+                                    if (existingLookups.Any(l => l == row[1]?.ToString().Trim()))
+                                    {
+                                        continue; // Skip if lookup with same name already exists
+                                    }
+                                    newLookup.LookupName = row[1]?.ToString().Trim() ?? string.Empty;
+                                    newLookup.LookupCode = row[3]?.ToString().Trim() ?? string.Empty;
+
+                                    Lookups.Add(newLookup);
+                                }
+
+                                // Add the new paths to the database
+                                foreach (var lookup in Lookups)
+                                {
+                                    var userId = await UserData.GetIdByEmailAsync("system_user@system.user"); // System User Id
+                                    var id = await LookupData.CreateLookupAsync(userId, lookup);
+                                }
+
+                            }
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+
+
 
 
     }
