@@ -316,123 +316,123 @@
                         var pathHeader = "Path Report " + pathReport.PathIndex.ToString() + " - Export Date: " + pathReport.RcaExportDate?.ToShortDateString();
 
                         <div @key="pathReport.PathReportId">
-                        <MudExpansionPanel Text="@pathHeader" Expanded="true">
-                            <MudGrid>
+                            <MudExpansionPanel Text="@pathHeader" Expanded="true">
+                                <MudGrid>
 
-                                <MudItem xs="12" sm="12" md="3" Class="mb-3 mt-2">
-                                    <MudAutocomplete T="Hospital" Value="pathReport.HospitalEntity" @ref="@hospAutocompleteRef"
-                                                     SearchFunc="HospitalSearch"
-                                                     @onfocus="@(() => _activeReport = pathReport)"
-                                                     SelectValueOnTab="true"
-                                                     DebounceInterval="300"
-                                                     Immediate="true"
-                                                     MinCharacters="3"
-                                                     ResetValueOnEmptyText="false"
-                                                     MaxItems="50"
-                                                     Label="Submitting Hospital"
-                                                     Placeholder="Search for Hospital"
-                                                     Modal="true" 
-                                                     Clearable 
-                                                     OnClearButtonClick="() => OnHospitalCleared(pathReport)"
-                                                     Variant="Variant.Outlined"
-                                                     ValueChanged="((value) => OnHospitalSelectionChanged(value, pathReport))"
-                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName}")"
-                                                     ShowProgressIndicator="true"
-                                                     ProgressIndicatorColor="Color.Info"
-                                                     AnchorOrigin="@_anchor"
-                                                     TransformOrigin="@_transform"
-                                                     RelativeWidth="_dropdownWidth">
-                                                     <ItemTemplate Context="item">
-                                                        <div class="d-flex flex-column">
-                                                            <MudText Typo="Typo.body1">@item.HospitalName</MudText>
-                                                            <MudText Typo="Typo.caption" Color="Color.Info">
-                                                                @item.City
-                                                            </MudText>
-                                                        </div>
-                                                    </ItemTemplate>
-                                     </MudAutocomplete>
-                                </MudItem>
-                                <MudItem xs="12" sm="12" md="1" Class="mt-7">
-                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
-                                               ButtonType="ButtonType.Button" OnClick="() => EditHospital(pathReport)"></MudButton>
-                                </MudItem>
-                                <MudItem xs="12" sm="6" md="2" Class="mb-n3">
-                                    <MudTextField Label="Sub. Hosp. Path Report Number" Variant="Variant.Outlined"
-                                                  @bind-Value="@pathReport.SubmittingHospitalPathReportNumber" Margin="Margin.Normal"
-                                                  For="@(() => pathReport.SubmittingHospitalPathReportNumber)"></MudTextField>
-                                </MudItem>
-                                <MudItem xs="12" sm="6" md="2" Class="mb-n3">
-                                    <MudDatePicker Label="Date of Procedure" Editable="true" Placeholder="Select Date" Date="pathReport.DateOfProcedure"
-                                                   Variant="Variant.Outlined" Margin="Margin.Normal" Mask="@(new DateMask("MM/dd/yyyy"))" DateFormat="MM/dd/yyyy"
-                                                   For="@(() => pathReport.DateOfProcedure)"
-                                                   DateChanged="@((Date) => CalculateAgeAtProcedure(Patient, pathReport, Date, Patient.DateOfBirth))" />
-                                    <MudText Color="Color.Info">@errorMsgPath</MudText>
-                                </MudItem>
-                                <MudItem xs="12" sm="3" md="1" Class="mb-n3">
-                                    <MudTextField T="string" Label="Age at Procedure" Variant="Variant.Outlined"
-                                                  @bind-Value="@pathReport.AgeAtProcedure" Margin="Margin.Normal"></MudTextField>
-                                    <MudText Color="Color.Info">@errorMsgAge</MudText>
-                                </MudItem>
-                                <MudItem xs="12" sm="6" md="2" Class="mb-n3">
-                                    <MudSelect @ref="exportSelect" @bind-Value="@pathReport.ExportStatus" Label="Export Status" HelperText="" Placeholder=""
-                                               Variant="Variant.Outlined" Margin="Margin.Normal"
-                                               For="@(() => pathReport.ExportStatus)">
-                                        <MudSelectItem Value="@("Ready")">Ready</MudSelectItem>
-                                        <MudSelectItem Value="@("Exported")">Exported</MudSelectItem>
-                                        <MudSelectItem Value="@("Ineligible for export")">Ineligible for export</MudSelectItem>
-                                        <MudSelectItem Value="@("Path too early")">Path too early</MudSelectItem>
-                                    </MudSelect>
-                                </MudItem>
-                                <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex justify-end">
-                                    <MudCheckBox T=bool Label="Hold" Value="pathReport.IsOnHold" For="@(() => pathReport.IsOnHold)"
-                                                 ValueChanged="@((value) => OnIsOnHoldChangedAsync(pathReport, value))" Dense />
-                                </MudItem>
-
-                                @if (Patient.StudyId == Guid.Parse("631B71B4-B451-4FD7-8B82-08DDD0513E23")) // Endometrial Study CECS
-                                {
-                                    <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex">
-                                        <MudCheckBox T=bool Label="Addendum" @bind-Value="pathReport.IsAddendum" 
-                                                        For="@(() => pathReport.IsAddendum)"
-                                                        Dense />
-                                    </MudItem>
-                                }
-
-                                <MudItem xs="4" sm="3" md="2" Class="mb-n3">
-                                    <MudSelect T="string" Label="Slides" @bind-Value="pathReport.SlidesResideAtSubmittingHospital" HelperText="Slides reside at submitting Hospital?"
-                                               Placeholder="" Variant="Variant.Outlined" Margin="Margin.Normal"
-                                               For="@(() => pathReport.SlidesResideAtSubmittingHospital)">
-                                        <MudSelectItem Value="@("Yes")">Yes</MudSelectItem>
-                                        <MudSelectItem Value="@("No")">No</MudSelectItem>
-                                    </MudSelect>
-                                </MudItem>
-                                @if (pathReport.SlidesResideAtSubmittingHospital == "Yes")
-                                {
-                                    <MudSpacer />
-                                    <MudItem xs="0" sm="0" md="9" Class="my-n3" />
-                                }
-
-                                @if (pathReport.SlidesResideAtSubmittingHospital == "No")
-                                {
                                     <MudItem xs="12" sm="12" md="3" Class="mb-3 mt-2">
-                                        <MudAutocomplete T="Hospital" Value="pathReport.OrigHospitalEntity" @ref="@origHospAutocompleteRef"
-                                                         SearchFunc="OrigHospitalSearch"
+                                        <MudAutocomplete T="Hospital" Value="pathReport.HospitalEntity" @ref="@hospAutocompleteRef"
+                                                         SearchFunc="HospitalSearch"
+                                                         @onfocus="@(() => _activeReport = pathReport)"
                                                          SelectValueOnTab="true"
                                                          DebounceInterval="300"
                                                          Immediate="true"
                                                          MinCharacters="3"
                                                          ResetValueOnEmptyText="false"
                                                          MaxItems="50"
-                                                         Label="Originating Hospital"
+                                                         Label="Submitting Hospital"
                                                          Placeholder="Search for Hospital"
-                                                         Modal="true" Clearable CoerceValue="false"
-                                                         OnClearButtonClick="() => OnOrigHospitalCleared(pathReport)"
+                                                         Modal="true"
+                                                         Clearable
+                                                         OnClearButtonClick="() => OnHospitalCleared(pathReport)"
                                                          Variant="Variant.Outlined"
-                                                         ValueChanged="((value) => OnOrigHospitalSelectionChanged(value, pathReport))"
+                                                         ValueChanged="((value) => OnHospitalSelectionChanged(value, pathReport))"
                                                          ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName}")"
                                                          ShowProgressIndicator="true"
                                                          ProgressIndicatorColor="Color.Info"
                                                          AnchorOrigin="@_anchor"
                                                          TransformOrigin="@_transform"
+                                                         RelativeWidth="_dropdownWidth">
+                                            <ItemTemplate Context="item">
+                                                <div class="d-flex flex-column">
+                                                    <MudText Typo="Typo.body1">@item.HospitalName</MudText>
+                                                    <MudText Typo="Typo.caption" Color="Color.Info">
+                                                        @item.City
+                                                    </MudText>
+                                                </div>
+                                            </ItemTemplate>
+                                        </MudAutocomplete>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="12" md="1" Class="mt-7">
+                                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
+                                                   ButtonType="ButtonType.Button" OnClick="() => EditHospital(pathReport)"></MudButton>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="2" Class="mb-n3">
+                                        <MudTextField Label="Sub. Hosp. Path Report Number" Variant="Variant.Outlined"
+                                                      @bind-Value="@pathReport.SubmittingHospitalPathReportNumber" Margin="Margin.Normal"
+                                                      For="@(() => pathReport.SubmittingHospitalPathReportNumber)"></MudTextField>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="2" Class="mb-n3">
+                                        <MudDatePicker Label="Date of Procedure" Editable="true" Placeholder="Select Date" Date="pathReport.DateOfProcedure"
+                                                       Variant="Variant.Outlined" Margin="Margin.Normal" Mask="@(new DateMask("MM/dd/yyyy"))" DateFormat="MM/dd/yyyy"
+                                                       For="@(() => pathReport.DateOfProcedure)"
+                                                       DateChanged="@((Date) => CalculateAgeAtProcedure(Patient, pathReport, Date, Patient.DateOfBirth))" />
+                                        <MudText Color="Color.Info">@errorMsgPath</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="3" md="1" Class="mb-n3">
+                                        <MudTextField T="string" Label="Age at Procedure" Variant="Variant.Outlined"
+                                                      @bind-Value="@pathReport.AgeAtProcedure" Margin="Margin.Normal"></MudTextField>
+                                        <MudText Color="Color.Info">@errorMsgAge</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="2" Class="mb-n3">
+                                        <MudSelect @ref="exportSelect" @bind-Value="@pathReport.ExportStatus" Label="Export Status" HelperText="" Placeholder=""
+                                                   Variant="Variant.Outlined" Margin="Margin.Normal"
+                                                   For="@(() => pathReport.ExportStatus)">
+                                            <MudSelectItem Value="@("Ready")">Ready</MudSelectItem>
+                                            <MudSelectItem Value="@("Exported")">Exported</MudSelectItem>
+                                            <MudSelectItem Value="@("Ineligible for export")">Ineligible for export</MudSelectItem>
+                                            <MudSelectItem Value="@("Path too early")">Path too early</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex justify-end">
+                                        <MudCheckBox T=bool Label="Hold" Value="pathReport.IsOnHold" For="@(() => pathReport.IsOnHold)"
+                                                     ValueChanged="@((value) => OnIsOnHoldChangedAsync(pathReport, value))" Dense />
+                                    </MudItem>
+
+                                    @if (Patient.StudyId == Guid.Parse("631B71B4-B451-4FD7-8B82-08DDD0513E23")) // Endometrial Study CECS
+                                    {
+                                        <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex">
+                                            <MudCheckBox T=bool Label="Addendum" @bind-Value="pathReport.IsAddendum"
+                                                         For="@(() => pathReport.IsAddendum)"
+                                                         Dense />
+                                        </MudItem>
+                                    }
+
+                                    <MudItem xs="4" sm="3" md="2" Class="mb-n3">
+                                        <MudSelect T="string" Label="Slides" @bind-Value="pathReport.SlidesResideAtSubmittingHospital" HelperText="Slides reside at submitting Hospital?"
+                                                   Placeholder="" Variant="Variant.Outlined" Margin="Margin.Normal"
+                                                   For="@(() => pathReport.SlidesResideAtSubmittingHospital)">
+                                            <MudSelectItem Value="@("Yes")">Yes</MudSelectItem>
+                                            <MudSelectItem Value="@("No")">No</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+                                    @if (pathReport.SlidesResideAtSubmittingHospital == "Yes")
+                                    {
+                                        <MudSpacer />
+                                        <MudItem xs="0" sm="0" md="9" Class="my-n3" />
+                                    }
+
+                                    @if (pathReport.SlidesResideAtSubmittingHospital == "No")
+                                    {
+                                        <MudItem xs="12" sm="12" md="3" Class="mb-3 mt-2">
+                                            <MudAutocomplete T="Hospital" Value="pathReport.OrigHospitalEntity" @ref="@origHospAutocompleteRef"
+                                                             SearchFunc="OrigHospitalSearch"
+                                                             SelectValueOnTab="true"
+                                                             DebounceInterval="300"
+                                                             Immediate="true"
+                                                             MinCharacters="3"
+                                                             ResetValueOnEmptyText="false"
+                                                             MaxItems="50"
+                                                             Label="Originating Hospital"
+                                                             Placeholder="Search for Hospital"
+                                                             Modal="true" Clearable CoerceValue="false"
+                                                             OnClearButtonClick="() => OnOrigHospitalCleared(pathReport)"
+                                                             Variant="Variant.Outlined"
+                                                             ValueChanged="((value) => OnOrigHospitalSelectionChanged(value, pathReport))"
+                                                             ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName}")"
+                                                             ShowProgressIndicator="true"
+                                                             ProgressIndicatorColor="Color.Info"
+                                                             AnchorOrigin="@_anchor"
+                                                             TransformOrigin="@_transform"
                                                              RelativeWidth="_dropdownWidth">
                                                 <ItemTemplate Context="item">
                                                     <div class="d-flex flex-column">
@@ -443,502 +443,572 @@
                                                     </div>
                                                 </ItemTemplate>
                                             </MudAutocomplete>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="12" md="1" Class="mt-7">
+                                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
+                                                       ButtonType="ButtonType.Button" OnClick="() => EditOrigHospital(pathReport)"></MudButton>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="2" Class="mb-n3">
+                                            <MudTextField Label="Orig. Hosp. Path Report Number" Variant="Variant.Outlined"
+                                                          @bind-Value="@pathReport.OriginatingHospitalPathReportNumber" Margin="Margin.Normal"
+                                                          For="@(() => pathReport.OriginatingHospitalPathReportNumber)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="12" md="2" Class="mb-n1">
+                                            <MudTextField Label="Originating Facility Comments" AutoGrow style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          @bind-Value="@pathReport.OriginatingHospitalComments" Margin="Margin.Normal"
+                                                          For="@(() => pathReport.OriginatingHospitalComments)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex">
+                                            <MudCheckBox T=bool Label="Path Report Obtained" @bind-Value="pathReport.PathReportObtained"
+                                                         For="@(() => pathReport.PathReportObtained)"
+                                                         Dense />
+                                        </MudItem>
+                                    }
+                                    <MudItem xs="12" sm="12" md="5" Class="mb-3 mt-2">
+                                        <MudAutocomplete T="Hospital" Value="pathReport.Reimb1HospitalEntity" @ref="@reimb1AutocompleteRef"
+                                                         SearchFunc="Reimb1HospitalSearch"
+                                                         SelectValueOnTab="true"
+                                                         DebounceInterval="300"
+                                                         Immediate="true"
+                                                         MinCharacters="3"
+                                                         ResetValueOnEmptyText="false"
+                                                         MaxItems="50"
+                                                         Label="Reimbursement 1"
+                                                         Placeholder="Search for Hospital"
+                                                         Modal="true" Clearable CoerceValue="false"
+                                                         OnClearButtonClick="() => OnReimbursement1Cleared(pathReport)"
+                                                         Variant="Variant.Outlined"
+                                                         ValueChanged="((value) => OnReimbursement1SelectionChanged(value, pathReport))"
+                                                         ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName}")"
+                                                         ShowProgressIndicator="true"
+                                                         ProgressIndicatorColor="Color.Info"
+                                                         AnchorOrigin="@_anchor"
+                                                         TransformOrigin="@_transform"
+                                                         RelativeWidth="_dropdownWidth">
+                                            <ItemTemplate Context="item">
+                                                <div class="d-flex flex-column">
+                                                    <MudText Typo="Typo.body1">@item.HospitalName</MudText>
+                                                    <MudText Typo="Typo.caption" Color="Color.Info">
+                                                        @item.City
+                                                    </MudText>
+                                                </div>
+                                            </ItemTemplate>
+                                        </MudAutocomplete>
                                     </MudItem>
-                                    <MudItem xs="12" sm="12" md="1" Class="mt-7">
-                                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
-                                                   ButtonType="ButtonType.Button" OnClick="() => EditOrigHospital(pathReport)"></MudButton>
+                                    <MudItem xs="12" sm="12" md="5" Class="mb-3 mt-2">
+                                        <MudAutocomplete T="Hospital" Value="pathReport.Reimb2HospitalEntity" @ref="@reimb2AutocompleteRef"
+                                                         SearchFunc="Reimb2HospitalSearch"
+                                                         SelectValueOnTab="true"
+                                                         DebounceInterval="300"
+                                                         Immediate="true"
+                                                         MinCharacters="3"
+                                                         ResetValueOnEmptyText="false"
+                                                         MaxItems="50"
+                                                         Label="Reimbursement 2"
+                                                         Placeholder="Search for Hospital"
+                                                         Modal="true" Clearable CoerceValue="false"
+                                                         OnClearButtonClick="() => OnReimbursement2Cleared(pathReport)"
+                                                         Variant="Variant.Outlined"
+                                                         ValueChanged="((value) => OnReimbursement2SelectionChanged(value, pathReport))"
+                                                         ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName}")"
+                                                         ShowProgressIndicator="true"
+                                                         ProgressIndicatorColor="Color.Info"
+                                                         AnchorOrigin="@_anchor"
+                                                         TransformOrigin="@_transform"
+                                                         RelativeWidth="_dropdownWidth">
+                                            <ItemTemplate Context="item">
+                                                <div class="d-flex flex-column">
+                                                    <MudText Typo="Typo.body1">@item.HospitalName</MudText>
+                                                    <MudText Typo="Typo.caption" Color="Color.Info">
+                                                        @item.City
+                                                    </MudText>
+                                                </div>
+                                            </ItemTemplate>
+                                        </MudAutocomplete>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="3" md="2" Class="mb-n3 mt-2 d-flex">
+                                        <MudCheckBox T=bool Label="Do Not Invoice" @bind-Value="pathReport.DoNotInvoice"
+                                                     For="@(() => pathReport.DoNotInvoice)"
+                                                     Dense />
                                     </MudItem>
                                     <MudItem xs="12" sm="6" md="2" Class="mb-n3">
-                                        <MudTextField Label="Orig. Hosp. Path Report Number" Variant="Variant.Outlined"
-                                                      @bind-Value="@pathReport.OriginatingHospitalPathReportNumber" Margin="Margin.Normal"
-                                                      For="@(() => pathReport.OriginatingHospitalPathReportNumber)"></MudTextField>
+                                        <MudDatePicker Label="RCA Export" Editable="true" Placeholder="Select Date" @bind-Date="pathReport.RcaExportDate"
+                                                       Variant="Variant.Outlined" Margin="Margin.Normal" Mask="@(new DateMask("MM/dd/yyyy"))" DateFormat="MM/dd/yyyy"
+                                                       For="@(() => pathReport.RcaExportDate)" />
                                     </MudItem>
-                                    <MudItem xs="12" sm="12" md="2" Class="mb-n1">
-                                        <MudTextField Label="Originating Facility Comments" AutoGrow style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                      @bind-Value="@pathReport.OriginatingHospitalComments" Margin="Margin.Normal"
-                                                      For="@(() => pathReport.OriginatingHospitalComments)"></MudTextField>
-                                    </MudItem>
-                                    <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex">
-                                        <MudCheckBox T=bool Label="Path Report Obtained" @bind-Value="pathReport.PathReportObtained"
-                                                     For="@(() => pathReport.PathReportObtained)"
-                                                     Dense />
-                                    </MudItem>
-                                }
-                                <MudItem xs="12" sm="12" md="5" Class="mb-3 mt-2">
-                                    <MudAutocomplete T="Hospital" Value="pathReport.Reimb1HospitalEntity" @ref="@reimb1AutocompleteRef"
-                                                     SearchFunc="Reimb1HospitalSearch"
-                                                     SelectValueOnTab="true"
-                                                     DebounceInterval="300"
-                                                     Immediate="true"
-                                                     MinCharacters="3"
-                                                     ResetValueOnEmptyText="false"
-                                                     MaxItems="50"
-                                                     Label="Reimbursement 1"
-                                                     Placeholder="Search for Hospital"
-                                                     Modal="true" Clearable CoerceValue="false"
-                                                     OnClearButtonClick="() => OnReimbursement1Cleared(pathReport)"
-                                                     Variant="Variant.Outlined"
-                                                     ValueChanged="((value) => OnReimbursement1SelectionChanged(value, pathReport))"
-                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName}")"
-                                                     ShowProgressIndicator="true"
-                                                     ProgressIndicatorColor="Color.Info"
-                                                     AnchorOrigin="@_anchor"
-                                                     TransformOrigin="@_transform"
-                                                         RelativeWidth="_dropdownWidth">
-                                            <ItemTemplate Context="item">
-                                                <div class="d-flex flex-column">
-                                                    <MudText Typo="Typo.body1">@item.HospitalName</MudText>
-                                                    <MudText Typo="Typo.caption" Color="Color.Info">
-                                                        @item.City
-                                                    </MudText>
-                                                </div>
-                                            </ItemTemplate>
-                                        </MudAutocomplete>
-                                </MudItem>
-                                <MudItem xs="12" sm="12" md="5" Class="mb-3 mt-2">
-                                    <MudAutocomplete T="Hospital" Value="pathReport.Reimb2HospitalEntity" @ref="@reimb2AutocompleteRef"
-                                                     SearchFunc="Reimb2HospitalSearch"
-                                                     SelectValueOnTab="true"
-                                                     DebounceInterval="300"
-                                                     Immediate="true"
-                                                     MinCharacters="3"
-                                                     ResetValueOnEmptyText="false"
-                                                     MaxItems="50"
-                                                     Label="Reimbursement 2"
-                                                     Placeholder="Search for Hospital"
-                                                     Modal="true" Clearable CoerceValue="false"
-                                                     OnClearButtonClick="() => OnReimbursement2Cleared(pathReport)"
-                                                     Variant="Variant.Outlined"
-                                                     ValueChanged="((value) => OnReimbursement2SelectionChanged(value, pathReport))"
-                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.HospitalName}")"
-                                                     ShowProgressIndicator="true"
-                                                     ProgressIndicatorColor="Color.Info"
-                                                     AnchorOrigin="@_anchor"
-                                                     TransformOrigin="@_transform"
-                                                         RelativeWidth="_dropdownWidth">
-                                            <ItemTemplate Context="item">
-                                                <div class="d-flex flex-column">
-                                                    <MudText Typo="Typo.body1">@item.HospitalName</MudText>
-                                                    <MudText Typo="Typo.caption" Color="Color.Info">
-                                                        @item.City
-                                                    </MudText>
-                                                </div>
-                                            </ItemTemplate>
-                                        </MudAutocomplete>
-                                </MudItem>
-                                <MudItem xs="12" sm="3" md="2" Class="mb-n3 mt-2 d-flex">
-                                    <MudCheckBox T=bool Label="Do Not Invoice" @bind-Value="pathReport.DoNotInvoice"
-                                                 For="@(() => pathReport.DoNotInvoice)"
-                                                 Dense />
-                                </MudItem>
-                                <MudItem xs="12" sm="6" md="2" Class="mb-n3">
-                                    <MudDatePicker Label="RCA Export" Editable="true" Placeholder="Select Date" @bind-Date="pathReport.RcaExportDate"
-                                                   Variant="Variant.Outlined" Margin="Margin.Normal" Mask="@(new DateMask("MM/dd/yyyy"))" DateFormat="MM/dd/yyyy"
-                                                   For="@(() => pathReport.RcaExportDate)" />
-                                </MudItem>
-                                @if (Patient.StudyId == Guid.Parse("631B71B4-B451-4FD7-8B82-08DDD0513E23")) // Endometrial Study CECS
-                                {
-                                    <MudItem xs="12" sm="3" md="2" Class="mb-n3 d-flex">
-                                        <MudCheckBox T=bool Label="Study Submission" @bind-Value="pathReport.StudySubmission"
-                                                     For="@(() => pathReport.StudySubmission)"
-                                                     Dense />
-                                    </MudItem>
-                                }
-                                <MudItem xs="12" sm="6" md="10" Class="mb-n3" />
+                                    @if (Patient.StudyId == Guid.Parse("631B71B4-B451-4FD7-8B82-08DDD0513E23")) // Endometrial Study CECS
+                                    {
+                                        <MudItem xs="12" sm="3" md="2" Class="mb-n3 d-flex">
+                                            <MudCheckBox T=bool Label="Study Submission" @bind-Value="pathReport.StudySubmission"
+                                                         For="@(() => pathReport.StudySubmission)"
+                                                         Dense />
+                                        </MudItem>
+                                    }
+                                    <MudItem xs="12" sm="6" md="10" Class="mb-n3" />
 
-                                <MudItem xs="12" sm="6" md="6" Class="mb-n3">
-                                    <MudSelect Value="@pathReport.Site" ValueChanged="(string value) => OnSiteChanged(value, pathReport)"
-                                               Label="Site" HelperText="" Placeholder="Select Site"
-                                               Variant="Variant.Outlined" Margin="Margin.Normal"
-                                               For="@(() => pathReport.Site)">
-                                        @foreach (var option in SiteList)
-                                        {
-                                            <MudSelectItem T="string" Value="@option.LookupName">@option.LookupCode @option.LookupName</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudItem>
-                                <MudItem xs="12" sm="6" md="5" Class="mb-n3" />
-
-                                <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex justify-end">
-                                    <MudCheckBox T=bool Label="Show Site2" @bind-Value="pathReport.IsShownSite2" For="@(() => pathReport.IsShownSite2)" Dense />
-                                </MudItem>
-                                <MudItem xs="12" sm="6" md="6" Class="my-n3">
-                                    <MudSelect @bind-Value="pathReport.PathProcedure" Label="Path Procedure" HelperText="" Placeholder="Select Procedure"
-                                               Variant="Variant.Outlined" Margin="Margin.Normal"
-                                               For="@(() => pathReport.PathProcedure)">
-                                        @foreach (var option in ProcedureList)
-                                        {
-                                            <MudSelectItem T="string" Value="@option">@option</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudItem>
-
-                                <MudItem xs="12" sm="12" md="6" Class="my-n3">
-                                    <MudTextField Label="Path Report Comments" AutoGrow style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                  @bind-Value="@pathReport.PathComments" Margin="Margin.Normal"
-                                                  For="@(() => pathReport.PathComments)"></MudTextField>
-                                </MudItem>
-                                <MudItem xs="12" sm="12" md="5" Class="my-n3">
-                                    <MudAutocomplete T="Doctor" Value="pathReport.DoctorEntity1" @ref="@doc1AutocompleteRef"
-                                                     SearchFunc="DoctorSearch"
-                                                     SelectValueOnTab="true"
-                                                     DebounceInterval="300"
-                                                     Immediate="true"
-                                                     MinCharacters="3"
-                                                     ResetValueOnEmptyText="false"
-                                                     MaxItems="50"
-                                                     Label="Authorizing Provider"
-                                                     Placeholder="Search for Provider"
-                                                     Modal="true" Clearable CoerceValue="false"
-                                                     OnClearButtonClick="() => OnDoctor1Cleared(pathReport)"
-                                                     Variant="Variant.Outlined"
-                                                     ValueChanged="((value) => OnDoctorSelectionChanged(value, pathReport))"
-                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName}")"
-                                                     ShowProgressIndicator="true"
-                                                     ProgressIndicatorColor="Color.Info"
-                                                     AnchorOrigin="@_anchor"
-                                                     TransformOrigin="@_transform"
-                                                     RelativeWidth="_dropdownWidth">
-                                            <ItemTemplate Context="item">
-                                                <div class="d-flex flex-column">
-                                                    <MudText Typo="Typo.body1">@item.DisplayName</MudText>
-                                                    <MudText Typo="Typo.caption" Color="Color.Info">
-                                                        @item.Address1, @item.City, @item.PrimarySpecialty
-                                                    </MudText>
-                                                </div>
-                                            </ItemTemplate>
-                                        </MudAutocomplete>
-                                </MudItem>
-                                <MudItem xs="12" sm="12" md="1" Class="my-2">
-                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
-                                               ButtonType="ButtonType.Button" OnClick="() => EditDoctor1(pathReport)"></MudButton>
-                                </MudItem>
-                                <MudItem xs="12" sm="12" md="6" Class="my-n3">
-                                    <MudTextField Label="Authorizing Provider Comments" style="min-height: 55px !important" AutoGrow Variant="Variant.Outlined"
-                                                  @bind-Value="@pathReport.AuthorizingProviderComments" Margin="Margin.Normal"
-                                                  For="@(() => pathReport.AuthorizingProviderComments)"></MudTextField>
-                                </MudItem>
-                                <MudItem xs="12" sm="12" md="5" Class="my-n3">
-                                    <MudAutocomplete T="Doctor" Value="pathReport.PathologistEntity1" @ref="@path1AutocompleteRef"
-                                                     SearchFunc="PathologistSearch"
-                                                     SelectValueOnTab="true"
-                                                     DebounceInterval="300"
-                                                     Immediate="true"
-                                                     MinCharacters="3"
-                                                     ResetValueOnEmptyText="false"
-                                                     MaxItems="50"
-                                                     Label="Pathologist"
-                                                     Placeholder="Search for Pathologist"
-                                                     Modal="true" Clearable CoerceValue="false"
-                                                     OnClearButtonClick="() => OnPathologist1Cleared(pathReport)"
-                                                     Variant="Variant.Outlined"
-                                                     ValueChanged="((value) => OnPathologistSelectionChanged(value, pathReport))"
-                                                     ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName}")"
-                                                     ShowProgressIndicator="true"
-                                                     ProgressIndicatorColor="Color.Info"
-                                                     AnchorOrigin="@_anchor"
-                                                     TransformOrigin="@_transform"
-                                                     RelativeWidth="_dropdownWidth">
-                                            <ItemTemplate Context="item">
-                                                <div class="d-flex flex-column">
-                                                    <MudText Typo="Typo.body1">@item.DisplayName</MudText>
-                                                    <MudText Typo="Typo.caption" Color="Color.Info">
-                                                        @item.Address1, @item.City, @item.PrimarySpecialty
-                                                    </MudText>
-                                                </div>
-                                            </ItemTemplate>
-                                        </MudAutocomplete>
-                                </MudItem>
-                                <MudItem xs="12" sm="12" md="1" Class="my-2">
-                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
-                                               ButtonType="ButtonType.Button" OnClick="() => EditPathologist1(pathReport)"></MudButton>
-                                </MudItem>
-                                <MudItem xs="12" sm="12" md="6" Class="my-n3">
-                                    <MudTextField Label="Pathologist Comments" style="min-height: 55px !important" AutoGrow Variant="Variant.Outlined"
-                                                  @bind-Value="@pathReport.PathologistComments" Margin="Margin.Normal"
-                                                  For="@(() => pathReport.PathologistComments)"></MudTextField>
-                                </MudItem>
-
-
-                                <MudItem xs="12" sm="12" md="5" Class="my-n3">
-                                    <MudSelect Value="pathReport.HistologyDiagnosis1" ValueChanged="(string value) => OnHistologyDiagnosis1Changed(value, pathReport)"
-                                               Label="Histology Diagnosis" HelperText="See Case View for Histology Code if not preseent"
-                                               Placeholder="Select Histology Diagnosis" Variant="Variant.Outlined" Margin="Margin.Normal"
-                                               For="@(() => pathReport.HistologyDiagnosis1)">
-                                        @foreach (var option in HistologyList1)
-                                        {
-                                            if (option.IsPreferred)
-                                            {
-                                                <MudSelectItem T="string" Style="@($"color: {Colors.Green.Default}")" Value="@option.HistologyName">@option.HistologyCode/@option.HistologyBehavior @option.HistologyName</MudSelectItem>
-
-                                            }
-                                            else
-                                            {
-                                                <MudSelectItem T="string" Value="@option.HistologyName">@option.HistologyCode/@option.HistologyBehavior @option.HistologyName</MudSelectItem>
-                                            }
-                                        }
-                                    </MudSelect>
-                                </MudItem>
-                                <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex justify-end">
-                                    <MudCheckBox T=bool Label="Show All" Value="showAllDx1" ValueChanged="@((value) => OnShowAllDx1Async(value))" Dense />
-                                </MudItem>
-                                <MudItem xs="12" sm="12" md="6" Class="my-n3">
-                                    <MudTextField Label="Histology Diagnosis Comments" AutoGrow style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                  @bind-Value="@pathReport.HistologyDiagnosisComments1" Margin="Margin.Normal"
-                                                  For="@(() => pathReport.HistologyDiagnosisComments1)"></MudTextField>
-                                </MudItem>
-                                @if (Patient.StudyId == Guid.Parse("251CE4DC-F01D-43D8-D47D-08DDD05DE341")) // Kidney Study KID-COMM
-                                {
-                                    <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                        <MudTextField Label="Tumor Size" style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                      @bind-Value="@pathReport.TumorSize" Margin="Margin.Normal"
-                                                      For="@(() => pathReport.TumorSize)"></MudTextField>
-                                    </MudItem>
-                                    <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                        <MudSelect @bind-Value="@pathReport.MarginStatus" Label="Margin Status" HelperText="" Placeholder=""
+                                    <MudItem xs="12" sm="6" md="6" Class="mb-n3">
+                                        <MudSelect Value="@pathReport.Site" ValueChanged="(string value) => OnSiteChanged(value, pathReport)"
+                                                   Label="Site" HelperText="" Placeholder="Select Site"
                                                    Variant="Variant.Outlined" Margin="Margin.Normal"
-                                                   For="@(() => pathReport.MarginStatus)">
-                                            <MudSelectItem Value="@("positive")">positive</MudSelectItem>
-                                            <MudSelectItem Value="@("negative")">negative</MudSelectItem>
-                                            <MudSelectItem Value="@("unknown")">unknown</MudSelectItem>
+                                                   For="@(() => pathReport.Site)">
+                                            @foreach (var option in SiteList)
+                                            {
+                                                <MudSelectItem T="string" Value="@option.LookupName">@option.LookupCode @option.LookupName</MudSelectItem>
+                                            }
                                         </MudSelect>
                                     </MudItem>
-                                }
-                                @if (Patient.StudyId == Guid.Parse("B4C7A525-42CD-4931-75CA-08DDEF2BF95E")) // Thyroid Study MTCSS
-                                {
-                                    <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                        <MudTextField Label="Tumor Size" style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                      @bind-Value="@pathReport.TumorSize" Margin="Margin.Normal"
-                                                      For="@(() => pathReport.TumorSize)"></MudTextField>
+                                    <MudItem xs="12" sm="6" md="5" Class="mb-n3" />
+
+                                    <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex justify-end">
+                                        <MudCheckBox T=bool Label="Show Site2" @bind-Value="pathReport.IsShownSite2" For="@(() => pathReport.IsShownSite2)" Dense />
                                     </MudItem>
-                                    <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                        <MudTextField Label="ALNL Positive Nodes" style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                      @bind-Value="@pathReport.ALNL_PositiveNodes" Margin="Margin.Normal"
-                                                      For="@(() => pathReport.ALNL_PositiveNodes)"></MudTextField>
-                                    </MudItem>
-                                    <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                        <MudTextField Label="ALNL Nodes Examined" style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                      @bind-Value="@pathReport.ALNL_NodesExamined" Margin="Margin.Normal"
-                                                      For="@(() => pathReport.ALNL_NodesExamined)"></MudTextField>
-                                    </MudItem>
-                                    <MudItem xs="12" sm="6" md="3" Class="my-n3"/>
-                                    <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                    <MudSelect @bind-Value="@pathReport.HistologicDiff" Label="Histologic Differentiation" HelperText="" Placeholder=""
+                                    <MudItem xs="12" sm="6" md="6" Class="my-n3">
+                                        <MudSelect @bind-Value="pathReport.PathProcedure" Label="Path Procedure" HelperText="" Placeholder="Select Procedure"
                                                    Variant="Variant.Outlined" Margin="Margin.Normal"
-                                                   For="@(() => pathReport.HistologicDiff)">
-                                            @foreach (var option in HistologicDiffList)
+                                                   For="@(() => pathReport.PathProcedure)">
+                                            @foreach (var option in ProcedureList)
                                             {
                                                 <MudSelectItem T="string" Value="@option">@option</MudSelectItem>
                                             }
-                                    </MudSelect>
+                                        </MudSelect>
                                     </MudItem>
-                                    <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                        <MudTextField Label="Histologic Grade" style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                      @bind-Value="@pathReport.HistologicGrade" Margin="Margin.Normal"
-                                                      For="@(() => pathReport.HistologicGrade)"></MudTextField>
-                                    </MudItem>
-                                }
-                                <div class="@(pathReport.IsShownSite2 ? "d-flex" : "d-none")">
-                                    <MudGrid Class="mx-1" Style="background-color: transparent !important">
 
-                                        <MudItem xs="12" sm="6" md="6" Class="mb-n3 mt-3">
-                                            <MudSelect Value="@pathReport.Site2" ValueChanged="(string value) => OnSite2Changed(value, pathReport)"
-                                                       Label="Site2" HelperText="" Placeholder="Select Site"
-                                                       Variant="Variant.Outlined" Margin="Margin.Normal"
-                                                       For="@(() => pathReport.Site2)">
-                                                @foreach (var option in SiteList)
+                                    <MudItem xs="12" sm="12" md="6" Class="my-n3">
+                                        <MudTextField Label="Path Report Comments" AutoGrow style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                      @bind-Value="@pathReport.PathComments" Margin="Margin.Normal"
+                                                      For="@(() => pathReport.PathComments)"></MudTextField>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="12" md="5" Class="my-n3">
+                                        <MudAutocomplete T="Doctor" Value="pathReport.DoctorEntity1" @ref="@doc1AutocompleteRef"
+                                                         SearchFunc="DoctorSearch"
+                                                         SelectValueOnTab="true"
+                                                         DebounceInterval="300"
+                                                         Immediate="true"
+                                                         MinCharacters="3"
+                                                         ResetValueOnEmptyText="false"
+                                                         MaxItems="50"
+                                                         Label="Authorizing Provider"
+                                                         Placeholder="Search for Provider"
+                                                         Modal="true" Clearable CoerceValue="false"
+                                                         OnClearButtonClick="() => OnDoctor1Cleared(pathReport)"
+                                                         Variant="Variant.Outlined"
+                                                         ValueChanged="((value) => OnDoctorSelectionChanged(value, pathReport))"
+                                                         ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName}")"
+                                                         ShowProgressIndicator="true"
+                                                         ProgressIndicatorColor="Color.Info"
+                                                         AnchorOrigin="@_anchor"
+                                                         TransformOrigin="@_transform"
+                                                         RelativeWidth="_dropdownWidth">
+                                            <ItemTemplate Context="item">
+                                                <div class="d-flex flex-column">
+                                                    <MudText Typo="Typo.body1">@item.DisplayName</MudText>
+                                                    <MudText Typo="Typo.caption" Color="Color.Info">
+                                                        @item.Address1, @item.City, @item.PrimarySpecialty
+                                                    </MudText>
+                                                </div>
+                                            </ItemTemplate>
+                                        </MudAutocomplete>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="12" md="1" Class="my-2">
+                                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
+                                                   ButtonType="ButtonType.Button" OnClick="() => EditDoctor1(pathReport)"></MudButton>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="12" md="6" Class="my-n3">
+                                        <MudTextField Label="Authorizing Provider Comments" style="min-height: 55px !important" AutoGrow Variant="Variant.Outlined"
+                                                      @bind-Value="@pathReport.AuthorizingProviderComments" Margin="Margin.Normal"
+                                                      For="@(() => pathReport.AuthorizingProviderComments)"></MudTextField>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="12" md="5" Class="my-n3">
+                                        <MudAutocomplete T="Doctor" Value="pathReport.PathologistEntity1" @ref="@path1AutocompleteRef"
+                                                         SearchFunc="PathologistSearch"
+                                                         SelectValueOnTab="true"
+                                                         DebounceInterval="300"
+                                                         Immediate="true"
+                                                         MinCharacters="3"
+                                                         ResetValueOnEmptyText="false"
+                                                         MaxItems="50"
+                                                         Label="Pathologist"
+                                                         Placeholder="Search for Pathologist"
+                                                         Modal="true" Clearable CoerceValue="false"
+                                                         OnClearButtonClick="() => OnPathologist1Cleared(pathReport)"
+                                                         Variant="Variant.Outlined"
+                                                         ValueChanged="((value) => OnPathologistSelectionChanged(value, pathReport))"
+                                                         ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName}")"
+                                                         ShowProgressIndicator="true"
+                                                         ProgressIndicatorColor="Color.Info"
+                                                         AnchorOrigin="@_anchor"
+                                                         TransformOrigin="@_transform"
+                                                         RelativeWidth="_dropdownWidth">
+                                            <ItemTemplate Context="item">
+                                                <div class="d-flex flex-column">
+                                                    <MudText Typo="Typo.body1">@item.DisplayName</MudText>
+                                                    <MudText Typo="Typo.caption" Color="Color.Info">
+                                                        @item.Address1, @item.City, @item.PrimarySpecialty
+                                                    </MudText>
+                                                </div>
+                                            </ItemTemplate>
+                                        </MudAutocomplete>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="12" md="1" Class="my-2">
+                                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
+                                                   ButtonType="ButtonType.Button" OnClick="() => EditPathologist1(pathReport)"></MudButton>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="12" md="6" Class="my-n3">
+                                        <MudTextField Label="Pathologist Comments" style="min-height: 55px !important" AutoGrow Variant="Variant.Outlined"
+                                                      @bind-Value="@pathReport.PathologistComments" Margin="Margin.Normal"
+                                                      For="@(() => pathReport.PathologistComments)"></MudTextField>
+                                    </MudItem>
+
+
+                                    <MudItem xs="12" sm="12" md="5" Class="my-n3">
+                                        <MudSelect Value="pathReport.HistologyDiagnosis1" ValueChanged="(string value) => OnHistologyDiagnosis1Changed(value, pathReport)"
+                                                   Label="Histology Diagnosis" HelperText="See Case View for Histology Code if not preseent"
+                                                   Placeholder="Select Histology Diagnosis" Variant="Variant.Outlined" Margin="Margin.Normal"
+                                                   For="@(() => pathReport.HistologyDiagnosis1)">
+                                            @foreach (var option in HistologyList1)
+                                            {
+                                                if (option.IsPreferred)
                                                 {
-                                                    <MudSelectItem T="string" Value="@option.LookupName">@option.LookupCode @option.LookupName</MudSelectItem>
+                                                    <MudSelectItem T="string" Style="@($"color: {Colors.Green.Default}")" Value="@option.HistologyName">@option.HistologyCode/@option.HistologyBehavior @option.HistologyName</MudSelectItem>
+
                                                 }
+                                                else
+                                                {
+                                                    <MudSelectItem T="string" Value="@option.HistologyName">@option.HistologyCode/@option.HistologyBehavior @option.HistologyName</MudSelectItem>
+                                                }
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex justify-end">
+                                        <MudCheckBox T=bool Label="Show All" Value="showAllDx1" ValueChanged="@((value) => OnShowAllDx1Async(value))" Dense />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="12" md="6" Class="my-n3">
+                                        <MudTextField Label="Histology Diagnosis Comments" AutoGrow style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                      @bind-Value="@pathReport.HistologyDiagnosisComments1" Margin="Margin.Normal"
+                                                      For="@(() => pathReport.HistologyDiagnosisComments1)"></MudTextField>
+                                    </MudItem>
+                                    @if (Patient.StudyId == Guid.Parse("251CE4DC-F01D-43D8-D47D-08DDD05DE341")) // Kidney Study KID-COMM
+                                    {
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField Label="Tumor Size" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          @bind-Value="@pathReport.TumorSize" Margin="Margin.Normal"
+                                                          For="@(() => pathReport.TumorSize)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudSelect @bind-Value="@pathReport.MarginStatus" Label="Margin Status" HelperText="" Placeholder=""
+                                                       Variant="Variant.Outlined" Margin="Margin.Normal"
+                                                       For="@(() => pathReport.MarginStatus)">
+                                                <MudSelectItem Value="@("positive")">positive</MudSelectItem>
+                                                <MudSelectItem Value="@("negative")">negative</MudSelectItem>
+                                                <MudSelectItem Value="@("unknown")">unknown</MudSelectItem>
                                             </MudSelect>
                                         </MudItem>
-                                        <MudItem xs="12" sm="6" md="5" Class="mb-n3" />
-
-                                        <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex justify-end">
+                                    }
+                                    @if (Patient.StudyId == Guid.Parse("B4C7A525-42CD-4931-75CA-08DDEF2BF95E")) // Thyroid Study MTCSS
+                                    {
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField Label="Tumor Size" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          @bind-Value="@pathReport.TumorSize" Margin="Margin.Normal"
+                                                          For="@(() => pathReport.TumorSize)"></MudTextField>
                                         </MudItem>
-                                        <MudItem xs="12" sm="6" md="6" Class="my-n3">
-                                            <MudSelect @bind-Value="pathReport.PathProcedure2" Label="Path Procedure2" HelperText="" Placeholder="Select Procedure"
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField Label="ALNL Positive Nodes" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          @bind-Value="@pathReport.ALNL_PositiveNodes" Margin="Margin.Normal"
+                                                          For="@(() => pathReport.ALNL_PositiveNodes)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField Label="ALNL Nodes Examined" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          @bind-Value="@pathReport.ALNL_NodesExamined" Margin="Margin.Normal"
+                                                          For="@(() => pathReport.ALNL_NodesExamined)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3" />
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudSelect @bind-Value="@pathReport.HistologicDiff" Label="Histologic Differentiation" HelperText="" Placeholder=""
                                                        Variant="Variant.Outlined" Margin="Margin.Normal"
-                                                       For="@(() => pathReport.PathProcedure2)">
-                                                @foreach (var option in ProcedureList)
+                                                       For="@(() => pathReport.HistologicDiff)">
+                                                @foreach (var option in HistologicDiffList)
                                                 {
                                                     <MudSelectItem T="string" Value="@option">@option</MudSelectItem>
                                                 }
                                             </MudSelect>
                                         </MudItem>
-
-                                        <MudItem xs="12" sm="12" md="6" Class="my-n3">
-                                            <MudTextField Label="Path Report Comments2" AutoGrow style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                          @bind-Value="@pathReport.PathComments2" Margin="Margin.Normal"
-                                                          For="@(() => pathReport.PathComments2)"></MudTextField>
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField Label="Histologic Grade" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          @bind-Value="@pathReport.HistologicGrade" Margin="Margin.Normal"
+                                                          For="@(() => pathReport.HistologicGrade)"></MudTextField>
                                         </MudItem>
-                                        <MudItem xs="12" sm="12" md="5" Class="my-n3">
-                                            <MudAutocomplete T="Doctor" Value="pathReport.DoctorEntity2" @ref="@doc2AutocompleteRef"
-                                                             SearchFunc="Doctor2Search"
-                                                             SelectValueOnTab="true"
-                                                             DebounceInterval="300"
-                                                             Immediate="true"
-                                                             MinCharacters="3"
-                                                             ResetValueOnEmptyText="false"
-                                                             MaxItems="50"
-                                                             Label="Authorizing Provider2"
-                                                             Placeholder="Search for Provider"
-                                                             Modal="true" Clearable CoerceValue="false"
-                                                             OnClearButtonClick="() => OnDoctor2Cleared(pathReport)"
-                                                             Variant="Variant.Outlined"
-                                                             ValueChanged="((value) => OnDoctor2SelectionChanged(value, pathReport))"
-                                                             ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName}")"
-                                                             ShowProgressIndicator="true"
-                                                             ProgressIndicatorColor="Color.Info"
-                                                             AnchorOrigin="@_anchor"
-                                                             TransformOrigin="@_transform"
-                                                             RelativeWidth="_dropdownWidth">
-                                                    <ItemTemplate Context="item">
-                                                        <div class="d-flex flex-column">
-                                                            <MudText Typo="Typo.body1">@item.DisplayName</MudText>
-                                                            <MudText Typo="Typo.caption" Color="Color.Info">
-                                                                @item.Address1, @item.City, @item.PrimarySpecialty
-                                                            </MudText>
-                                                        </div>
-                                                    </ItemTemplate>
-                                                </MudAutocomplete>
-                                        </MudItem>
-                                        <MudItem xs="12" sm="12" md="1" Class="my-2">
-                                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
-                                                       ButtonType="ButtonType.Button" OnClick="() => EditDoctor2(pathReport)"></MudButton>
-                                        </MudItem>
-                                        <MudItem xs="12" sm="12" md="6" Class="my-n3">
-                                            <MudTextField Label="Authorizing Provider Comments2" AutoGrow style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                          @bind-Value="@pathReport.AuthorizingProviderComments2" Margin="Margin.Normal"
-                                                          For="@(() => pathReport.AuthorizingProviderComments2)"></MudTextField>
-                                        </MudItem>
-                                        <MudItem xs="12" sm="12" md="5" Class="my-n3">
-                                            <MudAutocomplete T="Doctor" Value="pathReport.PathologistEntity2" @ref="@path2AutocompleteRef"
-                                                             SearchFunc="Pathologist2Search"
-                                                             SelectValueOnTab="true"
-                                                             DebounceInterval="300"
-                                                             Immediate="true"
-                                                             MinCharacters="3"
-                                                             ResetValueOnEmptyText="false"
-                                                             MaxItems="50"
-                                                             Label="Pathologist2"
-                                                             Placeholder="Search for Pathologist"
-                                                             Modal="true" Clearable CoerceValue="false"
-                                                             OnClearButtonClick="() => OnPathologist2Cleared(pathReport)"
-                                                             Variant="Variant.Outlined"
-                                                             ValueChanged="((value) => OnPathologist2SelectionChanged(value, pathReport))"
-                                                             ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName}")"
-                                                             ShowProgressIndicator="true"
-                                                             ProgressIndicatorColor="Color.Info"
-                                                             AnchorOrigin="@_anchor"
-                                                             TransformOrigin="@_transform"
-                                                             RelativeWidth="_dropdownWidth">
-                                                    <ItemTemplate Context="item">
-                                                        <div class="d-flex flex-column">
-                                                            <MudText Typo="Typo.body1">@item.DisplayName</MudText>
-                                                            <MudText Typo="Typo.caption" Color="Color.Info">
-                                                                @item.Address1, @item.City, @item.PrimarySpecialty
-                                                            </MudText>
-                                                        </div>
-                                                    </ItemTemplate>
-                                                </MudAutocomplete>
-                                        </MudItem>
-                                        <MudItem xs="12" sm="12" md="1" Class="my-2">
-                                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
-                                                       ButtonType="ButtonType.Button" OnClick="() => EditPathologist2(pathReport)"></MudButton>
-                                        </MudItem>
-                                        <MudItem xs="12" sm="12" md="6" Class="my-n3">
-                                            <MudTextField Label="Pathologist Comments2" style="min-height: 55px !important" AutoGrow Variant="Variant.Outlined"
-                                                          @bind-Value="@pathReport.PathologistComments2" Margin="Margin.Normal"
-                                                          For="@(() => pathReport.PathologistComments2)"></MudTextField>
-                                        </MudItem>
-
-                                        <MudItem xs="12" sm="12" md="5" Class="my-n3">
-                                            <MudSelect Value="pathReport.HistologyDiagnosis2" ValueChanged="(string value) => OnHistologyDiagnosis2Changed(value, pathReport)"
-                                                       Label="Histology Diagnosis2" HelperText="See Case View for Histology Code if not preseent"
-                                                       Placeholder="Select Histology Diagnosis" Variant="Variant.Outlined" Margin="Margin.Normal"
-                                                       For="@(() => pathReport.HistologyDiagnosis2)">
-                                                @foreach (var option in HistologyList2)
-                                                {
-                                                    if (option.IsPreferred)
-                                                    {
-                                                        <MudSelectItem T="string" Style="@($"color: {Colors.Green.Default}")" Value="@option.HistologyName">@option.HistologyCode/@option.HistologyBehavior @option.HistologyName</MudSelectItem>
-
-                                                    }
-                                                    else
-                                                    {
-                                                        <MudSelectItem T="string" Value="@option.HistologyName">@option.HistologyCode/@option.HistologyBehavior @option.HistologyName</MudSelectItem>
-                                                    }
-                                                }
+                                    }
+                                    @if (Patient.StudyId == Guid.Parse("9F8035F1-5E92-47E9-4B50-08DE9BE51DB4")) // NCProCESS2 Study
+                                    {
+                                        <MudItem xs="12" sm="6" md="4" Class="my-n3">
+                                            <MudSelect @bind-Value="@pathReport.PSA" Label="PSA" HelperText="" Placeholder=""
+                                                       Variant="Variant.Outlined" Margin="Margin.Normal"
+                                                       For="@(() => pathReport.PSA)">
+                                                <MudSelectItem Value="@("PSA Not Available")">PSA Not Available</MudSelectItem>
+                                                <MudSelectItem Value="@("Increase, NOS")">Increase, NOS</MudSelectItem>
                                             </MudSelect>
                                         </MudItem>
-                                        <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex justify-end">
-                                            <MudCheckBox T=bool Label="Show All" Value="showAllDx2" ValueChanged="@((value) => OnShowAllDx2Async(value))" Dense />
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField Label="PSA ng/mL" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          @bind-Value="@pathReport.PSA_ng_ml" Margin="Margin.Normal"
+                                                          For="@(() => pathReport.PSA_ng_ml)"></MudTextField>
                                         </MudItem>
-                                        <MudItem xs="12" sm="12" md="6" Class="my-n3">
-                                            <MudTextField Label="Histology Diagnosis Comments2" AutoGrow style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                          @bind-Value="@pathReport.HistologyDiagnosisComments2" Margin="Margin.Normal"
-                                                          For="@(() => pathReport.HistologyDiagnosisComments2)"></MudTextField>
+                                        <MudItem xs="12" sm="6" md="4" Class="my-n3">
+                                            <MudSelect @bind-Value="@pathReport.PerineuralInvasion" Label="Perineural Invasion" HelperText="" Placeholder=""
+                                                       Variant="Variant.Outlined" Margin="Margin.Normal"
+                                                       For="@(() => pathReport.PerineuralInvasion)">
+                                                <MudSelectItem Value="@("identified")">identified</MudSelectItem>
+                                                <MudSelectItem Value="@("not identified")">not identified</MudSelectItem>
+                                                <MudSelectItem Value="@("not available")">not available</MudSelectItem>
+                                            </MudSelect>
                                         </MudItem>
-                                        @if (Patient.StudyId == Guid.Parse("251CE4DC-F01D-43D8-D47D-08DDD05DE341")) // Kidney Study
-                                        {
-                                            <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                                <MudTextField Label="Tumor Size2" style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                              @bind-Value="@pathReport.TumorSize2" Margin="Margin.Normal"
-                                                              For="@(() => pathReport.TumorSize2)"></MudTextField>
-                                            </MudItem>
-                                            <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                                <MudSelect @bind-Value="@pathReport.MarginStatus2" Label="Margin Status2" HelperText="" Placeholder=""
+                                        <MudItem xs="12" sm="6" md="1" Class="my-n3" />
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField Label="Num Cores Biopsy" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          @bind-Value="@pathReport.NumCoresBiopsy" Margin="Margin.Normal"
+                                                          For="@(() => pathReport.NumCoresBiopsy)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField Label="Num Cores Cancer" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          @bind-Value="@pathReport.NumCoresCancer" Margin="Margin.Normal"
+                                                          For="@(() => pathReport.NumCoresCancer)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="6" Class="my-n3" />
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField T="int?" Label="Primary Gleason Score1" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          Value="@pathReport.PrimGleason1" Margin="Margin.Normal" ValueChanged="@((int? value) => OnPrimGleason1Changed(value, pathReport))"
+                                                          For="@(() => pathReport.PrimGleason1)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField T="int?" Label="Secondary Gleason Score1" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          Value="@pathReport.SecGleason1" Margin="Margin.Normal" ValueChanged="(int? value) => OnSecGleason1Changed(value, pathReport)"
+                                                          For="@(() => pathReport.SecGleason1)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField Label="Gleason Sum1" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          @bind-Value="@pathReport.GleasonSum1" Margin="Margin.Normal"
+                                                          For="@(() => pathReport.GleasonSum1)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3" />
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField T="int?" Label="Primary Gleason Score2" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          Value="@pathReport.PrimGleason2" Margin="Margin.Normal" ValueChanged="(int? value) => OnPrimGleason2Changed(value, pathReport)"
+                                                          For="@(() => pathReport.PrimGleason2)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField T="int?" Label="Secondary Gleason Score2" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          Value="@pathReport.SecGleason2" Margin="Margin.Normal" ValueChanged="(int? value) => OnSecGleason2Changed(value, pathReport)"
+                                                          For="@(() => pathReport.SecGleason2)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                            <MudTextField Label="Gleason Sum2" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                          @bind-Value="@pathReport.GleasonSum2" Margin="Margin.Normal"
+                                                          For="@(() => pathReport.GleasonSum2)"></MudTextField>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="3" Class="my-n3" />
+                                    }
+                                    <div class="@(pathReport.IsShownSite2 ? "d-flex" : "d-none")">
+                                        <MudGrid Class="mx-1" Style="background-color: transparent !important">
+
+                                            <MudItem xs="12" sm="6" md="6" Class="mb-n3 mt-3">
+                                                <MudSelect Value="@pathReport.Site2" ValueChanged="(string value) => OnSite2Changed(value, pathReport)"
+                                                           Label="Site2" HelperText="" Placeholder="Select Site"
                                                            Variant="Variant.Outlined" Margin="Margin.Normal"
-                                                           For="@(() => pathReport.MarginStatus2)">
-                                                    <MudSelectItem Value="@("positive")">positive</MudSelectItem>
-                                                    <MudSelectItem Value="@("negative")">negative</MudSelectItem>
-                                                    <MudSelectItem Value="@("unknown")">unknown</MudSelectItem>
+                                                           For="@(() => pathReport.Site2)">
+                                                    @foreach (var option in SiteList)
+                                                    {
+                                                        <MudSelectItem T="string" Value="@option.LookupName">@option.LookupCode @option.LookupName</MudSelectItem>
+                                                    }
                                                 </MudSelect>
                                             </MudItem>
-                                        }
-                                        @if (Patient.StudyId == Guid.Parse("B4C7A525-42CD-4931-75CA-08DDEF2BF95E")) // Thyroid Study
-                                        {
-                                            <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                                <MudTextField Label="Tumor Size2" style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                              @bind-Value="@pathReport.TumorSize2" Margin="Margin.Normal"
-                                                              For="@(() => pathReport.TumorSize2)"></MudTextField>
+                                            <MudItem xs="12" sm="6" md="5" Class="mb-n3" />
+
+                                            <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex justify-end">
                                             </MudItem>
-                                            <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                                <MudTextField Label="ALNL Positive Nodes2" style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                              @bind-Value="@pathReport.ALNL_PositiveNodes2" Margin="Margin.Normal"
-                                                              For="@(() => pathReport.ALNL_PositiveNodes2)"></MudTextField>
+                                            <MudItem xs="12" sm="6" md="6" Class="my-n3">
+                                                <MudSelect @bind-Value="pathReport.PathProcedure2" Label="Path Procedure2" HelperText="" Placeholder="Select Procedure"
+                                                           Variant="Variant.Outlined" Margin="Margin.Normal"
+                                                           For="@(() => pathReport.PathProcedure2)">
+                                                    @foreach (var option in ProcedureList)
+                                                    {
+                                                        <MudSelectItem T="string" Value="@option">@option</MudSelectItem>
+                                                    }
+                                                </MudSelect>
                                             </MudItem>
-                                            <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                                <MudTextField Label="ALNL Nodes Examined2" style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                              @bind-Value="@pathReport.ALNL_NodesExamined2" Margin="Margin.Normal"
-                                                              For="@(() => pathReport.ALNL_NodesExamined2)"></MudTextField>
+
+                                            <MudItem xs="12" sm="12" md="6" Class="my-n3">
+                                                <MudTextField Label="Path Report Comments2" AutoGrow style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                              @bind-Value="@pathReport.PathComments2" Margin="Margin.Normal"
+                                                              For="@(() => pathReport.PathComments2)"></MudTextField>
                                             </MudItem>
-                                            <MudItem xs="12" sm="6" md="3" Class="my-n3" />
-                                                <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                        <MudSelect @bind-Value="@pathReport.HistologicDiff2" Label="Histologic Differentiation2" HelperText="" Placeholder=""
-                                                   Variant="Variant.Outlined" Margin="Margin.Normal"
-                                                   For="@(() => pathReport.HistologicDiff2)">
-                                            @foreach (var option in HistologicDiffList)
+                                            <MudItem xs="12" sm="12" md="5" Class="my-n3">
+                                                <MudAutocomplete T="Doctor" Value="pathReport.DoctorEntity2" @ref="@doc2AutocompleteRef"
+                                                                 SearchFunc="Doctor2Search"
+                                                                 SelectValueOnTab="true"
+                                                                 DebounceInterval="300"
+                                                                 Immediate="true"
+                                                                 MinCharacters="3"
+                                                                 ResetValueOnEmptyText="false"
+                                                                 MaxItems="50"
+                                                                 Label="Authorizing Provider2"
+                                                                 Placeholder="Search for Provider"
+                                                                 Modal="true" Clearable CoerceValue="false"
+                                                                 OnClearButtonClick="() => OnDoctor2Cleared(pathReport)"
+                                                                 Variant="Variant.Outlined"
+                                                                 ValueChanged="((value) => OnDoctor2SelectionChanged(value, pathReport))"
+                                                                 ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName}")"
+                                                                 ShowProgressIndicator="true"
+                                                                 ProgressIndicatorColor="Color.Info"
+                                                                 AnchorOrigin="@_anchor"
+                                                                 TransformOrigin="@_transform"
+                                                                 RelativeWidth="_dropdownWidth">
+                                                    <ItemTemplate Context="item">
+                                                        <div class="d-flex flex-column">
+                                                            <MudText Typo="Typo.body1">@item.DisplayName</MudText>
+                                                            <MudText Typo="Typo.caption" Color="Color.Info">
+                                                                @item.Address1, @item.City, @item.PrimarySpecialty
+                                                            </MudText>
+                                                        </div>
+                                                    </ItemTemplate>
+                                                </MudAutocomplete>
+                                            </MudItem>
+                                            <MudItem xs="12" sm="12" md="1" Class="my-2">
+                                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
+                                                           ButtonType="ButtonType.Button" OnClick="() => EditDoctor2(pathReport)"></MudButton>
+                                            </MudItem>
+                                            <MudItem xs="12" sm="12" md="6" Class="my-n3">
+                                                <MudTextField Label="Authorizing Provider Comments2" AutoGrow style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                              @bind-Value="@pathReport.AuthorizingProviderComments2" Margin="Margin.Normal"
+                                                              For="@(() => pathReport.AuthorizingProviderComments2)"></MudTextField>
+                                            </MudItem>
+                                            <MudItem xs="12" sm="12" md="5" Class="my-n3">
+                                                <MudAutocomplete T="Doctor" Value="pathReport.PathologistEntity2" @ref="@path2AutocompleteRef"
+                                                                 SearchFunc="Pathologist2Search"
+                                                                 SelectValueOnTab="true"
+                                                                 DebounceInterval="300"
+                                                                 Immediate="true"
+                                                                 MinCharacters="3"
+                                                                 ResetValueOnEmptyText="false"
+                                                                 MaxItems="50"
+                                                                 Label="Pathologist2"
+                                                                 Placeholder="Search for Pathologist"
+                                                                 Modal="true" Clearable CoerceValue="false"
+                                                                 OnClearButtonClick="() => OnPathologist2Cleared(pathReport)"
+                                                                 Variant="Variant.Outlined"
+                                                                 ValueChanged="((value) => OnPathologist2SelectionChanged(value, pathReport))"
+                                                                 ToStringFunc="@(item => item == null ? string.Empty : $"{item.DisplayName}")"
+                                                                 ShowProgressIndicator="true"
+                                                                 ProgressIndicatorColor="Color.Info"
+                                                                 AnchorOrigin="@_anchor"
+                                                                 TransformOrigin="@_transform"
+                                                                 RelativeWidth="_dropdownWidth">
+                                                    <ItemTemplate Context="item">
+                                                        <div class="d-flex flex-column">
+                                                            <MudText Typo="Typo.body1">@item.DisplayName</MudText>
+                                                            <MudText Typo="Typo.caption" Color="Color.Info">
+                                                                @item.Address1, @item.City, @item.PrimarySpecialty
+                                                            </MudText>
+                                                        </div>
+                                                    </ItemTemplate>
+                                                </MudAutocomplete>
+                                            </MudItem>
+                                            <MudItem xs="12" sm="12" md="1" Class="my-2">
+                                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Info" Size="Size.Medium"
+                                                           ButtonType="ButtonType.Button" OnClick="() => EditPathologist2(pathReport)"></MudButton>
+                                            </MudItem>
+                                            <MudItem xs="12" sm="12" md="6" Class="my-n3">
+                                                <MudTextField Label="Pathologist Comments2" style="min-height: 55px !important" AutoGrow Variant="Variant.Outlined"
+                                                              @bind-Value="@pathReport.PathologistComments2" Margin="Margin.Normal"
+                                                              For="@(() => pathReport.PathologistComments2)"></MudTextField>
+                                            </MudItem>
+
+                                            <MudItem xs="12" sm="12" md="5" Class="my-n3">
+                                                <MudSelect Value="pathReport.HistologyDiagnosis2" ValueChanged="(string value) => OnHistologyDiagnosis2Changed(value, pathReport)"
+                                                           Label="Histology Diagnosis2" HelperText="See Case View for Histology Code if not preseent"
+                                                           Placeholder="Select Histology Diagnosis" Variant="Variant.Outlined" Margin="Margin.Normal"
+                                                           For="@(() => pathReport.HistologyDiagnosis2)">
+                                                    @foreach (var option in HistologyList2)
+                                                    {
+                                                        if (option.IsPreferred)
+                                                        {
+                                                            <MudSelectItem T="string" Style="@($"color: {Colors.Green.Default}")" Value="@option.HistologyName">@option.HistologyCode/@option.HistologyBehavior @option.HistologyName</MudSelectItem>
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudSelectItem T="string" Value="@option.HistologyName">@option.HistologyCode/@option.HistologyBehavior @option.HistologyName</MudSelectItem>
+                                                        }
+                                                    }
+                                                </MudSelect>
+                                            </MudItem>
+                                            <MudItem xs="12" sm="3" md="1" Class="mb-n3 d-flex justify-end">
+                                                <MudCheckBox T=bool Label="Show All" Value="showAllDx2" ValueChanged="@((value) => OnShowAllDx2Async(value))" Dense />
+                                            </MudItem>
+                                            <MudItem xs="12" sm="12" md="6" Class="my-n3">
+                                                <MudTextField Label="Histology Diagnosis Comments2" AutoGrow style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                              @bind-Value="@pathReport.HistologyDiagnosisComments2" Margin="Margin.Normal"
+                                                              For="@(() => pathReport.HistologyDiagnosisComments2)"></MudTextField>
+                                            </MudItem>
+                                            @if (Patient.StudyId == Guid.Parse("251CE4DC-F01D-43D8-D47D-08DDD05DE341")) // Kidney Study
                                             {
-                                                <MudSelectItem T="string" Value="@option">@option</MudSelectItem>
+                                                <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                                    <MudTextField Label="Tumor Size2" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                                  @bind-Value="@pathReport.TumorSize2" Margin="Margin.Normal"
+                                                                  For="@(() => pathReport.TumorSize2)"></MudTextField>
+                                                </MudItem>
+                                                <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                                    <MudSelect @bind-Value="@pathReport.MarginStatus2" Label="Margin Status2" HelperText="" Placeholder=""
+                                                               Variant="Variant.Outlined" Margin="Margin.Normal"
+                                                               For="@(() => pathReport.MarginStatus2)">
+                                                        <MudSelectItem Value="@("positive")">positive</MudSelectItem>
+                                                        <MudSelectItem Value="@("negative")">negative</MudSelectItem>
+                                                        <MudSelectItem Value="@("unknown")">unknown</MudSelectItem>
+                                                    </MudSelect>
+                                                </MudItem>
                                             }
-                                    </MudSelect>
-                                            </MudItem>
-                                            <MudItem xs="12" sm="6" md="3" Class="my-n3">
-                                                <MudTextField Label="Histologic Grade2" style="min-height: 55px !important" Variant="Variant.Outlined"
-                                                              @bind-Value="@pathReport.HistologicGrade2" Margin="Margin.Normal"
-                                                              For="@(() => pathReport.HistologicGrade2)"></MudTextField>
-                                            </MudItem>
-                                        }
-                                    </MudGrid>
-                                </div>
-                            </MudGrid>
-                            <MudItem xs="12" sm="12" md="12" Class="d-flex justify-end mb-n3">
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(async () => DeletePathReport(pathReport))" />
-                            </MudItem>
-                        </MudExpansionPanel>
-                                <MudText Color="Color.Success">Path records last modified on @modDatePath by @modUserPath.</MudText>
+                                            @if (Patient.StudyId == Guid.Parse("B4C7A525-42CD-4931-75CA-08DDEF2BF95E")) // Thyroid Study
+                                            {
+                                                <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                                    <MudTextField Label="Tumor Size2" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                                  @bind-Value="@pathReport.TumorSize2" Margin="Margin.Normal"
+                                                                  For="@(() => pathReport.TumorSize2)"></MudTextField>
+                                                </MudItem>
+                                                <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                                    <MudTextField Label="ALNL Positive Nodes2" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                                  @bind-Value="@pathReport.ALNL_PositiveNodes2" Margin="Margin.Normal"
+                                                                  For="@(() => pathReport.ALNL_PositiveNodes2)"></MudTextField>
+                                                </MudItem>
+                                                <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                                    <MudTextField Label="ALNL Nodes Examined2" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                                  @bind-Value="@pathReport.ALNL_NodesExamined2" Margin="Margin.Normal"
+                                                                  For="@(() => pathReport.ALNL_NodesExamined2)"></MudTextField>
+                                                </MudItem>
+                                                <MudItem xs="12" sm="6" md="3" Class="my-n3" />
+                                                <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                                    <MudSelect @bind-Value="@pathReport.HistologicDiff2" Label="Histologic Differentiation2" HelperText="" Placeholder=""
+                                                               Variant="Variant.Outlined" Margin="Margin.Normal"
+                                                               For="@(() => pathReport.HistologicDiff2)">
+                                                        @foreach (var option in HistologicDiffList)
+                                                        {
+                                                            <MudSelectItem T="string" Value="@option">@option</MudSelectItem>
+                                                        }
+                                                    </MudSelect>
+                                                </MudItem>
+                                                <MudItem xs="12" sm="6" md="3" Class="my-n3">
+                                                    <MudTextField Label="Histologic Grade2" style="min-height: 55px !important" Variant="Variant.Outlined"
+                                                                  @bind-Value="@pathReport.HistologicGrade2" Margin="Margin.Normal"
+                                                                  For="@(() => pathReport.HistologicGrade2)"></MudTextField>
+                                                </MudItem>
+                                            }
+
+                                        </MudGrid>
+                                    </div>
+                                </MudGrid>
+                                <MudItem xs="12" sm="12" md="12" Class="d-flex justify-end mb-n3">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(async () => DeletePathReport(pathReport))" />
+                                </MudItem>
+                            </MudExpansionPanel>
+                            <MudText Color="Color.Success">Path records last modified on @modDatePath by @modUserPath.</MudText>
 
                         </div>
                     }

@@ -779,6 +779,34 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         }
 
+        private void OnPrimGleason1Changed(int? newValue, PathReport pathReport)
+        {
+            pathReport.PrimGleason1 = newValue;
+            pathReport.GleasonSum1 = newValue + pathReport.SecGleason1.GetValueOrDefault(); // Update GleasonSum1 based on newValue
+            StateHasChanged(); // Refresh the UI to reflect the changes
+        }
+
+        private void OnSecGleason1Changed(int? newValue, PathReport pathReport)
+        {
+            pathReport.SecGleason1 = newValue;
+            pathReport.GleasonSum1 = newValue + pathReport.PrimGleason1.GetValueOrDefault(); // Update GleasonSum1 based on newValue
+            StateHasChanged(); // Refresh the UI to reflect the changes
+        }
+
+        private void OnPrimGleason2Changed(int? newValue, PathReport pathReport)
+        {
+            pathReport.PrimGleason2 = newValue;
+            pathReport.GleasonSum2 = newValue + pathReport.SecGleason2.GetValueOrDefault(); // Update GleasonSum2 based on newValue
+            StateHasChanged(); // Refresh the UI to reflect the changes
+        }
+
+        private void OnSecGleason2Changed(int? newValue, PathReport pathReport)
+        {
+            pathReport.SecGleason2 = newValue;
+            pathReport.GleasonSum2 = newValue + pathReport.PrimGleason2.GetValueOrDefault(); // Update GleasonSum2 based on newValue
+            StateHasChanged(); // Refresh the UI to reflect the changes 
+        }
+
         private async Task OnDoctorSelectionChanged(Doctor doctor, PathReport pathReport)
         {
             doctorSelectionMade = true;
