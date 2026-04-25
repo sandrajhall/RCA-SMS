@@ -181,7 +181,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/app/cases/create", forceLoad: true);
+                Patient = new Patient();
+                EditContext = new EditContext(Patient);
+                EditContext.MarkAsUnmodified();
+
+                SaveMessage = "Saved successfully. You can now add another.";
+                StateHasChanged();
             }
         }
 

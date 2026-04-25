@@ -1,8 +1,9 @@
-﻿using RCA_StudyManagementSystem.Shared.Domain;
-using Microsoft.AspNetCore.Components;
-using MudBlazor;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
+using MudBlazor;
 using RCA_StudyManagementSystem.Client.Services;
+using RCA_StudyManagementSystem.Shared.Domain;
 
 namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
 {
@@ -144,7 +145,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/app/rcacontacts/create", forceLoad: true);
+                RCAContact = new RCAContact();
+                EditContext = new EditContext(RCAContact);
+                EditContext.MarkAsUnmodified();
+
+                SaveMessage = "Saved successfully. You can now add another.";
+                StateHasChanged();
             }
         }
 
@@ -154,6 +160,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.RCAContacts
 
             if (!IsDialog && IsSaved)
             {
+
                 NavigationManager.NavigateTo($"/app/rcacontacts/list");
             }
             else

@@ -23,7 +23,6 @@ using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System.Text.Json.Serialization;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add output caching services
@@ -43,6 +42,12 @@ builder.Services.AddOutputCache(options =>
     {
         policy.Expire(TimeSpan.FromDays(7));
         policy.Tag("histology-api");
+    });
+});
+
+builder.Services.AddCors(options => {
+    options.AddDefaultPolicy(policy => {
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
 
@@ -175,6 +180,15 @@ builder.Services.AddScoped<GridStateView<Invoice>>(); // Register for a specific
 builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApi();
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    // Increase depth (e.g., to 128)
+    options.SerializerOptions.MaxDepth = 128;
+
+    // Optional: Ignore cycles if your models have circular references
+    options.SerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
 
 builder.Services.AddDataProtection()
     .SetApplicationName("RCA_StudyManagementSystem")
@@ -194,7 +208,7 @@ var app = builder.Build();
 //        if (!roleExists)
 //            await roleManager.CreateAsync(new IdentityRole(roleName));
 //    }
-   
+
 //    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 //    var userGail = await userManager.FindByEmailAsync("gail.cooley@dhhs.nc.gov");
 //    var userJenn = await userManager.FindByEmailAsync("jennifer.oneill@dhhs.nc.gov");
@@ -235,6 +249,7 @@ var app = builder.Build();
 //}
 
 
+app.UseCors();
 
 
 // Configure the HTTP request pipeline.
@@ -303,6 +318,14 @@ app.MapGet("/logout", async (
     return Results.LocalRedirect(returnUrl);
 });
 
+app.MapOpenApi(); // Exposes the JSON file at /openapi/v1.json
+app.UseSwaggerUI(options => {
+    options.SwaggerEndpoint("/openapi/v1.json", "v1");
+    // Sorts by the path (A-Z)
+    options.ConfigObject.AdditionalItems.Add("operationsSorter", "alpha");
+    options.ConfigObject.AdditionalItems.Add("tagsSorter", "alpha");   // Optional: Also sorts the Tags (Controller groups) alphabetically
+    options.DefaultModelExpandDepth(2);
+});
 app.UseHttpsRedirection();
 app.MapStaticAssets();
 

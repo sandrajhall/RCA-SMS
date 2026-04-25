@@ -144,7 +144,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/app/hospitals/create", forceLoad: true);
+                Hospital = new Hospital();
+                EditContext = new EditContext(Hospital);
+                EditContext.MarkAsUnmodified();
+
+                SaveMessage = "Saved successfully. You can now add another.";
+                StateHasChanged();
             }
         }
 

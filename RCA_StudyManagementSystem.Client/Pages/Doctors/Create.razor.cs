@@ -158,7 +158,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/app/doctors/create", forceLoad: true);
+                Doctor = new Doctor();
+                EditContext = new EditContext(Doctor);
+                EditContext.MarkAsUnmodified();
+
+                SaveMessage = "Saved successfully. You can now add another.";
+                StateHasChanged();
             }
         }
 

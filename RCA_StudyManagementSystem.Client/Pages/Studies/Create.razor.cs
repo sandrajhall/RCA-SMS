@@ -115,7 +115,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/app/studies/create", forceLoad: true);
+                Study = new Study();
+                EditContext = new EditContext(Study);
+                EditContext.MarkAsUnmodified();
+
+                SaveMessage = "Saved successfully. You can now add another.";
+                StateHasChanged();
             }
         }
 

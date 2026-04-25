@@ -1,0 +1,12 @@
+General Information
+
+API Documentation
+
+The application uses Swagger for API documentation.  
+https://localhost:7150/swagger/index.html
+
+
+Geoapify Address Autocomplete
+
+The application uses a free service for address autocomplete.  The geoapify key was set up with my (Sandy Hall) email address.  If for any reason you need to generate a new key, that is fine.  Just replace my key in appsettings.json and appsettings.Development.json with a new key.
+https://apidocs.geoapify.com/docs/geocoding/address-autocomplete/

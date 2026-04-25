@@ -1,0 +1,41 @@
+Common Tasks
+
+Back Up Database
+
+In SQL Server Management Studio, right-click on the database name and select Tasks -> Back Up.
+Check Copy-only backup
+Click Add
+Navigate to backup folder, enter a name for the backup file and click OK, then OK again.
+Remove any previous backup files if they exist.
+Click OK.
+
+Restore Database
+
+In SQL Server Management Studio, right-click on the database name and select Tasks -> Restore -> Database.
+Select Device and click on the ... button
+Click Add and navigate to the backup file location, click on the backup file, click OK, then OK again.
+Under Select A Page on the left, choose Options
+Check Overwrite existing database
+Uncheck Take tail-log backup before restore
+Check Close existing connections to destination database
+Click OK.
+
+Adding Fields To Path Report
+
+Before adding fields, switch to a new branch and back up the database.  Just in case something goes wrong.
+If you get build errors during this process, you might still have the application running.  Stop any running processes.  To be sure, you can run the application in debug mode then stop it.  That will kill any running processes.
+In Shared\Domain\PathReport.cs, add the new fields and save.
+If the fields are required, use the [Required] attribute, see examples in the code.
+If the fields are not required, don't forget to put a ? after the type. (public double? TumorSize { get; set; }) 
+At a command line, like Developer Powershell in Visual Studio (View -> Terminal), change directory to the Server project
+> cd .\RCA_StudyManagementSystem\
+Check to see if changes are detected (optional)
+> dotnet ef migrations has-pending-model-changes --context ApplicationDbContext
+If no changes are detected, something has gone wrong.  Try adding the fields again or start over on a new branch.
+If changes are detected, add a migration with a descriptive name
+> dotnet ef migrations add AddTumorSizeField
+Update database
+> dotnet ef database update
+If something goes wrong with the database update, you can remove the migration, fix the issue, then try again.
+> dotnet ef migrations remove
+If the database update was successful, you can add the field to the page (Client\Pages\Cases\fields.razor).  If this field is only for one study, be sure to put it in a section near the bottom that is only for that study.  There are already some examples of that in the code, so just look for if statements with StudyID == Study guid in the razor page markup.  Make sure you are in the Site1 section to start with.  If the new fields need to be in Site2, add them there as well.  Site2 is the very last section on the page so it is easy to mistakenly start there and miss adding to Site1.

@@ -148,7 +148,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.ReimbursementEntities
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/app/reimbursemententities/create", forceLoad: true);
+                ReimbursementEntity = new ReimbursementEntity();
+                EditContext = new EditContext(ReimbursementEntity);
+                EditContext.MarkAsUnmodified();
+
+                SaveMessage = "Saved successfully. You can now add another.";
+                StateHasChanged();
             }
         }
 

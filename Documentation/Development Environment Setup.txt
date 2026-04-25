@@ -1,0 +1,17 @@
+Development Environment Setup
+
+Install .NET 10 Framework
+Install Visual Studio 2026 (required for .NET 10)
+Install SQL Server Management Studio
+
+Get the latest copy of database from Osprey computer in DB Backups folder.
+Create a new database in SSMS called RCA-SMS and restore the backup file.  (See Common Tasks document for restore instructions.)
+***When local dev DB is setup, add instructions to connect there to use the existing DB.***
+
+Get the latest copy of the codebase from Gitlab under lims\RCA_StudyManagementSystem.
+Navigate to where you want to save the code and clone the repo.
+> git clone ***Add address here ***
+
+Open the solution file (RCA_StudyManagementSystem.slnx) in Visual Studio.
+
+I recommend setting up a separate Chrome user profile just for development.  That way you'll have minimal interference from extensions and you can clear all data easily without deleting data you might want in your own profile.

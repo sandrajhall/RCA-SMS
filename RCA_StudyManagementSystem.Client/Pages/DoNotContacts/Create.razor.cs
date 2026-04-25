@@ -158,7 +158,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
 
             if (IsSaved)
             {
-                NavigationManager.NavigateTo($"/app/donotcontact/create", forceLoad: true);
+                DoNotContact = new DoNotContact();
+                EditContext = new EditContext(DoNotContact);
+                EditContext.MarkAsUnmodified();
+
+                SaveMessage = "Saved successfully. You can now add another.";
+                StateHasChanged();
             }
         }
 
