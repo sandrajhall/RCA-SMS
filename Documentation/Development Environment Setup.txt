@@ -14,4 +14,6 @@ Navigate to where you want to save the code and clone the repo.
 
 Open the solution file (RCA_StudyManagementSystem.slnx) in Visual Studio.
 
+Make sure the top project in the list is the startup project (RCA_StudyManagementSystem).  It should be bold.  If not, right-click on the project and choose Set as Startup Project.
+
 I recommend setting up a separate Chrome user profile just for development.  That way you'll have minimal interference from extensions and you can clear all data easily without deleting data you might want in your own profile.
