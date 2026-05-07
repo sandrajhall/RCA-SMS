@@ -2,9 +2,10 @@ Development Environment Setup
 
 Install .NET 10 Framework
 Install Visual Studio 2026 (required for .NET 10)
-Install SQL Server Management Studio
+Install MS SQL Server
+Install SQL Server Management Studio (SSMS)
 
-Get the latest copy of database from Osprey computer in DB Backups folder.
+Get the latest copy of database from Osprey computer (osprey.bioinf.unc.edu) in the DB Backups folder.
 Create a new database in SSMS called RCA-SMS and restore the backup file.  (See Common Tasks document for restore instructions.)
 ***When local dev DB is setup, add instructions to connect there to use the existing DB.***
 
