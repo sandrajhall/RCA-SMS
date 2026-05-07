@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json.Linq;
+using RCA_StudyManagementSystem.Client.Interfaces;
 using RCA_StudyManagementSystem.Shared.Domain;
 using System.Net.Http.Json;
 using static System.Net.WebRequestMethods;
 
 namespace RCA_StudyManagementSystem.Client.Services
 {
-    public class HistologyData
+    public class HistologyData : IHistologyData
     {
         private readonly HttpClient _httpClient;
 

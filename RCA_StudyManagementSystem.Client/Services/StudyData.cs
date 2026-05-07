@@ -6,10 +6,11 @@ using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using static System.Net.WebRequestMethods;
+using RCA_StudyManagementSystem.Client.Interfaces;
 
 namespace RCA_StudyManagementSystem.Client.Services
 {
-    public class StudyData
+    public class StudyData : IStudyData
     {
         private readonly HttpClient _httpClient;
 

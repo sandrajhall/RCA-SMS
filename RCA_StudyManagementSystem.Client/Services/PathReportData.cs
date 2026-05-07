@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json.Linq;
+using RCA_StudyManagementSystem.Client.Interfaces;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.DTOs;
 using RCA_StudyManagementSystem.Shared.ViewModels;
@@ -8,7 +9,7 @@ using static System.Net.WebRequestMethods;
 
 namespace RCA_StudyManagementSystem.Client.Services
 {
-    public class PathReportData
+    public class PathReportData : IPathReportData
     {
         private readonly HttpClient _httpClient;
         private readonly NavigationManager _navigationManager;

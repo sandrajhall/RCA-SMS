@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
+using RCA_StudyManagementSystem.Client.Interfaces;
 using RCA_StudyManagementSystem.Shared.Domain;
 using System.Net.Http.Json;
 
 namespace RCA_StudyManagementSystem.Client.Services
 {
-    public class StudyReportHeaderData
+    public class StudyReportHeaderData : IStudyReportHeaderData
     {
         private readonly HttpClient _httpClient;
 

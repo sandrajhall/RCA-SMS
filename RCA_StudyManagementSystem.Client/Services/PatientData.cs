@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Newtonsoft.Json.Linq;
+using RCA_StudyManagementSystem.Client.Interfaces;
 using RCA_StudyManagementSystem.Shared.Domain;
 using System.Net;
 using System.Net.Http.Json;
@@ -9,7 +10,7 @@ using static System.Net.WebRequestMethods;
 
 namespace RCA_StudyManagementSystem.Client.Services
 {
-    public class PatientData
+    public class PatientData : IPatientData
     {
         private readonly HttpClient _httpClient;
 

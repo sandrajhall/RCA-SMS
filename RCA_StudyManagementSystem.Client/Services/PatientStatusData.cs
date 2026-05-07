@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json.Linq;
+using RCA_StudyManagementSystem.Client.Interfaces;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System.Net.Http.Json;
 
 namespace RCA_StudyManagementSystem.Client.Services
 {
-    public class PatientStatusData
+    public class PatientStatusData : IPatientStatusData
     {
         private readonly HttpClient _httpClient;
 
