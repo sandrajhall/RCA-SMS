@@ -2,7 +2,7 @@ Development Environment Setup
 
 Install .NET 10 Framework
 Install Visual Studio 2026 (required for .NET 10)
-Install MS SQL Server
+Install MS SQL Server - You may need to get SOM IT to install this for you.  If they install it, be sure to have them log in to the "." server and add your account as a "sysadmin".
 Install SQL Server Management Studio (SSMS)
 
 Get the latest copy of database from Osprey computer (osprey.bioinf.unc.edu) in the DB Backups folder.
