@@ -6,7 +6,8 @@ Install MS SQL Server - You may need to get SOM IT to install this for you.  If 
 Install SQL Server Management Studio (SSMS)
 
 Get the latest copy of database from Osprey computer (osprey.bioinf.unc.edu) in the DB Backups folder.
-Create a new database in SSMS called RCA-SMS and restore the backup file.  (See Common Tasks document for restore instructions.)
+In SSMS, log in to the "." server.
+Create a new database called RCA-SMS and restore the backup file.  (See Common Tasks document for restore instructions.)
 ***When local dev DB is setup, add instructions to connect there to use the existing DB.***
 
 Get the latest copy of the codebase from Gitlab under lims\RCA_StudyManagementSystem.
