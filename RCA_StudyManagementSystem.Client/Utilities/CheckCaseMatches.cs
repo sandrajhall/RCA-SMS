@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using RCA_StudyManagementSystem.Client.Interfaces;
 using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System.Threading.Tasks;
@@ -8,8 +9,8 @@ namespace RCA_StudyManagementSystem.Client.Utilities
     public class CheckCaseMatches
     {
         [Inject]
-        public static PatientData _patientData { get; set; }
-        public CheckCaseMatches(PatientData patientData)
+        public static IPatientData _patientData { get; set; }
+        public CheckCaseMatches(IPatientData patientData)
         {
             _patientData = patientData;
          }

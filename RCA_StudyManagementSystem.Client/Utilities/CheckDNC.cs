@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using RCA_StudyManagementSystem.Client.Interfaces;
 using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System.Threading.Tasks;
@@ -10,8 +11,8 @@ namespace RCA_StudyManagementSystem.Client.Utilities
         private static CancellationToken token;
 
         [Inject]
-        public static DoNotContactData _dncData { get; set; }
-        public CheckDNC(DoNotContactData dncData)
+        public static IDoNotContactData _dncData { get; set; }
+        public CheckDNC(IDoNotContactData dncData)
         {
             _dncData = dncData;
          }
