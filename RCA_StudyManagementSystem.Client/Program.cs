@@ -68,9 +68,9 @@ builder.Services.AddScoped<IInvoiceData, InvoiceData>();
 builder.Services.AddScoped<IReportData, ReportData>();
 builder.Services.AddScoped<IDailyPathSubmissionData, DailyPathSubmissionData>();
 builder.Services.AddScoped<IPatientStatusData, PatientStatusData>();
+builder.Services.AddScoped<IUserData, UserData>();
 builder.Services.AddScoped<GenerateCaseNumber>();
 builder.Services.AddScoped<GenerateBatchNumber>();
-builder.Services.AddScoped<UserData>();
 
 builder.Services.AddScoped<GridStateView<Patient>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<PathReportView>>(); // Register for a specific data item type

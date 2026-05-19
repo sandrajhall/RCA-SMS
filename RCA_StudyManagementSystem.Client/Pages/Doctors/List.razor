@@ -5,15 +5,16 @@
 @using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using RCA_StudyManagementSystem.Shared.ViewModels
 @using MudBlazor
 @using System.Linq
 
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
-@inject DoctorData DoctorData
-@inject LookupData LookupData
-@inject UserData UserData
+@inject IDoctorData DoctorData
+@inject ILookupData LookupData
+@inject IUserData UserData
 @inject GridStateView<Doctor> DocGridStateView
 @inject ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider AuthStateProvider

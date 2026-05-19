@@ -6,13 +6,14 @@
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.ViewModels
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using MudBlazor
 @using System.Linq
 @using System.IO
 
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
-@inject InvoiceData InvoiceData
+@inject IInvoiceData InvoiceData
 @inject GridStateView<Invoice> InvGridStateView
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager Navigation

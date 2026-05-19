@@ -1,5 +1,6 @@
 ﻿@using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using System.ComponentModel.DataAnnotations
 @using MudBlazor
 @using System.Net.Http
@@ -11,8 +12,8 @@
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IConfiguration Configuration
-@inject RCAContactData RCAContactData
-@inject UserData UserData
+@inject IRCAContactData RCAContactData
+@inject IUserData UserData
 
 
 

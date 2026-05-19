@@ -1,4 +1,5 @@
 ﻿@using MudBlazor
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Pages.Cases
@@ -6,12 +7,11 @@
 @* @rendermode InteractiveAuto
  *@
 @inject IDialogService DialogService
-@inject StudyData StudyData
-@inject BatchData BatchData 
-@inject PatientData PatientData
-@inject PathReportData PathReportData
-@inject UserData UserData
-
+@inject IStudyData StudyData
+@inject IBatchData BatchData 
+@inject IPatientData PatientData
+@inject IPathReportData PathReportData
+@inject IUserData UserData
 
 @if (IsLoading)
 {

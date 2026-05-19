@@ -1,6 +1,7 @@
 ﻿@using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.ViewModels
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using System.ComponentModel.DataAnnotations
 @using MudBlazor
 @using MudBlazor.Utilities
@@ -11,14 +12,14 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject ISnackbar Snackbar
-@inject StudyData StudyData
-@inject StudyLookupData StudyLookupData
-@inject LookupData LookupData
-@inject HistologyData HistologyData
-@inject StudyHistologyData StudyHistologyData
-@inject PathReportData PathReportData
+@inject IStudyData StudyData
+@inject IStudyLookupData StudyLookupData
+@inject ILookupData LookupData
+@inject IHistologyData HistologyData
+@inject IStudyHistologyData StudyHistologyData
+@inject IPathReportData PathReportData
 @inject IDialogService DialogService
-@inject UserData UserData
+@inject IUserData UserData
 
 
 

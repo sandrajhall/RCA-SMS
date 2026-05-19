@@ -3,12 +3,13 @@
 @using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using System.ComponentModel.DataAnnotations
 @using System.Net.Http
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
-@inject StudyData StudyData
+@inject IStudyData StudyData
 @inject ISnackbar Snackbar
 @inject ILogger<Create> Logger
 @inject AuthenticationStateProvider AuthStateProvider

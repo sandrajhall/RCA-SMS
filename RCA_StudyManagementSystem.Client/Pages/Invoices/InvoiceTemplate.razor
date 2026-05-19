@@ -9,13 +9,14 @@
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Pages.Cases
+@using RCA_StudyManagementSystem.Client.Interfaces
 
 @rendermode InteractiveAuto
 
 @inject IDialogService DialogService
-@inject StudyData StudyData
-@inject HospitalData HospitalData
-@inject InvoiceData InvoiceData
+@inject IStudyData StudyData
+@inject IHospitalData HospitalData
+@inject IInvoiceData InvoiceData
 
 
         <div >

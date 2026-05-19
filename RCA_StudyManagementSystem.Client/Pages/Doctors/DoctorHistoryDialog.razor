@@ -1,12 +1,13 @@
 ﻿@using MudBlazor
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Interfaces
 @* @using RCA_StudyManagementSystem.Client.Pages.Cases *@
 
 @rendermode InteractiveAuto
 
 @inject IDialogService DialogService
-@inject UserData UserData
+@inject IUserData UserData
 
 <MudDialog>
     <DialogContent>

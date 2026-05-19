@@ -5,16 +5,17 @@
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.ViewModels
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using MudBlazor
 @using System.Linq
 
 @inject IJSRuntime JSRuntime
-@inject StudyData StudyData
-@inject DailyPathSubmissionData DailyPathSubmissionData
-@inject HospitalData HospitalData
-@inject LookupData LookupData
-@inject PatientData PatientData
-@inject PatientStatusData PatientStatusData
+@inject IStudyData StudyData
+@inject IDailyPathSubmissionData DailyPathSubmissionData
+@inject IHospitalData HospitalData
+@inject ILookupData LookupData
+@inject IPatientData PatientData
+@inject IPatientStatusData PatientStatusData
 @inject ISnackbar Snackbar
 @inject AuthenticationStateProvider AuthStateProvider
 

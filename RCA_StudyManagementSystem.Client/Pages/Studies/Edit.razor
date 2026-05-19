@@ -4,18 +4,19 @@
 @using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using System.ComponentModel.DataAnnotations
 @using System.Net.Http
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject IDialogService DialogService
-@inject StudyData StudyData
-@inject StudyLookupData StudyLookupData
-@inject StudyHistologyData StudyHistologyData
-@inject PathReportData PathReportData
-@inject StudyHeaderData StudyHeaderData
-@inject StudyReportHeaderData StudyReportHeaderData
+@inject IStudyData StudyData
+@inject IStudyLookupData StudyLookupData
+@inject IStudyHistologyData StudyHistologyData
+@inject IPathReportData PathReportData
+@inject IStudyHeaderData StudyHeaderData
+@inject IStudyReportHeaderData StudyReportHeaderData
 @inject IJSRuntime JSRuntime
 @inject ISnackbar Snackbar
 @inject ILogger<Edit> Logger

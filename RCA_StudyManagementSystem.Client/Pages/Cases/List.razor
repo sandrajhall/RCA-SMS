@@ -3,6 +3,7 @@
 
 @using Blazored.LocalStorage
 @using Microsoft.AspNetCore.Authorization
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using RCA_StudyManagementSystem.Client.Utilities
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services
@@ -12,17 +13,17 @@
 
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
-@inject PathReportData PathReportData
-@inject PatientData PatientData
-@inject StudyData StudyData
-@inject LookupData LookupData
-@inject HospitalData HospitalData
-@inject DoctorData DoctorData
-@inject UserData UserData
-@inject StudyLookupData StudyLookupData
-@inject StudyHistologyData StudyHistologyData
+@inject IPathReportData PathReportData
+@inject IPatientData PatientData
+@inject IStudyData StudyData
+@inject ILookupData LookupData
+@inject IHospitalData HospitalData
+@inject IDoctorData DoctorData
+@inject IUserData UserData
+@inject IStudyLookupData StudyLookupData
+@inject IStudyHistologyData StudyHistologyData
 @inject GenerateCaseNumber GenerateCaseNumber
-@inject DoNotContactData DoNotContactData
+@inject IDoNotContactData DoNotContactData
 @inject GridStateView<PathReportView> PathGridStateView
 @inject ILocalStorageService LocalStorage
 

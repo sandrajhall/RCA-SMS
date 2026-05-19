@@ -4,15 +4,16 @@
 @using Microsoft.AspNetCore.Authorization
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using MudBlazor
 @using System.Linq
 
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
-@inject HistologyData HistologyData
+@inject IHistologyData HistologyData
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider AuthStateProvider
-@inject UserData UserData
+@inject IUserData UserData
 
 @rendermode InteractiveAuto
 

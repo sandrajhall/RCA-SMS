@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using RCA_StudyManagementSystem.Client.Interfaces;
 using RCA_StudyManagementSystem.Client.Services;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,8 @@ namespace RCA_StudyManagementSystem.Client.Utilities
 {
     public class GenerateCaseNumber
     {
-        private readonly PatientData _patientData;
-        public GenerateCaseNumber(PatientData patientData)
+        private readonly IPatientData _patientData;
+        public GenerateCaseNumber(IPatientData patientData)
         {
             _patientData = patientData;
         }

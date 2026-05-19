@@ -5,14 +5,15 @@
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.ViewModels
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using MudBlazor
 @using System.Linq
 
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
-@inject ReportData ReportData
-@inject StudyData StudyData
-@inject HistologyData HistologyData
+@inject IReportData ReportData
+@inject IStudyData StudyData
+@inject IHistologyData HistologyData
 @inject IJSRuntime JSRuntime
 
 

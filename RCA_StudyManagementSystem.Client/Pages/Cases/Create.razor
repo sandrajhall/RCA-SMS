@@ -2,6 +2,7 @@
 @page "/app/cases/create"
 @using Microsoft.AspNetCore.Authorization
 @using MudBlazor
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Client.Utilities
 @using RCA_StudyManagementSystem.Shared.Domain
@@ -10,12 +11,12 @@
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
-@inject PatientData PatientData
-@inject HospitalData HospitalData
-@inject DoctorData DoctorData
+@inject IPatientData PatientData
+@inject IHospitalData HospitalData
+@inject IDoctorData DoctorData
 @inject ISnackbar Snackbar
 @inject ILogger<Create> Logger
-@inject StudyData StudyData
+@inject IStudyData StudyData
 @inject GenerateCaseNumber GenerateCaseNumber
 @inject AuthenticationStateProvider AuthStateProvider
 

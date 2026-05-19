@@ -3,6 +3,7 @@
 @page "/app/cases/edit/{PatientId:guid}/{IsSaved:bool?}"
 @page "/app/cases/edit/{PatientId:guid}/{List}"
 @using Microsoft.AspNetCore.Authorization
+@using RCA_StudyManagementSystem.Client.Interfaces
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.Domain
 @using System.ComponentModel.DataAnnotations
@@ -11,8 +12,8 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject IDialogService DialogService
-@inject PatientData PatientData
-@inject StudyData StudyData
+@inject IPatientData PatientData
+@inject IStudyData StudyData
 @inject IJSRuntime JSRuntime
 @inject ISnackbar Snackbar
 @inject ILogger<Edit> Logger

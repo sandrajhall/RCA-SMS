@@ -2,13 +2,14 @@
 @using RCA_StudyManagementSystem.Client.Services
 @using RCA_StudyManagementSystem.Shared.Domain
 @using RCA_StudyManagementSystem.Client.Pages.Cases
+@using RCA_StudyManagementSystem.Client.Interfaces
 
 @rendermode InteractiveAuto
 
 @inject IDialogService DialogService
-@inject StudyData StudyData
-@inject UserData UserData
-@inject HospitalData HospitalData
+@inject IStudyData StudyData
+@inject IUserData UserData
+@inject IHospitalData HospitalData
 
 <MudDialog>
     <DialogContent>

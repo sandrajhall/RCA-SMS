@@ -1,11 +1,12 @@
 ﻿@using MudBlazor
 @using RCA_StudyManagementSystem.Client.Services;
 @using RCA_StudyManagementSystem.Shared.Domain;
+@using RCA_StudyManagementSystem.Client.Interfaces
 
 @rendermode InteractiveAuto
 @inject IDialogService DialogService
-@inject StudyLookupData StudyLookupData
-@inject StudyHistologyData StudyHistologyData
+@inject IStudyLookupData StudyLookupData
+@inject IStudyHistologyData StudyHistologyData
 
 <style>
     .newspaper-columns {
