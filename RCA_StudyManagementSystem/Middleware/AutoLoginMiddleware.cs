@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using RCA_StudyManagementSystem.Data;
 
+// This middleware is intended for development purposes only. It automatically logs in a specified user if no user is currently authenticated.
+
+
 namespace RCA_StudyManagementSystem.Middleware
 {
     public class AutoLoginMiddleware
@@ -21,6 +24,7 @@ namespace RCA_StudyManagementSystem.Middleware
         {
             if (context.User.Identity?.IsAuthenticated != true)
             {
+                // change user@email to the email of the user you want to auto-login as
                 var testUser = await userManager.FindByEmailAsync("user@email");
                 if (testUser != null)
                 {
