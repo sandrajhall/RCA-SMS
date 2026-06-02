@@ -10,9 +10,9 @@ In SSMS, log in to the "." server.
 Create a new database called RCA-SMS and restore the backup file.  (See Common Tasks document for restore instructions.)
 ***When local dev DB is setup, add instructions to connect there to use the existing DB.***
 
-Get the latest copy of the codebase from Gitlab under lims\RCA_StudyManagementSystem.
+Get the latest copy of the codebase from GitHub.
 Navigate to where you want to save the code and clone the repo.
-> git clone git@sc.unc.edu:lbg_lims/rca-sms.git
+> git clone git@github.com:sandrajhall/RCA-SMS.git
 
 Open the solution file (RCA_StudyManagementSystem.slnx) in Visual Studio.
 
