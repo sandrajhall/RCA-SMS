@@ -6,9 +6,9 @@ Install MS SQL Server (latest Developer Standard Edition) - You may need to get 
 Install SQL Server Management Studio (SSMS)
 
 Get the latest copy of the database from the Osprey computer (osprey.bioinf.unc.edu) in the DB Backups folder.
-In SSMS, log in to the "." server.
+In SSMS, log in to the "." server. Check Trust Server Certificate.
 Create a new database called RCA-SMS and restore the backup file.  (See Common Tasks document for restore instructions.)
-***When local dev DB is setup, add instructions to connect there to use the existing DB.***
+
 
 Get the latest copy of the codebase from GitHub.
 Navigate to where you want to save the code and clone the repo.
