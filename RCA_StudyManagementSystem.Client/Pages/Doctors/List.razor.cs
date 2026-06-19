@@ -393,6 +393,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Doctors
                                         continue;
                                     var newDoctor = new Doctor();
                                     //newDoctor.DoctorId = Guid.NewGuid();
+                                    newDoctor.IsDuplicate = bool.TryParse(row[24]?.ToString().Trim(), out bool isDuplicate) ? isDuplicate : false;
+                                    newDoctor.DuplicateOfDoctorId = row[25]?.ToString().Trim() ?? string.Empty;
                                     newDoctor.MigratedDoctorId = row[0]?.ToString().Trim() ?? string.Empty;
                                     if (row[2] == null || string.IsNullOrWhiteSpace(row[2].ToString()))
                                     {

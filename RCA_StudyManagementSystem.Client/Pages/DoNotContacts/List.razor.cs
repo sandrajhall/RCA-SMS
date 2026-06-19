@@ -381,11 +381,12 @@ namespace RCA_StudyManagementSystem.Client.Pages.DoNotContacts
                                     if (row[0]?.ToString() == "ID") // Skip header row
                                         continue;
                                     var newDNC = new DoNotContact();
-                                    newDNC.FirstName = row[2]?.ToString().Trim() ?? string.Empty;
+                                    newDNC.FirstName = row[2]?.ToString().Trim() ?? "Unknown";
                                     newDNC.MiddleName = row[3]?.ToString().Trim() ?? string.Empty;
-                                    newDNC.LastName = row[1]?.ToString().Trim() ?? string.Empty;
-                                    newDNC.DateOfBirth = DateTime.TryParse(row[6]?.ToString().Trim(), out DateTime dob) ? dob : (DateTime?)null;
-                                    newDNC.SocialSecurityNumber = row[5]?.ToString().Trim() ?? string.Empty;
+                                    newDNC.LastName = row[1]?.ToString().Trim() ?? "Unknown";
+                                    newDNC.DateOfBirth = DateTime.TryParse(row[6]?.ToString().Trim(), out DateTime dob) ? dob : DateTime.Parse("1/1/1000");
+                                    string ssnValue = row[5]?.ToString().Trim();
+                                    newDNC.SocialSecurityNumber = string.IsNullOrWhiteSpace(ssnValue) ? "999-99-9999" : ssnValue;
                                     newDNC.StudyName = row[8]?.ToString().Trim() ?? string.Empty;
                                     newDNC.DateLastContact = DateTime.TryParse(row[12]?.ToString().Trim(), out DateTime dlc) ? dlc : (DateTime?)null;
 

@@ -131,7 +131,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                 .FirstOrDefaultAsync(s => s.MigratedCCRNo == ccrno);
             if (patient == null)
             {
-                return NotFound();
+                return Guid.Empty;
             }
 
             var patientId = patient.PatientId;
