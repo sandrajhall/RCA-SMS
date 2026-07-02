@@ -75,7 +75,14 @@ namespace RCA_StudyManagementSystem.Controllers
                 .FirstOrDefaultAsync();
             if (hospital == null)
             {
-                return NotFound();
+                hospital = await _context.Hospitals
+                    .Where(h => h.MigratedHospitalId.Contains(migratedId))
+                    .FirstOrDefaultAsync();
+
+                if (hospital == null)
+                {
+                    return NotFound();
+                }
             }
             return hospital;
         }

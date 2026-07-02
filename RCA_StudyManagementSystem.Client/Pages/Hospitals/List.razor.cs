@@ -360,19 +360,22 @@ namespace RCA_StudyManagementSystem.Client.Pages.Hospitals
                                     if (row[0]?.ToString() == "ShortHospName") // Skip header row
                                         continue;
                                     var newHospital = new Hospital();
+
+                                    newHospital.IsDuplicate = bool.TryParse(row[18]?.ToString().Trim(), out bool isDuplicate) ? isDuplicate : false;
+                                    newHospital.DuplicateOfHospitalId = row[19]?.ToString().Trim() ?? string.Empty;
                                     newHospital.MigratedHospitalId = row[1]?.ToString().Trim() ?? string.Empty;
                                     newHospital.HospitalShortName = row[0]?.ToString().Trim() ?? string.Empty;
                                     newHospital.HospitalCode = row[1]?.ToString().Trim() ?? string.Empty;
                                     newHospital.HospitalName = row[2]?.ToString().Trim() ?? string.Empty;
-                                    newHospital.Address1 = row[3]?.ToString().Trim() ?? string.Empty;
-                                    newHospital.Address2 = row[4]?.ToString().Trim() ?? string.Empty;
-                                    newHospital.City = row[7]?.ToString().Trim() ?? string.Empty;
-                                    newHospital.State = row[8]?.ToString().Trim() ?? string.Empty;
-                                    newHospital.ZipCode = row[9]?.ToString().Trim() ?? string.Empty;
-                                    newHospital.County = row[17]?.ToString().Trim() ?? string.Empty;
-                                    newHospital.PhoneNumber = row[5]?.ToString().Trim() ?? string.Empty;
-                                    newHospital.FaxNumber = row[6]?.ToString().Trim() ?? string.Empty;
-                                    newHospital.HospitalComments = row[11]?.ToString().Trim() ?? string.Empty;
+                                    newHospital.Address1 = string.IsNullOrWhiteSpace(row[3]?.ToString().Trim()) ? "Unknown" : row[3]?.ToString().Trim();
+                                    newHospital.Address2 = string.IsNullOrWhiteSpace(row[4]?.ToString().Trim()) ? "Unknown" : row[4]?.ToString().Trim();
+                                    newHospital.City = string.IsNullOrWhiteSpace(row[7]?.ToString().Trim()) ? "Unknown" : row[7]?.ToString().Trim();
+                                    newHospital.State = string.IsNullOrWhiteSpace(row[8]?.ToString().Trim()) ? "Unknown" : row[8]?.ToString().Trim();
+                                    newHospital.ZipCode = string.IsNullOrWhiteSpace(row[9]?.ToString().Trim()) ? "Unknown" : row[9]?.ToString().Trim();
+                                    newHospital.County = string.IsNullOrWhiteSpace(row[17]?.ToString().Trim()) ? "Unknown" : row[17]?.ToString().Trim();
+                                    newHospital.PhoneNumber = string.IsNullOrWhiteSpace(row[5]?.ToString().Trim()) ? "Unknown" : row[5]?.ToString().Trim();
+                                    newHospital.FaxNumber = string.IsNullOrWhiteSpace(row[6]?.ToString().Trim()) ? "Unknown" : row[6]?.ToString().Trim();
+                                    newHospital.HospitalComments = string.IsNullOrWhiteSpace(row[11]?.ToString().Trim()) ? string.Empty : row[11]?.ToString().Trim();
                                     newHospital.IsActive = true;
 
                                     newHospital.CreatedDate = DateTime.TryParse(row[12]?.ToString().Trim(), out DateTime cDate) ? cDate : DateTime.UtcNow;

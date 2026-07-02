@@ -746,7 +746,19 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                             ModifiedUserId = newPatient.ModifiedUserId
                                         });
                                     }
-
+                                    else
+                                    {
+                                        newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
+                                        {
+                                            PhoneNumber = "555-555-5555",
+                                            PhoneType = "Other",
+                                            IsPrimary = true,
+                                            CreatedDate = newPatient.CreatedDate,
+                                            CreatedUserId = newPatient.CreatedUserId,
+                                            ModifiedDate = newPatient.ModifiedDate,
+                                            ModifiedUserId = newPatient.ModifiedUserId
+                                        });
+                                    }
                                     if (!string.IsNullOrWhiteSpace(row[13]?.ToString()))
                                     {
                                         newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
@@ -852,6 +864,11 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.PathIndex = 1;
                                     newPath.MigratedCCRNumber = row[1]?.ToString().Trim() ?? string.Empty;
                                     newPath.PatientId = await PatientData.GetPatientIdByCCRNoAsync(newPath.MigratedCCRNumber);
+                                    if (newPath.PatientId == Guid.Empty)
+                                    {
+                                        Console.WriteLine($"No patient found for CCR Number: {newPath.MigratedCCRNumber}");
+                                        continue; // Skip this path report if no patient is found
+                                    }
                                     await Task.Delay(50);
 
                                     var study = await StudyData.GetStudyAsync(Guid.Parse("889CD103-A5BA-48EA-1168-08DDD04D0C1E"));  // CBCS4 StudyId
@@ -873,6 +890,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.DateOfProcedure = DateTime.TryParse(row[4]?.ToString().Trim(), out DateTime dop) ? dop : (DateTime?)null;
                                     newPath.AgeAtProcedure = row[5]?.ToString().Trim() ?? string.Empty;
 
+                                    Console.WriteLine("HOSPMIGRATEDID: " + row[2]?.ToString().Trim());
                                     var hospital = await HospitalData.GetHospitalByMigratedIdAsync(row[2]?.ToString().Trim().TrimStart('0') ?? string.Empty);
                                     await Task.Delay(50);
                                     if (hospital.IsDuplicate)
@@ -890,6 +908,13 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.HospFaxNumber = hospital != null ? hospital.FaxNumber : "Unknown";
 
                                     newPath.SubmittingHospitalPathReportNumber = row[6]?.ToString().Trim() ?? string.Empty;
+                                    if (string.IsNullOrEmpty(newPath.SubmittingHospitalPathReportNumber))
+                                    {
+                                        newPath.SubmittingHospitalPathReportNumber = "Unknown";
+                                    }
+                                    var dup = await PathReportData.CheckPathReportNumberAsync(newPath.SubmittingHospitalPathReportNumber);
+                                    if (dup == "true")
+                                        newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-d" + Random.Shared.Next(1, 1001).ToString();
 
                                     var doctor = await DoctorData.GetDoctorByMigratedIdAsync(row[7]?.ToString().Trim());
                                     await Task.Delay(50);
@@ -1283,6 +1308,19 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                             ModifiedUserId = newPatient.ModifiedUserId
                                         });
                                     }
+                                    else
+                                    {
+                                        newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
+                                        {
+                                            PhoneNumber = "555-555-5555",
+                                            PhoneType = "Other",
+                                            IsPrimary = true,
+                                            CreatedDate = newPatient.CreatedDate,
+                                            CreatedUserId = newPatient.CreatedUserId,
+                                            ModifiedDate = newPatient.ModifiedDate,
+                                            ModifiedUserId = newPatient.ModifiedUserId
+                                        });
+                                    }
 
                                     if (!string.IsNullOrWhiteSpace(row[13]?.ToString()))
                                     {
@@ -1384,6 +1422,11 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.PathIndex = 1;
                                     newPath.MigratedCCRNumber = row[1]?.ToString().Trim() ?? string.Empty;
                                     newPath.PatientId = await PatientData.GetPatientIdByCCRNoAsync(newPath.MigratedCCRNumber);
+                                    if (newPath.PatientId == Guid.Empty)
+                                    {
+                                        Console.WriteLine($"No patient found for CCR Number: {newPath.MigratedCCRNumber}");
+                                        continue; // Skip this path report if no patient is found
+                                    }
                                     await Task.Delay(50);
 
                                     var study = await StudyData.GetStudyAsync(Guid.Parse("631B71B4-B451-4FD7-8B82-08DDD0513E23"));  // CECS StudyId
@@ -1422,15 +1465,23 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.HospFaxNumber = hospital != null ? hospital.FaxNumber : "Unknown";
 
                                     newPath.SubmittingHospitalPathReportNumber = row[6]?.ToString().Trim() ?? string.Empty;
+                                    if(string.IsNullOrEmpty(newPath.SubmittingHospitalPathReportNumber))
+                                    {
+                                        newPath.SubmittingHospitalPathReportNumber = "Unknown";
+                                    }
                                     var dup = await PathReportData.CheckPathReportNumberAsync(newPath.SubmittingHospitalPathReportNumber);
                                     if (dup == "true")
-                                        newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-1";
+                                        newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-d" + Random.Shared.Next(1, 1001).ToString();
 
-                                    var doctor = await DoctorData.GetDoctorByMigratedIdAsync(row[7]?.ToString().Trim());
-                                    await Task.Delay(50);
-                                    if (doctor.IsDuplicate)
+                                    var doctor = (Doctor)null;
+                                    if (!string.IsNullOrEmpty(row[7]?.ToString().Trim()))
                                     {
-                                        doctor = await DoctorData.GetDoctorByMigratedIdAsync(doctor.DuplicateOfDoctorId);
+                                        doctor = await DoctorData.GetDoctorByMigratedIdAsync(row[7]?.ToString().Trim());
+                                        await Task.Delay(50);
+                                        if (doctor.IsDuplicate)
+                                        {
+                                            doctor = await DoctorData.GetDoctorByMigratedIdAsync(doctor.DuplicateOfDoctorId);
+                                        }
                                     }
                                     newPath.AuthorizingProvider = doctor != null ? doctor.DisplayName : "Unknown Provider";
                                     newPath.DoctorId = doctor != null ? doctor.DoctorId : Guid.Empty;
@@ -1448,28 +1499,30 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
                                     newPath.AuthorizingProviderComments = row[37]?.ToString().Trim() ?? string.Empty;
 
-                                    var pathologist = await DoctorData.GetDoctorByMigratedIdAsync(row[8]?.ToString().Trim());
-                                    await Task.Delay(50);
-                                    if (pathologist.IsDuplicate)
+                                    if (!string.IsNullOrEmpty(row[8]?.ToString().Trim()))
                                     {
-                                        pathologist = await DoctorData.GetDoctorByMigratedIdAsync(pathologist.DuplicateOfDoctorId);
+                                        var pathologist = await DoctorData.GetDoctorByMigratedIdAsync(row[8]?.ToString().Trim());
+                                        await Task.Delay(50);
+                                        if (pathologist.IsDuplicate)
+                                        {
+                                            pathologist = await DoctorData.GetDoctorByMigratedIdAsync(pathologist.DuplicateOfDoctorId);
+                                        }
+                                        newPath.Pathologist = pathologist != null ? pathologist.DisplayName : "Unknown Pathologist";
+                                        newPath.PathologistId = pathologist != null ? pathologist.DoctorId : Guid.Empty;
+                                        newPath.PathAddress1 = pathologist != null ? pathologist.Address1 : "Unknown";
+                                        newPath.PathAddress2 = pathologist != null ? pathologist.Address2 : "Unknown";
+                                        newPath.PathAddress3 = pathologist != null ? pathologist.Address2 : "Unknown";
+                                        newPath.PathCity = pathologist != null ? pathologist.City : "Unknown";
+                                        newPath.PathState = pathologist != null ? pathologist.State : "Unknown";
+                                        newPath.PathZipCode = pathologist != null ? pathologist.ZipCode : "Unknown";
+                                        newPath.PathCounty = pathologist != null ? pathologist.County : "Unknown";
+                                        newPath.PathPhoneNumber1 = pathologist != null ? pathologist.PhoneNumber1 : "Unknown";
+                                        newPath.PathPhoneNumber2 = pathologist != null ? pathologist.PhoneNumber2 : "Unknown";
+                                        newPath.PathFaxNumber = pathologist != null ? pathologist.FaxNumber : "Unknown";
+                                        newPath.PathEmail = pathologist != null ? pathologist.Email : "Unknown";
+
+                                        newPath.PathologistComments = row[38]?.ToString().Trim() ?? string.Empty;
                                     }
-                                    newPath.Pathologist = pathologist != null ? pathologist.DisplayName : "Unknown Pathologist";
-                                    newPath.PathologistId = pathologist != null ? pathologist.DoctorId : Guid.Empty;
-                                    newPath.PathAddress1 = pathologist != null ? pathologist.Address1 : "Unknown";
-                                    newPath.PathAddress2 = pathologist != null ? pathologist.Address2 : "Unknown";
-                                    newPath.PathAddress3 = pathologist != null ? pathologist.Address2 : "Unknown";
-                                    newPath.PathCity = pathologist != null ? pathologist.City : "Unknown";
-                                    newPath.PathState = pathologist != null ? pathologist.State : "Unknown";
-                                    newPath.PathZipCode = pathologist != null ? pathologist.ZipCode : "Unknown";
-                                    newPath.PathCounty = pathologist != null ? pathologist.County : "Unknown";
-                                    newPath.PathPhoneNumber1 = pathologist != null ? pathologist.PhoneNumber1 : "Unknown";
-                                    newPath.PathPhoneNumber2 = pathologist != null ? pathologist.PhoneNumber2 : "Unknown";
-                                    newPath.PathFaxNumber = pathologist != null ? pathologist.FaxNumber : "Unknown";
-                                    newPath.PathEmail = pathologist != null ? pathologist.Email : "Unknown";
-
-                                    newPath.PathologistComments = row[38]?.ToString().Trim() ?? string.Empty;
-
 
                                     var studyId = Guid.Parse("631B71B4-B451-4FD7-8B82-08DDD0513E23");  // CECS StudyId
                                     if (!string.IsNullOrEmpty(row[11]?.ToString().Trim()))
@@ -1786,7 +1839,19 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                             ModifiedUserId = newPatient.ModifiedUserId
                                         });
                                     }
-
+                                    else
+                                    {
+                                        newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
+                                        {
+                                            PhoneNumber = "555-555-5555",
+                                            PhoneType = "Other",
+                                            IsPrimary = true,
+                                            CreatedDate = newPatient.CreatedDate,
+                                            CreatedUserId = newPatient.CreatedUserId,
+                                            ModifiedDate = newPatient.ModifiedDate,
+                                            ModifiedUserId = newPatient.ModifiedUserId
+                                        });
+                                    }
                                     if (!string.IsNullOrWhiteSpace(row[13]?.ToString()))
                                     {
                                         newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
@@ -1887,6 +1952,11 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.PathIndex = 1;
                                     newPath.MigratedCCRNumber = row[1]?.ToString().Trim() ?? string.Empty;
                                     newPath.PatientId = await PatientData.GetPatientIdByCCRNoAsync(newPath.MigratedCCRNumber);
+                                    if (newPath.PatientId == Guid.Empty)
+                                    {
+                                        Console.WriteLine($"No patient found for CCR Number: {newPath.MigratedCCRNumber}");
+                                        continue; // Skip this path report if no patient is found
+                                    }
                                     await Task.Delay(50);
 
                                     var study = await StudyData.GetStudyAsync(Guid.Parse("251CE4DC-F01D-43D8-D47D-08DDD05DE341"));  // KID-COMM StudyId
@@ -1925,12 +1995,23 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.HospFaxNumber = hospital != null ? hospital.FaxNumber : "Unknown";
 
                                     newPath.SubmittingHospitalPathReportNumber = row[6]?.ToString().Trim() ?? string.Empty;
-
-                                    var doctor = await DoctorData.GetDoctorByMigratedIdAsync(row[7]?.ToString().Trim());
-                                    await Task.Delay(50);
-                                    if (doctor.IsDuplicate)
+                                    if (string.IsNullOrEmpty(newPath.SubmittingHospitalPathReportNumber))
                                     {
-                                        doctor = await DoctorData.GetDoctorByMigratedIdAsync(doctor.DuplicateOfDoctorId);
+                                        newPath.SubmittingHospitalPathReportNumber = "Unknown";
+                                    }
+                                    var dup = await PathReportData.CheckPathReportNumberAsync(newPath.SubmittingHospitalPathReportNumber);
+                                    if (dup == "true")
+                                        newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-d" + Random.Shared.Next(1, 1001).ToString();
+
+                                    var doctor = (Doctor)null;
+                                    if (!string.IsNullOrEmpty(row[7]?.ToString().Trim()))
+                                    {
+                                        doctor = await DoctorData.GetDoctorByMigratedIdAsync(row[7]?.ToString().Trim());
+                                        await Task.Delay(50);
+                                        if (doctor.IsDuplicate)
+                                        {
+                                            doctor = await DoctorData.GetDoctorByMigratedIdAsync(doctor.DuplicateOfDoctorId);
+                                        }
                                     }
                                     newPath.AuthorizingProvider = doctor != null ? doctor.DisplayName : "Unknown Provider";
                                     newPath.DoctorId = doctor != null ? doctor.DoctorId : Guid.Empty;
@@ -2255,8 +2336,47 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPatient.DateOfBirth = DateTime.TryParse(row[15]?.ToString().Trim(), out DateTime dob) ? dob : (DateTime?)null;
                                     Console.WriteLine("RACECODE: " + row[17]?.ToString().Trim().PadLeft(2, '0'));
 
-                                    newPatient.Race = await LookupData.GetTypeByCodeAsync("Race", row[17]?.ToString().Trim().PadLeft(2, '0')) ?? string.Empty;
-                                    newPatient.RaceCode = row[17]?.ToString().Trim().PadLeft(2, '0') ?? string.Empty;
+
+                                    var race = row[17]?.ToString().Trim().PadLeft(2, '0');
+                                    var raceCode = "";
+                                    switch (race)
+                                    {
+                                        case "1":
+                                            raceCode = "01";
+                                            break;
+                                        case "2":
+                                            raceCode = "02";
+                                            break;
+                                        case "3":
+                                            raceCode = "03";
+                                            break;
+                                        case "4":
+                                            raceCode = "96";
+                                            break;
+                                        case "5":
+                                            raceCode = "98";
+                                            break;
+                                        case "6":
+                                            raceCode = "07";
+                                            break;
+                                        case "7":
+                                            raceCode = "07";
+                                            break;
+                                        case "8":
+                                            raceCode = "98";
+                                            break;
+                                        case "9":
+                                            raceCode = "99";
+                                            break;
+                                        case "10":
+                                            raceCode = "98";
+                                            break;
+                                        default:
+                                            raceCode = "99";
+                                            break;
+                                    }
+                                    newPatient.Race = await LookupData.GetTypeByCodeAsync("Race", raceCode) ?? string.Empty;
+                                    newPatient.RaceCode = raceCode ?? string.Empty;
                                     newPatient.Gender = await LookupData.GetTypeByCodeAsync("Gender", row[19]?.ToString().Trim()) ?? string.Empty;
                                     newPatient.GenderCode = row[19]?.ToString().Trim() ?? string.Empty;
 
@@ -2319,7 +2439,19 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                             ModifiedUserId = newPatient.ModifiedUserId
                                         });
                                     }
-
+                                    else
+                                    {
+                                        newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
+                                        {
+                                            PhoneNumber = "555-555-5555",
+                                            PhoneType = "Other",
+                                            IsPrimary = true,
+                                            CreatedDate = newPatient.CreatedDate,
+                                            CreatedUserId = newPatient.CreatedUserId,
+                                            ModifiedDate = newPatient.ModifiedDate,
+                                            ModifiedUserId = newPatient.ModifiedUserId
+                                        });
+                                    }
                                     if (!string.IsNullOrWhiteSpace(row[14]?.ToString()))
                                     {
                                         newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
@@ -2420,6 +2552,11 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.PathIndex = 1;
                                     newPath.MigratedCCRNumber = row[1]?.ToString().Trim() ?? string.Empty;
                                     newPath.PatientId = await PatientData.GetPatientIdByCCRNoAsync(newPath.MigratedCCRNumber);
+                                    if (newPath.PatientId == Guid.Empty)
+                                    {
+                                        Console.WriteLine($"No patient found for CCR Number: {newPath.MigratedCCRNumber}");
+                                        continue; // Skip this path report if no patient is found
+                                    }
                                     await Task.Delay(50);
 
                                     var study = await StudyData.GetStudyAsync(Guid.Parse("B4C7A525-42CD-4931-75CA-08DDEF2BF95E"));  // MTCSS StudyId
@@ -2458,12 +2595,23 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.HospFaxNumber = hospital != null ? hospital.FaxNumber : "Unknown";
 
                                     newPath.SubmittingHospitalPathReportNumber = row[6]?.ToString().Trim() ?? string.Empty;
-
-                                    var doctor = await DoctorData.GetDoctorByMigratedIdAsync(row[7]?.ToString().Trim());
-                                    await Task.Delay(50);
-                                    if (doctor.IsDuplicate)
+                                    if (string.IsNullOrEmpty(newPath.SubmittingHospitalPathReportNumber))
                                     {
-                                        doctor = await DoctorData.GetDoctorByMigratedIdAsync(doctor.DuplicateOfDoctorId);
+                                        newPath.SubmittingHospitalPathReportNumber = "Unknown";
+                                    }
+                                    var dup = await PathReportData.CheckPathReportNumberAsync(newPath.SubmittingHospitalPathReportNumber);
+                                    if (dup == "true")
+                                        newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-d" + Random.Shared.Next(1, 1001).ToString();
+
+                                    var doctor = (Doctor)null;
+                                    if (!string.IsNullOrEmpty(row[7]?.ToString().Trim()))
+                                    {
+                                        doctor = await DoctorData.GetDoctorByMigratedIdAsync(row[7]?.ToString().Trim());
+                                        await Task.Delay(50);
+                                        if (doctor.IsDuplicate)
+                                        {
+                                            doctor = await DoctorData.GetDoctorByMigratedIdAsync(doctor.DuplicateOfDoctorId);
+                                        }
                                     }
                                     newPath.AuthorizingProvider = doctor != null ? doctor.DisplayName : "Unknown Provider";
                                     newPath.DoctorId = doctor != null ? doctor.DoctorId : Guid.Empty;
@@ -2843,7 +2991,19 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                             ModifiedUserId = newPatient.ModifiedUserId
                                         });
                                     }
-
+                                    else
+                                    {
+                                        newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
+                                        {
+                                            PhoneNumber = "555-555-5555",
+                                            PhoneType = "Other",
+                                            IsPrimary = true,
+                                            CreatedDate = newPatient.CreatedDate,
+                                            CreatedUserId = newPatient.CreatedUserId,
+                                            ModifiedDate = newPatient.ModifiedDate,
+                                            ModifiedUserId = newPatient.ModifiedUserId
+                                        });
+                                    }
                                     if (!string.IsNullOrWhiteSpace(row[14]?.ToString()))
                                     {
                                         newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
@@ -2944,6 +3104,11 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.PathIndex = 1;
                                     newPath.MigratedCCRNumber = row[1]?.ToString().Trim() ?? string.Empty;
                                     newPath.PatientId = await PatientData.GetPatientIdByCCRNoAsync(newPath.MigratedCCRNumber);
+                                    if (newPath.PatientId == Guid.Empty)
+                                    {
+                                        Console.WriteLine($"No patient found for CCR Number: {newPath.MigratedCCRNumber}");
+                                        continue; // Skip this path report if no patient is found
+                                    }
                                     await Task.Delay(50);
 
                                     var study = await StudyData.GetStudyAsync(Guid.Parse("E75C6CA6-FECF-4923-270C-08DE94EA6BC8"));  // CHANCE-2 StudyId
@@ -2982,12 +3147,23 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.HospFaxNumber = hospital != null ? hospital.FaxNumber : "Unknown";
 
                                     newPath.SubmittingHospitalPathReportNumber = row[7]?.ToString().Trim() ?? string.Empty;
-
-                                    var doctor = await DoctorData.GetDoctorByMigratedIdAsync(row[8]?.ToString().Trim());
-                                    await Task.Delay(50);
-                                    if (doctor.IsDuplicate)
+                                    if (string.IsNullOrEmpty(newPath.SubmittingHospitalPathReportNumber))
                                     {
-                                        doctor = await DoctorData.GetDoctorByMigratedIdAsync(doctor.DuplicateOfDoctorId);
+                                        newPath.SubmittingHospitalPathReportNumber = "Unknown";
+                                    }
+                                    var dup = await PathReportData.CheckPathReportNumberAsync(newPath.SubmittingHospitalPathReportNumber);
+                                    if (dup == "true")
+                                        newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-d" + Random.Shared.Next(1, 1001).ToString();
+
+                                    var doctor = (Doctor)null;
+                                    if (!string.IsNullOrEmpty(row[8]?.ToString().Trim()))
+                                    {
+                                        doctor = await DoctorData.GetDoctorByMigratedIdAsync(row[8]?.ToString().Trim());
+                                        await Task.Delay(50);
+                                        if (doctor.IsDuplicate)
+                                        {
+                                            doctor = await DoctorData.GetDoctorByMigratedIdAsync(doctor.DuplicateOfDoctorId);
+                                        }
                                     }
                                     newPath.AuthorizingProvider = doctor != null ? doctor.DisplayName : "Unknown Provider";
                                     newPath.DoctorId = doctor != null ? doctor.DoctorId : Guid.Empty;
@@ -3356,7 +3532,19 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                             ModifiedUserId = newPatient.ModifiedUserId
                                         });
                                     }
-
+                                    else
+                                    {
+                                        newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
+                                        {
+                                            PhoneNumber = "555-555-5555",
+                                            PhoneType = "Other",
+                                            IsPrimary = true,
+                                            CreatedDate = newPatient.CreatedDate,
+                                            CreatedUserId = newPatient.CreatedUserId,
+                                            ModifiedDate = newPatient.ModifiedDate,
+                                            ModifiedUserId = newPatient.ModifiedUserId
+                                        });
+                                    }
                                     if (!string.IsNullOrWhiteSpace(row[13]?.ToString()))
                                     {
                                         newPatient.PatientPhoneNumbers.Add(new PatientPhoneNumber
@@ -3457,6 +3645,11 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.PathIndex = 1;
                                     newPath.MigratedCCRNumber = row[1]?.ToString().Trim() ?? string.Empty;
                                     newPath.PatientId = await PatientData.GetPatientIdByCCRNoAsync(newPath.MigratedCCRNumber);
+                                    if (newPath.PatientId == Guid.Empty)
+                                    {
+                                        Console.WriteLine($"No patient found for CCR Number: {newPath.MigratedCCRNumber}");
+                                        continue; // Skip this path report if no patient is found
+                                    }
                                     await Task.Delay(50);
 
                                     var study = await StudyData.GetStudyAsync(Guid.Parse("9F8035F1-5E92-47E9-4B50-08DE9BE51DB4"));  // NCProCESS2 StudyId
@@ -3495,12 +3688,23 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     newPath.HospFaxNumber = hospital != null ? hospital.FaxNumber : "Unknown";
 
                                     newPath.SubmittingHospitalPathReportNumber = row[6]?.ToString().Trim() ?? string.Empty;
-
-                                    var doctor = await DoctorData.GetDoctorByMigratedIdAsync(row[7]?.ToString().Trim());
-                                    await Task.Delay(50);
-                                    if (doctor.IsDuplicate)
+                                    if (string.IsNullOrEmpty(newPath.SubmittingHospitalPathReportNumber))
                                     {
-                                        doctor = await DoctorData.GetDoctorByMigratedIdAsync(doctor.DuplicateOfDoctorId);
+                                        newPath.SubmittingHospitalPathReportNumber = "Unknown";
+                                    }
+                                    var dup = await PathReportData.CheckPathReportNumberAsync(newPath.SubmittingHospitalPathReportNumber);
+                                    if (dup == "true")
+                                        newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-d" + Random.Shared.Next(1, 1001).ToString();
+
+                                    var doctor = (Doctor)null;
+                                    if (!string.IsNullOrEmpty(row[7]?.ToString().Trim()))
+                                    {
+                                        doctor = await DoctorData.GetDoctorByMigratedIdAsync(row[7]?.ToString().Trim());
+                                        await Task.Delay(50);
+                                        if (doctor.IsDuplicate)
+                                        {
+                                            doctor = await DoctorData.GetDoctorByMigratedIdAsync(doctor.DuplicateOfDoctorId);
+                                        }
                                     }
                                     newPath.AuthorizingProvider = doctor != null ? doctor.DisplayName : "Unknown Provider";
                                     newPath.DoctorId = doctor != null ? doctor.DoctorId : Guid.Empty;
