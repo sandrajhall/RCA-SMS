@@ -912,7 +912,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     {
                                         newPath.SubmittingHospitalPathReportNumber = "Unknown";
                                     }
-                                    var dup = await PathReportData.CheckPathReportNumberAsync(newPath.SubmittingHospitalPathReportNumber);
+                                    var dup = await PathReportData.CheckPathReportNumberAsync(Uri.EscapeDataString(newPath.SubmittingHospitalPathReportNumber));
                                     if (dup == "true")
                                         newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-d" + Random.Shared.Next(1, 1001).ToString();
 
@@ -1469,7 +1469,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     {
                                         newPath.SubmittingHospitalPathReportNumber = "Unknown";
                                     }
-                                    var dup = await PathReportData.CheckPathReportNumberAsync(newPath.SubmittingHospitalPathReportNumber);
+                                    var dup = await PathReportData.CheckPathReportNumberAsync(Uri.EscapeDataString(newPath.SubmittingHospitalPathReportNumber));
                                     if (dup == "true")
                                         newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-d" + Random.Shared.Next(1, 1001).ToString();
 
@@ -1999,7 +1999,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     {
                                         newPath.SubmittingHospitalPathReportNumber = "Unknown";
                                     }
-                                    var dup = await PathReportData.CheckPathReportNumberAsync(newPath.SubmittingHospitalPathReportNumber);
+                                    var dup = await PathReportData.CheckPathReportNumberAsync(Uri.EscapeDataString(newPath.SubmittingHospitalPathReportNumber));
                                     if (dup == "true")
                                         newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-d" + Random.Shared.Next(1, 1001).ToString();
 
@@ -2599,7 +2599,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     {
                                         newPath.SubmittingHospitalPathReportNumber = "Unknown";
                                     }
-                                    var dup = await PathReportData.CheckPathReportNumberAsync(newPath.SubmittingHospitalPathReportNumber);
+                                    var dup = await PathReportData.CheckPathReportNumberAsync(Uri.EscapeDataString(newPath.SubmittingHospitalPathReportNumber));
                                     if (dup == "true")
                                         newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-d" + Random.Shared.Next(1, 1001).ToString();
 
@@ -3151,7 +3151,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     {
                                         newPath.SubmittingHospitalPathReportNumber = "Unknown";
                                     }
-                                    var dup = await PathReportData.CheckPathReportNumberAsync(newPath.SubmittingHospitalPathReportNumber);
+                                    var dup = await PathReportData.CheckPathReportNumberAsync(Uri.EscapeDataString(newPath.SubmittingHospitalPathReportNumber));
                                     if (dup == "true")
                                         newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-d" + Random.Shared.Next(1, 1001).ToString();
 
@@ -3692,7 +3692,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     {
                                         newPath.SubmittingHospitalPathReportNumber = "Unknown";
                                     }
-                                    var dup = await PathReportData.CheckPathReportNumberAsync(newPath.SubmittingHospitalPathReportNumber);
+                                    var dup = await PathReportData.CheckPathReportNumberAsync(Uri.EscapeDataString(newPath.SubmittingHospitalPathReportNumber));
                                     if (dup == "true")
                                         newPath.SubmittingHospitalPathReportNumber = newPath.SubmittingHospitalPathReportNumber + "-d" + Random.Shared.Next(1, 1001).ToString();
 
