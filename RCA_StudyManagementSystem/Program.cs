@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Logging;
 using MudBlazor.Services;
 using RCA_StudyManagementSystem.Client.Interfaces;
 using RCA_StudyManagementSystem.Client.Pages;
@@ -46,8 +47,10 @@ builder.Services.AddOutputCache(options =>
     });
 });
 
-builder.Services.AddCors(options => {
-    options.AddDefaultPolicy(policy => {
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
@@ -78,14 +81,25 @@ builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
     options
         .UseSqlServer(connectionString)
         .AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
+    }
 });
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+    IdentityModelEventSource.ShowPII = true; // Show PII in logs for development
+}
 
 builder.Services.AddServerSideBlazor()
-    .AddHubOptions(options => {
+    .AddHubOptions(options =>
+    {
         options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB
     })
-    .AddCircuitOptions(options => {
+    .AddCircuitOptions(options =>
+    {
         options.DetailedErrors = true; // Shows the real error in the browser console
     });
 
@@ -320,7 +334,8 @@ app.MapGet("/logout", async (
 });
 
 app.MapOpenApi(); // Exposes the JSON file at /openapi/v1.json
-app.UseSwaggerUI(options => {
+app.UseSwaggerUI(options =>
+{
     options.SwaggerEndpoint("/openapi/v1.json", "v1");
     // Sorts by the path (A-Z)
     options.ConfigObject.AdditionalItems.Add("operationsSorter", "alpha");
