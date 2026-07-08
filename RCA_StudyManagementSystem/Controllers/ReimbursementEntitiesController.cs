@@ -33,6 +33,8 @@ namespace RCA_StudyManagementSystem.Controllers
             return await _context.ReimbursementEntities
                 .Where(r => r.IsActive == true) // Only active ReimbursementEntities
                 .OrderBy(r => r.Name)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
         }
 
@@ -41,7 +43,11 @@ namespace RCA_StudyManagementSystem.Controllers
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<ReimbursementEntity>>> ListAllReimbursementEntities()
         {
-            return await _context.ReimbursementEntities.OrderBy(h => h.Name).ToListAsync();
+            return await _context.ReimbursementEntities
+                .OrderBy(h => h.Name)
+                .AsNoTracking()
+                .TagWithCallSite()
+                .ToListAsync();
         }
 
         // GET: api/ReimbursementEntities/5
@@ -51,6 +57,8 @@ namespace RCA_StudyManagementSystem.Controllers
             var reimbEntity = await _context.ReimbursementEntities
                 .Include(c => c.ReimbursementEntityRCAContacts)
                 .Where(r => r.ReimbursementEntityId == id)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .FirstOrDefaultAsync();
 
             if (reimbEntity == null)
@@ -67,6 +75,8 @@ namespace RCA_StudyManagementSystem.Controllers
             var query = _context.ReimbursementEntities
                 .Where(r => r.Name.Contains(searchTerm) || r.PayableTo.Contains(searchTerm) || r.AttentionTo.Contains(searchTerm))
                 .OrderBy(r => r.Name)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .Take(50); // Important: Limit the number of records returned
 
             return await query.ToListAsync();

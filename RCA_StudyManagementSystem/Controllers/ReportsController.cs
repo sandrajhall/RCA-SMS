@@ -48,6 +48,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                     EligiblePathCount = 0, // Placeholder, as this will be calculated in the main query
                     SubmittedPathCount = 0  // Placeholder, will be calculated in the loop below
                 })
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
 
 

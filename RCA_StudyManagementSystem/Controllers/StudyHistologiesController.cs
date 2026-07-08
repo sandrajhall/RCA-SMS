@@ -55,6 +55,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                     IsPreferred = sl.Histology.IsPreferred,
                     Order = sl.Order
                 })
+                .AsNoTracking()
+                .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} StudyHistologyView.", query.Count());
@@ -84,6 +86,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                     IsPreferred = sl.Histology.IsPreferred,
                     Order = sl.Order
                 })
+            .AsNoTracking()
+            .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning all {Count} StudyHistologyView.", query.Count());
@@ -116,6 +120,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                     IsPreferred = sl.Histology.IsPreferred,
                     Order = sl.Order
                 })
+            .AsNoTracking()
+            .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} StudyHistologyView.", query.Count());
@@ -136,6 +142,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                 .Where(sl => sl.StudyId == studyId) // Filter by histology type and active status
                 .OrderBy(sl => sl.Order)
                 .Select(sl => sl.Histology.HistologyName)
+                .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} strings.", query.Count());

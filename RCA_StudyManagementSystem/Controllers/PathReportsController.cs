@@ -56,6 +56,8 @@ namespace RCA_StudyManagementSystem.Controllers
                     .Include(x => x.Patient)
                     .Include(s => s.Patient!.Study)
                     .Where(s => s.Patient!.Study!.IsArchived == false)
+                    .AsNoTracking()
+                    .TagWithCallSite()
                     .ToListAsync();
           
 

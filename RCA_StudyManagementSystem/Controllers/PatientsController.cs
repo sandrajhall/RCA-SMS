@@ -51,6 +51,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             .Include(pr => pr.PathReports)
             .Include(p => p.PatientPhoneNumbers)
             .Where(s => s.IsActive) // Filter to only include active patients
+            .AsNoTracking()
+            .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} Patients.", query.Count());

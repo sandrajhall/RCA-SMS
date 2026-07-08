@@ -31,6 +31,8 @@ namespace RCA_StudyManagementSystem.Controllers
         {
             return await _context.DoNotContacts
                 .OrderBy(d => d.LastName)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
         }
 

@@ -29,7 +29,10 @@ namespace RCA_StudyManagementSystem.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<StudyReportHeader>>> ListStudyReportHeaders()
         {
-            return await _context.StudyReportHeaders.ToListAsync();
+            return await _context.StudyReportHeaders
+                .AsNoTracking()
+                .TagWithCallSite()
+                .ToListAsync();
         }
 
         // GET: api/StudyReportHeaders/study/{studyId}
@@ -38,6 +41,8 @@ namespace RCA_StudyManagementSystem.Controllers
         {
             return await _context.StudyReportHeaders
                 .Where(sh => sh.StudyId == studyid)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
         }
 

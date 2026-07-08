@@ -38,6 +38,8 @@ namespace RCA_StudyManagementSystem.Controllers
             return await _context.Doctors
                 .Where(d => d.IsActive == true && d.IsPathologist == false)
                 .OrderBy(d => d.LastName)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
         }
 
@@ -49,6 +51,8 @@ namespace RCA_StudyManagementSystem.Controllers
             return await _context.Doctors
                 .Where(d => d.IsActive == true && d.IsPathologist == true)
                 .OrderBy(d => d.LastName)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
         }
 
@@ -61,6 +65,8 @@ namespace RCA_StudyManagementSystem.Controllers
             return await _context.Doctors
                 .Where(d => d.IsActive == true)
                 .OrderBy(d => d.LastName)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
         }
 
@@ -101,7 +107,9 @@ namespace RCA_StudyManagementSystem.Controllers
             var query = _context.Doctors
                 .Where(d => !d.IsPathologist && (d.DisplayName.Contains(searchTerm) || d.City.Contains(searchTerm) || d.PrimarySpecialty.Contains(searchTerm)))
                 .OrderBy(d => d.LastName)
-                .Take(50); // Important: Limit the number of records returned
+                .Take(50) // Important: Limit the number of records returned
+                .AsNoTracking()
+                .TagWithCallSite();
 
             return await query.ToListAsync();
         }
@@ -114,7 +122,9 @@ namespace RCA_StudyManagementSystem.Controllers
             var query = _context.Doctors
                 .Where(d => d.IsPathologist && (d.DisplayName.Contains(searchTerm) || d.City.Contains(searchTerm) || d.PrimarySpecialty.Contains(searchTerm)))
                 .OrderBy(d => d.LastName)
-                .Take(50); // Important: Limit the number of records returned
+                .Take(50) // Important: Limit the number of records returned
+                .AsNoTracking()
+                .TagWithCallSite();
 
             return await query.ToListAsync();
         }

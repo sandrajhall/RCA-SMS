@@ -40,6 +40,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             // Fetch all active studies
             var query = _context.Studies
             .Where(pl => pl.IsActive) // Filter to only include active studies
+            .AsNoTracking()
+            .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} Studies.", query.Count());
@@ -57,6 +59,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             // Fetch all active studies
             var query = _context.Studies
             .Where(pl => pl.IsArchived) // Filter to only include archived studies
+            .AsNoTracking()
+            .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} Studies.", query.Count());
@@ -73,6 +77,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             // Fetch all active studies
             var query = _context.Studies
             .Where(pl => pl.IsArchived == false) // Filter to only include unarchived studies
+            .AsNoTracking()
+            .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} Studies.", query.Count());

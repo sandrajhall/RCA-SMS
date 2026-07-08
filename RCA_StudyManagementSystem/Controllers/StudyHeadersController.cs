@@ -38,6 +38,8 @@ namespace RCA_StudyManagementSystem.Controllers
         {
             return await _context.StudyHeaders
                 .Where(sh => sh.StudyId == studyid)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
         }
 

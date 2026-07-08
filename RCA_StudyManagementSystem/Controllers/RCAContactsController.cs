@@ -32,6 +32,8 @@ namespace RCA_StudyManagementSystem.Controllers
             return await _context.RCAContacts
                 .Where(h => h.IsActive == true) // Only active RCAContacts
                 .OrderBy(h => h.LastName)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
         }
 
@@ -40,7 +42,11 @@ namespace RCA_StudyManagementSystem.Controllers
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<RCAContact>>> ListAllRCAContacts()
         {
-            return await _context.RCAContacts.OrderBy(h => h.LastName).ToListAsync();
+            return await _context.RCAContacts
+                .OrderBy(h => h.LastName)
+                .AsNoTracking()
+                .TagWithCallSite()
+                .ToListAsync();
         }
 
         // GET: api/RCAContacts/reimbursemententity/{reimbursementEntityId}
@@ -61,6 +67,8 @@ namespace RCA_StudyManagementSystem.Controllers
             var contacts = await _context.RCAContacts
                         .Include(c => c.ReimbursementEntityRCAContacts)
                         .ThenInclude(re => re.ReimbursementEntity)
+                        .AsNoTracking()
+                        .TagWithCallSite()
                         .ToListAsync();
 
             var contact = contacts.FirstOrDefault(c => c.RCAContactId == rcacontactid);

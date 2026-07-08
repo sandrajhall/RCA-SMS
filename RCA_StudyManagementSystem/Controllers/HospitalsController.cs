@@ -34,6 +34,8 @@ namespace RCA_StudyManagementSystem.Controllers
             return await _context.Hospitals
                 .Where(h => h.IsActive == true) // Only active hospitals
                 .OrderBy(h => h.HospitalName)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
         }
 
@@ -42,14 +44,23 @@ namespace RCA_StudyManagementSystem.Controllers
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<Hospital>>> ListAllHospitals()
         {
-            return await _context.Hospitals.OrderBy(h => h.HospitalName).ToListAsync();
+            return await _context.Hospitals
+                .OrderBy(h => h.HospitalName)
+                .AsNoTracking()
+                .TagWithCallSite()
+                .ToListAsync();
         }
 
         // GET: api/Hospitals/reimbursemententity/{reimbursementEntityId}
         [HttpGet("reimbursemententity/{reimbursemententityid}")]
         public async Task<ActionResult<IEnumerable<Hospital>>> ListHospitalsForReimbursementEntity(Guid reimbursemententityid)
         {
-            return await _context.Hospitals.Where(h => h.ReimbursementEntityId == reimbursemententityid).OrderBy(h => h.HospitalName).ToListAsync();
+            return await _context.Hospitals
+                .Where(h => h.ReimbursementEntityId == reimbursemententityid)
+                .OrderBy(h => h.HospitalName)
+                .AsNoTracking()
+                .TagWithCallSite()
+                .ToListAsync();
         }
 
         // GET: api/Hospitals/5
@@ -94,7 +105,9 @@ namespace RCA_StudyManagementSystem.Controllers
             var query = _context.Hospitals
                 .Where(h => h.HospitalName.Contains(searchTerm) || h.HospitalShortName.Contains(searchTerm) || h.City.Contains(searchTerm))
                 .OrderBy(h => h.HospitalName)
-                .Take(50); // Important: Limit the number of records returned
+                .Take(50) // Important: Limit the number of records returned
+                .AsNoTracking()
+                .TagWithCallSite();
 
             return await query.ToListAsync();
         }

@@ -44,7 +44,9 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             var query = _context.Histologies
             .OrderBy(s => s.HistologyCode)
             .ThenBy(s => s.HistologyBehavior)
-            .ThenBy(s => s.HistologyName) // 
+            .ThenBy(s => s.HistologyName)
+            .AsNoTracking()
+            .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} Histologies.", query.Count());
@@ -65,6 +67,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             .OrderBy(s => s.HistologyCode)
             .ThenBy(s => s.HistologyBehavior)
             .ThenBy(s => s.HistologyName) // 
+            .AsNoTracking()
+            .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} Histologies.", query.Count());

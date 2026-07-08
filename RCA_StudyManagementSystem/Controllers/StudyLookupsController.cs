@@ -54,6 +54,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                     LookupType = sl.Lookup.LookupType,
                     Order = sl.Order
                 })
+            .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} StudyLookupViews.", query.Count());
@@ -83,7 +84,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                     LookupType = sl.Lookup.LookupType,
                     Order = sl.Order
                 })
-            .AsQueryable();
+            .AsQueryable()
+            .TagWithCallSite();
 
             _logger.LogInformation("Returning {Count} StudyLookupViews.", query.Count());
 
@@ -112,7 +114,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                     StudyLookupId = sl.StudyLookupId,
                     Order = sl.Order
                 })
-            .AsQueryable();
+            .AsQueryable()
+            .TagWithCallSite();
 
             _logger.LogInformation("Returning {Count} StudyLookupViews.", query.Count());
 

@@ -31,7 +31,7 @@ namespace RCA_StudyManagementSystem.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DailyPathSubmission>>> GetDailyPathSubmissions()
         {
-            return await _context.DailyPathSubmissions.ToListAsync();
+            return await _context.DailyPathSubmissions.AsNoTracking().TagWithCallSite().ToListAsync();
         }
 
         // GET: api/DailyPathSubmissions/5
@@ -57,6 +57,7 @@ namespace RCA_StudyManagementSystem.Controllers
                 .Include(h => h.DailyPathSubmissions
                     .Where(s => s.Date >= startDate && s.Date <= endDate && s.StudyId == studyId))
                 .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
 
             var monthlyList = hospitals.Select(h => new MonthlyPathSubmissionView

@@ -29,14 +29,20 @@ namespace RCA_StudyManagementSystem.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PathReportExport>>> ListPathReportExports()
         {
-            return await _context.PathReportExports.ToListAsync();
+            return await _context.PathReportExports
+                .AsNoTracking()
+                .TagWithCallSite()
+                .ToListAsync();
         }
 
         // GET: api/PathReportExports/5
         [HttpGet("{id}")]
         public async Task<ActionResult<PathReportExport>> GetPathReportExport(Guid id)
         {
-            var pathReportExport = await _context.PathReportExports.FindAsync(id);
+            var pathReportExport = await _context.PathReportExports
+                .AsNoTracking()
+                .TagWithCallSite()
+                .FirstOrDefaultAsync(e => e.PathReportExportId == id);
 
             if (pathReportExport == null)
             {

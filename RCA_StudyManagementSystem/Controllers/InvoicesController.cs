@@ -45,6 +45,8 @@ namespace RCA_StudyManagementSystem.Controllers
 
             invoices = await _context.Invoices
                 .Where(i => i.DateEmailed == null)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
 
             if (invoices.Count > 0)
@@ -71,6 +73,8 @@ namespace RCA_StudyManagementSystem.Controllers
 
             invoices = await _context.Invoices
                 .Where(i => i.DateEmailed != null)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
 
             if (invoices.Count > 0)
@@ -97,6 +101,8 @@ namespace RCA_StudyManagementSystem.Controllers
 
             var invoice = await _context.Invoices
                 .OrderByDescending(i => i.InvoiceQuarter)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .FirstOrDefaultAsync();
 
             if (invoice != null)
@@ -125,6 +131,8 @@ namespace RCA_StudyManagementSystem.Controllers
                 .Where(pr => pr.DoNotInvoice == false &&
                              pr.RcaExportDate >= startDateDate &&
                                 pr.RcaExportDate <= endDateDate)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
 
             var pathReportsWithTwoReimb = await _context.PathReports
@@ -134,6 +142,8 @@ namespace RCA_StudyManagementSystem.Controllers
                              pr.RcaExportDate >= startDateDate &&
                                 pr.RcaExportDate <= endDateDate &&
                                 pr.Reimbursement2.Length > 1)
+                .AsNoTracking()
+                .TagWithCallSite()
                 .ToListAsync();
 
 
@@ -150,15 +160,21 @@ namespace RCA_StudyManagementSystem.Controllers
             foreach (var pr in pathReports)
             {
                 pr.Reimbursement1 = pr.Reimbursement1.Trim();
+                
+                var hospitalSearchResult = await httpClient.GetFromJsonAsync<List<Hospital>>($"api/hospitals/search/{pr.Reimbursement1}");
+                var hospitalFromSearch = hospitalSearchResult?.FirstOrDefault();
+                
+                var hospitalDetails = await httpClient.GetFromJsonAsync<Hospital>($"api/hospitals/{pr.HospitalId}");
+                
                 var pathReportReimb = new PathReportReimbView
                 {
                     PathReportId = pr.PathReportId,
                     RcaExportDate = pr.RcaExportDate,
                     ReimbursementHospitalName = pr.Reimbursement1,
-                    ReimbursementHospitalId = (await httpClient.GetFromJsonAsync<List<Hospital>>($"api/hospitals/search/{pr.Reimbursement1}")).FirstOrDefault()?.HospitalId ?? Guid.Empty,
+                    ReimbursementHospitalId = hospitalFromSearch?.HospitalId ?? Guid.Empty,
                     StudyId = pr.Patient.StudyId,
                     StudyDesignation = pr.Patient.Study.InvoiceDesignation,
-                    ReimbursementEntityId = (Guid)await httpClient.GetFromJsonAsync<Hospital>($"api/hospitals/{pr.HospitalId}").ContinueWith(h => h.Result.ReimbursementEntityId),
+                    ReimbursementEntityId = hospitalDetails?.ReimbursementEntityId ?? Guid.Empty,
                 };
 
                 reimbPathReports.Add(pathReportReimb);
@@ -166,22 +182,28 @@ namespace RCA_StudyManagementSystem.Controllers
 
             foreach (var pr in pathReportsWithTwoReimb)
             {
+                var hospitalSearchResult = await httpClient.GetFromJsonAsync<List<Hospital>>($"api/hospitals/search/{pr.Reimbursement1}");
+                var hospitalFromSearch = hospitalSearchResult?.FirstOrDefault();
+                
+                var hospitalDetails = await httpClient.GetFromJsonAsync<Hospital>($"api/hospitals/{pr.HospitalId}");
+                
                 var pathReportReimb = new PathReportReimbView
                 {
                     PathReportId = pr.PathReportId,
                     RcaExportDate = pr.RcaExportDate,
                     ReimbursementHospitalName = pr.Reimbursement2,
-                    ReimbursementHospitalId = (await httpClient.GetFromJsonAsync<List<Hospital>>($"api/hospitals/search/{pr.Reimbursement1}")).FirstOrDefault()?.HospitalId ?? Guid.Empty,
+                    ReimbursementHospitalId = hospitalFromSearch?.HospitalId ?? Guid.Empty,
                     StudyId = pr.Patient.StudyId,
                     StudyDesignation = pr.Patient.Study.InvoiceDesignation,
-                    ReimbursementEntityId = (Guid)await httpClient.GetFromJsonAsync<Hospital>($"api/hospitals/{pr.HospitalId}").ContinueWith(h => h.Result.ReimbursementEntityId),
+                    ReimbursementEntityId = hospitalDetails?.ReimbursementEntityId ?? Guid.Empty,
                 };
                 reimbPathReports.Add(pathReportReimb);
             }
 
             foreach (var prr in reimbPathReports)
             {
-                prr.ReimbursementEntityName = await httpClient.GetFromJsonAsync<ReimbursementEntity>($"api/reimbursemententities/{prr.ReimbursementEntityId}").ContinueWith(re => re.Result.Name);
+                var reimbEntity = await httpClient.GetFromJsonAsync<ReimbursementEntity>($"api/reimbursemententities/{prr.ReimbursementEntityId}");
+                prr.ReimbursementEntityName = reimbEntity?.Name ?? string.Empty;
             }
 
             var groupedByReimbEntity = reimbPathReports
@@ -190,7 +212,8 @@ namespace RCA_StudyManagementSystem.Controllers
 
             foreach (var group in groupedByReimbEntity)
             {
-                var reimbEntityPrefix = await httpClient.GetFromJsonAsync<ReimbursementEntity>($"api/reimbursemententities/{group.Key}").ContinueWith(re => re.Result.InvoicePrefix);
+                var reimbEntity = await httpClient.GetFromJsonAsync<ReimbursementEntity>($"api/reimbursemententities/{group.Key}");
+                var reimbEntityPrefix = reimbEntity?.InvoicePrefix ?? "INV";
                 var runningTotal = 0.00M;
 
                 var invoice = new Invoice
@@ -296,6 +319,7 @@ namespace RCA_StudyManagementSystem.Controllers
                             .Include(i => i.ReimbursementEntity)
                             .ThenInclude(re => re.ReimbursementEntityRCAContacts)
                             .ThenInclude(rerc => rerc.RCAContact)
+                            .TagWithCallSite()
                             .FirstOrDefaultAsync(i => i.InvoiceId == id);
 
             if (invoice == null)

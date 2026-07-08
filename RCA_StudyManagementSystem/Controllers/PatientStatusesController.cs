@@ -31,7 +31,7 @@ namespace RCA_StudyManagementSystem.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PatientStatus>>> GetPatientStatuses()
         {
-            return await _context.PatientStatuses.ToListAsync();
+            return await _context.PatientStatuses.AsNoTracking().TagWithCallSite().ToListAsync();
         }
 
         [HttpGet("patientstatusview/{StudyId}/{startDateStr}/{endDateStr}")]
@@ -44,6 +44,8 @@ namespace RCA_StudyManagementSystem.Controllers
             var result = new List<PatientStatusView>();
 
             var patientStatusViews = await _context.PatientStatuses
+                .AsNoTracking()
+                .TagWithCallSite()
                 .Include(x => x.Patient)
                     .Where(s => s.StudyId == StudyId && s.Date >= startDate && s.Date <= endDate)
                     .OrderByDescending(s => s.Date)
@@ -85,6 +87,8 @@ namespace RCA_StudyManagementSystem.Controllers
                     .Include(s => s.Patient!.Study)
                     .Where(s => s.Patient!.Study!.StudyId == StudyId && s.Date >= startDate && s.Date <= endDate)
                     .OrderByDescending(s => s.Date)
+                    .AsNoTracking()
+                    .TagWithCallSite()
                     .ToListAsync();
 
             foreach (var view in patientStatusViews)

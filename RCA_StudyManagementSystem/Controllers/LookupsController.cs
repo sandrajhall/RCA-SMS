@@ -42,6 +42,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             .OrderBy(s => s.LookupType) // Order by LookupName
             .ThenBy(s => s.LookupCode) // Then by Lookup Name
             .ThenBy(s => s.SortOrder) // Then by Sort Order
+            .AsNoTracking()
+            .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} Lookups.", query.Count());
@@ -62,6 +64,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             .ThenBy(s => s.LookupName)
             .ThenBy(s => s.SortOrder) // Order by Sort Order
             .Select(s => s.LookupName) // Select only the LookupName
+            .AsNoTracking()
+            .TagWithCallSite()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} lookups for type {type}.", query.Count(), type);

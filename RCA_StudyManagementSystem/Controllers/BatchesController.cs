@@ -33,7 +33,7 @@ namespace RCA_StudyManagementSystem.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Batch>>> ListBatches()
         {
-            return await _context.Batches.ToListAsync();
+            return await _context.Batches.AsNoTracking().TagWithCallSite().ToListAsync();
         }
 
         // GET: api/Batches/study/{studyId}
@@ -41,6 +41,8 @@ namespace RCA_StudyManagementSystem.Controllers
         public async Task<ActionResult<IEnumerable<Batch>>> ListBatchesByStudy(Guid studyId)
         {
             return await _context.Batches
+                .AsNoTracking()
+                .TagWithCallSite()
                 .Include(b => b.PathReportExports)
                 .Where(b => b.StudyId == studyId)
                 .OrderByDescending(b => b.CreatedDate)
