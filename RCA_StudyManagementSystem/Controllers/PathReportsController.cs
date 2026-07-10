@@ -8,9 +8,11 @@ using RCA_StudyManagementSystem.Data;
 using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
+using System.Data;
 using System.Dynamic;
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
 
 namespace RCA_StudyManagementSystem.Controllers
 {
@@ -51,15 +53,15 @@ namespace RCA_StudyManagementSystem.Controllers
         {
             var pathReports = new List<PathReport>();
             var result = new List<PathReportView>();
-            
-                pathReports = await _context.PathReports
-                    .Include(x => x.Patient)
-                    .Include(s => s.Patient!.Study)
-                    .Where(s => s.Patient!.Study!.IsArchived == false)
-                    .AsNoTracking()
-                    .TagWithCallSite()
-                    .ToListAsync();
-          
+
+            pathReports = await _context.PathReports
+                .Include(x => x.Patient)
+                .Include(s => s.Patient!.Study)
+                .Where(s => s.Patient!.Study!.IsArchived == false)
+                .AsNoTracking()
+                .TagWithCallSite()
+                .ToListAsync();
+
 
             foreach (var x in pathReports)
             {
@@ -141,60 +143,60 @@ namespace RCA_StudyManagementSystem.Controllers
         {
             // List of PathReportViews by batch number
             var pathReports = (from pr in _context.PathReports
-                                     join pre in _context.PathReportExports on pr.PathReportId equals pre.PathReportId
-                                     join b in _context.Batches on pre.BatchId equals b.BatchId
-                                     join p in _context.Patients on pr.PatientId equals p.PatientId
-                                     where b.BatchNumber == batchNumber
-                                     select new PathReportView
-                                     {
-                                         PathReportId = pr.PathReportId,
-                                         MigratedCCRNumber = pr.MigratedCCRNumber,
-                                         PatientId = pr.PatientId,
-                                         PathIndex = pr.PathIndex,
-                                         CaseNumber = pr.CaseNumber,
-                                         StudyPrefix = pr.StudyPrefix,
-                                         StudyColor = pr.StudyColor,
-                                         SubmittingHospital = pr.SubmittingHospital,
-                                         SubmittingHospitalPathReportNumber = pr.SubmittingHospitalPathReportNumber,
-                                         OriginatingHospitalPathReportNumber = pr.OriginatingHospitalPathReportNumber,
-                                         OriginatingHospitalComments = pr.OriginatingHospitalComments,
-                                         SlidesResideAtSubmittingHospital = pr.SlidesResideAtSubmittingHospital,
-                                         DateOfProcedure = pr.DateOfProcedure,
-                                         AgeAtProcedure = pr.AgeAtProcedure,
-                                         ExportStatus = pr.ExportStatus,
-                                         RcaExportDate = pr.RcaExportDate,
-                                         Reimbursement1 = pr.Reimbursement1,
-                                         Reimbursement2 = pr.Reimbursement2,
-                                         Site = pr.Site,
-                                         SiteCode = pr.SiteCode,
-                                         PathProcedure = pr.PathProcedure,
-                                         PathComments = pr.PathComments,
-                                         IsOnHold = pr.IsOnHold,
-                                         HistologyDiagnosis1 = pr.HistologyDiagnosis1,
-                                         HistologyCode1 = pr.HistologyCode1,
-                                         HistologyBehavior1 = pr.HistologyBehavior1,
-                                         HistologyDiagnosisComments1 = pr.HistologyDiagnosisComments1,
-                                         AuthorizingProvider = pr.AuthorizingProvider,
-                                         AuthorizingProviderComments = pr.AuthorizingProviderComments,
-                                         Site2 = pr.Site2,
-                                         SiteCode2 = pr.SiteCode2,
-                                         PathProcedure2 = pr.PathProcedure2,
-                                         PathComments2 = pr.PathComments2,
-                                         HistologyDiagnosis2 = pr.HistologyDiagnosis2,
-                                         HistologyCode2 = pr.HistologyCode2,
-                                         HistologyBehavior2 = pr.HistologyBehavior2,
-                                         HistologyDiagnosisComments2 = pr.HistologyDiagnosisComments2,
-                                         HospCity = pr.HospCity,
-                                         BatchNumber = b.BatchNumber,
-                                         // Include patient details
-                                         LastName = p.LastName ?? string.Empty,
-                                         FirstName = p.FirstName ?? string.Empty,
-                                         MiddleName = p.MiddleName ?? string.Empty,
-                                         DisplayName = p.DisplayName ?? string.Empty,
-                                         DateOfBirth = p.DateOfBirth.HasValue == true ? p.DateOfBirth.Value.ToShortDateString() : string.Empty,
-                                         SocialSecurityNumber = p.SocialSecurityNumber,
-                                         StudyId = p.StudyId,
-                                     });
+                               join pre in _context.PathReportExports on pr.PathReportId equals pre.PathReportId
+                               join b in _context.Batches on pre.BatchId equals b.BatchId
+                               join p in _context.Patients on pr.PatientId equals p.PatientId
+                               where b.BatchNumber == batchNumber
+                               select new PathReportView
+                               {
+                                   PathReportId = pr.PathReportId,
+                                   MigratedCCRNumber = pr.MigratedCCRNumber,
+                                   PatientId = pr.PatientId,
+                                   PathIndex = pr.PathIndex,
+                                   CaseNumber = pr.CaseNumber,
+                                   StudyPrefix = pr.StudyPrefix,
+                                   StudyColor = pr.StudyColor,
+                                   SubmittingHospital = pr.SubmittingHospital,
+                                   SubmittingHospitalPathReportNumber = pr.SubmittingHospitalPathReportNumber,
+                                   OriginatingHospitalPathReportNumber = pr.OriginatingHospitalPathReportNumber,
+                                   OriginatingHospitalComments = pr.OriginatingHospitalComments,
+                                   SlidesResideAtSubmittingHospital = pr.SlidesResideAtSubmittingHospital,
+                                   DateOfProcedure = pr.DateOfProcedure,
+                                   AgeAtProcedure = pr.AgeAtProcedure,
+                                   ExportStatus = pr.ExportStatus,
+                                   RcaExportDate = pr.RcaExportDate,
+                                   Reimbursement1 = pr.Reimbursement1,
+                                   Reimbursement2 = pr.Reimbursement2,
+                                   Site = pr.Site,
+                                   SiteCode = pr.SiteCode,
+                                   PathProcedure = pr.PathProcedure,
+                                   PathComments = pr.PathComments,
+                                   IsOnHold = pr.IsOnHold,
+                                   HistologyDiagnosis1 = pr.HistologyDiagnosis1,
+                                   HistologyCode1 = pr.HistologyCode1,
+                                   HistologyBehavior1 = pr.HistologyBehavior1,
+                                   HistologyDiagnosisComments1 = pr.HistologyDiagnosisComments1,
+                                   AuthorizingProvider = pr.AuthorizingProvider,
+                                   AuthorizingProviderComments = pr.AuthorizingProviderComments,
+                                   Site2 = pr.Site2,
+                                   SiteCode2 = pr.SiteCode2,
+                                   PathProcedure2 = pr.PathProcedure2,
+                                   PathComments2 = pr.PathComments2,
+                                   HistologyDiagnosis2 = pr.HistologyDiagnosis2,
+                                   HistologyCode2 = pr.HistologyCode2,
+                                   HistologyBehavior2 = pr.HistologyBehavior2,
+                                   HistologyDiagnosisComments2 = pr.HistologyDiagnosisComments2,
+                                   HospCity = pr.HospCity,
+                                   BatchNumber = b.BatchNumber,
+                                   // Include patient details
+                                   LastName = p.LastName ?? string.Empty,
+                                   FirstName = p.FirstName ?? string.Empty,
+                                   MiddleName = p.MiddleName ?? string.Empty,
+                                   DisplayName = p.DisplayName ?? string.Empty,
+                                   DateOfBirth = p.DateOfBirth.HasValue == true ? p.DateOfBirth.Value.ToShortDateString() : string.Empty,
+                                   SocialSecurityNumber = p.SocialSecurityNumber,
+                                   StudyId = p.StudyId,
+                               });
 
             return pathReports.ToList();
         }
@@ -298,8 +300,8 @@ namespace RCA_StudyManagementSystem.Controllers
                     .Where(s => s.Patient!.Study!.IsArchived == false && s.CreatedDate >= oneWeekAgo)
                     .ToListAsync();
             }
-            if(limit == "ThreeMonths")
-            {                 
+            if (limit == "ThreeMonths")
+            {
                 var threeMonthsAgo = DateTime.Now.AddMonths(-3);
                 pathReports = await _context.PathReports
                     .Include(x => x.Patient)
@@ -307,8 +309,8 @@ namespace RCA_StudyManagementSystem.Controllers
                     .Where(s => s.Patient!.Study!.IsArchived == false && s.CreatedDate >= threeMonthsAgo)
                     .ToListAsync();
             }
-            if(limit == "Year")
-            {                 
+            if (limit == "Year")
+            {
                 var oneYearAgo = DateTime.Now.AddYears(-1);
                 pathReports = await _context.PathReports
                     .Include(x => x.Patient)
@@ -316,8 +318,8 @@ namespace RCA_StudyManagementSystem.Controllers
                     .Where(s => s.Patient!.Study!.IsArchived == false && s.CreatedDate >= oneYearAgo)
                     .ToListAsync();
             }
-            if(limit == "All")
-            {                 
+            if (limit == "All")
+            {
                 pathReports = await _context.PathReports
                     .Include(x => x.Patient)
                     .Include(s => s.Patient!.Study)
@@ -554,17 +556,17 @@ namespace RCA_StudyManagementSystem.Controllers
         public async Task<ActionResult<IEnumerable<ExportView>>> GetPathReportExportHistory(Guid pathReportId)
         {
             var pathReportExports = await (from pre in _context.PathReportExports
-                                                join pr in _context.PathReports on pre.PathReportId equals pr.PathReportId
-                                                join b in _context.Batches on pre.BatchId equals b.BatchId
-                                                join p in _context.Patients on pr.PatientId equals p.PatientId
-                                                where pre.PathReportId == pathReportId
-                                               select new ExportView
-                                               {
-                                                   BatchId = pre.BatchId,
-                                                   BatchNumber = b.BatchNumber,
-                                                   CreatedDate = b.CreatedDate,
-                                                   PathId = p.CaseNumber + "-" + pr.PathIndex,
-                                               }).ToListAsync();
+                                           join pr in _context.PathReports on pre.PathReportId equals pr.PathReportId
+                                           join b in _context.Batches on pre.BatchId equals b.BatchId
+                                           join p in _context.Patients on pr.PatientId equals p.PatientId
+                                           where pre.PathReportId == pathReportId
+                                           select new ExportView
+                                           {
+                                               BatchId = pre.BatchId,
+                                               BatchNumber = b.BatchNumber,
+                                               CreatedDate = b.CreatedDate,
+                                               PathId = p.CaseNumber + "-" + pr.PathIndex,
+                                           }).ToListAsync();
             return pathReportExports;
         }
 
@@ -612,7 +614,7 @@ namespace RCA_StudyManagementSystem.Controllers
                 if (prop.HeaderName == "Patient" || prop.HeaderName == "IsShownSite2" || prop.HeaderName == "PathId" ||
                     prop.HeaderName == "PatientId" || prop.HeaderName == "PatientPhoneNumberId" || prop.HeaderName == "PathReportId" ||
                     prop.HeaderName == "StudyId" || prop.HeaderName == "SocialSecurityNumber" || prop.HeaderName == "DisplayName" ||
-                    prop.HeaderName == "HospitalId"  || prop.HeaderName == "OrigHospitalId" || prop.HeaderName == "DoctorId" || prop.HeaderName == "Doctor2Id" ||
+                    prop.HeaderName == "HospitalId" || prop.HeaderName == "OrigHospitalId" || prop.HeaderName == "DoctorId" || prop.HeaderName == "Doctor2Id" ||
                     prop.HeaderName == "PathologistId" || prop.HeaderName == "Pathologist2Id" ||
                     prop.HeaderName.Contains("Cleared") || prop.HeaderName.Contains("Entity"))
                 {
@@ -715,7 +717,8 @@ namespace RCA_StudyManagementSystem.Controllers
                         ExportTitle = $"PhoneNumber{phoneIndex}",
                         TableName = "PatientPhoneNumber",
                         Order = headerIndex + 0,
-                        IsActive = true
+                        IsActive = true,
+                        StudyId = studyId
                     };
                     reportHeaders.Insert(headerIndex + 0, phoneNumberHeader);
 
@@ -725,7 +728,8 @@ namespace RCA_StudyManagementSystem.Controllers
                         ExportTitle = $"PhoneNumberType{phoneIndex}",
                         TableName = "PatientPhoneNumber",
                         Order = headerIndex + 1,
-                        IsActive = true
+                        IsActive = true,
+                        StudyId = studyId
                     };
                     reportHeaders.Insert(headerIndex + 1, phoneTypeHeader);
 
@@ -735,7 +739,8 @@ namespace RCA_StudyManagementSystem.Controllers
                         ExportTitle = $"PhoneNumberComments{phoneIndex}",
                         TableName = "PatientPhoneNumber",
                         Order = headerIndex + 2,
-                        IsActive = true
+                        IsActive = true,
+                        StudyId = studyId
                     };
                     reportHeaders.Insert(headerIndex + 2, phoneCommentsHeader);
 
@@ -745,7 +750,8 @@ namespace RCA_StudyManagementSystem.Controllers
                         ExportTitle = $"IsPrimaryPhone{phoneIndex}",
                         TableName = "PatientPhoneNumber",
                         Order = headerIndex + 3,
-                        IsActive = true
+                        IsActive = true,
+                        StudyId = studyId
                     };
                     reportHeaders.Insert(headerIndex + 3, isPrimaryHeader);
                     headerIndex += 4;
@@ -773,7 +779,8 @@ namespace RCA_StudyManagementSystem.Controllers
                         ExportTitle = $"PhoneNumber{phoneIndex}",
                         TableName = "PatientPhoneNumber",
                         Order = headerIndex + 0,
-                        IsActive = true
+                        IsActive = true,
+                        StudyId = studyId
                     };
                     headers.Insert(headerIndex + 0, phoneNumberHeader);
 
@@ -783,7 +790,8 @@ namespace RCA_StudyManagementSystem.Controllers
                         ExportTitle = $"PhoneNumberType{phoneIndex}",
                         TableName = "PatientPhoneNumber",
                         Order = headerIndex + 1,
-                        IsActive = true
+                        IsActive = true,
+                        StudyId = studyId
                     };
                     headers.Insert(headerIndex + 1, phoneTypeHeader);
 
@@ -793,7 +801,8 @@ namespace RCA_StudyManagementSystem.Controllers
                         ExportTitle = $"PhoneNumberComments{phoneIndex}",
                         TableName = "PatientPhoneNumber",
                         Order = headerIndex + 2,
-                        IsActive = true
+                        IsActive = true,
+                        StudyId = studyId
                     };
                     headers.Insert(headerIndex + 2, phoneCommentsHeader);
 
@@ -803,7 +812,8 @@ namespace RCA_StudyManagementSystem.Controllers
                         ExportTitle = $"IsPrimaryPhone{phoneIndex}",
                         TableName = "PatientPhoneNumber",
                         Order = headerIndex + 3,
-                        IsActive = true
+                        IsActive = true,
+                        StudyId = studyId
                     };
                     headers.Insert(headerIndex + 3, isPrimaryHeader);
                     headerIndex += 4;
@@ -832,14 +842,14 @@ namespace RCA_StudyManagementSystem.Controllers
             //sb.Append($"PatientId, ");
 
 
-            if(headers.Count > 0)
+            if (headers.Count > 0)
             {
                 foreach (var item in headers)
                 {
                     uniqueHeaders.Add(item.ExportTitle.Length > 0 ? item.ExportTitle : item.HeaderName);
                 }
             }
-            else if(reportHeaders.Count > 0)
+            else if (reportHeaders.Count > 0)
             {
                 foreach (var item in reportHeaders)
                 {
@@ -892,143 +902,60 @@ namespace RCA_StudyManagementSystem.Controllers
             return sb.ToString();
         }
 
-        private async Task AddPropertiesToDtoAsync(List<dynamic> dtoList, IEnumerable<StudyHeader>? headers, IEnumerable<StudyReportHeader>? reportHeaders, Guid studyId, int maxPhoneNumbers, string? exportType, Guid? batchId, List<Guid>? pathIds)
+        private async Task AddPropertiesToDtoAsync(
+            List<dynamic> dtoList,
+            IEnumerable<StudyHeader>? headers,
+            IEnumerable<StudyReportHeader>? reportHeaders,
+            Guid studyId,
+            int maxPhoneNumbers,
+            string? exportType,
+            Guid? batchId,
+            List<Guid>? pathIds)
         {
+            // Normalize header source once
+            var headerItems = (headers?.Any() == true)
+                ? headers.Select(h => new HeaderMeta(h.TableName, h.HeaderName, h.ExportTitle)).ToList()
+                : (reportHeaders?.Any() == true)
+                    ? reportHeaders.Select(h => new HeaderMeta(h.TableName, h.HeaderName, h.ExportTitle)).ToList()
+                    : new List<HeaderMeta>();
 
-            var sqlQuery = new StringBuilder("SELECT ");
-            sqlQuery.Append($"Patient.PatientId, ");
+            // Build SELECT segments (before PhoneNumber1 and after IsPrimaryPhone{maxPhoneNumbers})
+            var prePhoneHeaders = headerItems
+                .TakeWhile(h => !string.Equals(h.HeaderName, "PhoneNumber1", StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
-            if (headers.Count() > 0)
-            {
-                foreach (var header in headers)
-                {
-                    if (header.HeaderName == "PhoneNumber1")
-                    {
-                        break; // Stop adding properties when we reach PhoneNumber
-                    }
+            var phoneNumberEnd = $"IsPrimaryPhone{maxPhoneNumbers}";
+            var postPhoneHeaders = headerItems
+                .SkipWhile(h => !string.Equals(h.HeaderName, phoneNumberEnd, StringComparison.OrdinalIgnoreCase))
+                .Skip(1) // start AFTER IsPrimaryPhone{N}
+                .ToList();
 
-                    if (header.ExportTitle != null && header.ExportTitle.Length > 0)
-                    {
-                        sqlQuery.Append($"{header.TableName}.{header.HeaderName} AS '{header.ExportTitle}', ");
-                    }
-                    else
-                    {
-                        sqlQuery.Append($"{header.TableName}.{header.HeaderName}, ");
-                    }
-                }
-            }
-            else if (reportHeaders.Count() > 0)
-            {
-                foreach (var header in reportHeaders)
-                {
-                    if (header.HeaderName == "PhoneNumber1")
-                    {
-                        break; // Stop adding properties when we reach PhoneNumber
-                    }
-                    if (header.ExportTitle != null && header.ExportTitle.Length > 0)
-                    {
-                        sqlQuery.Append($"{header.TableName}.{header.HeaderName} AS '{header.ExportTitle}', ");
-                    }
-                    else
-                    {
-                        sqlQuery.Append($"{header.TableName}.{header.HeaderName}, ");
-                    }
-                }
-            }
+            // Query #1: pre-phone columns + PatientId
+            var preSql = BuildSelectSql(prePhoneHeaders, exportType, includePhoneJson: false, pathIds: pathIds);
+            var preRows = await ExecuteDynamicRowsAsync(preSql.Sql, preSql.Parameters, studyId, batchId, pathIds);
 
-            // Remove the last comma and space
-            if (sqlQuery.Length > 2)
-                sqlQuery.Remove(sqlQuery.Length - 2, 2);
-
-            var fromClause = string.Empty;
-            if (exportType == "Current")
-            {
-                fromClause = $" FROM Patient " +
-                $"INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId AND PathReport.ExportStatus = 'Ready' AND PathReport.IsOnHold != 1"
-                + $" WHERE StudyId = '{studyId}'";
-            }
-            if (exportType == "Past")
-            {
-                fromClause = $" FROM Patient " +
-                $"INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId " +
-                $"INNER JOIN PathReportExport On PathReportExport.PathReportId = PathReport.PathReportId" +
-                $" WHERE BatchId = '{batchId}'";
-            }
-            if (exportType == "Selected")
-            {
-                string idList = string.Empty;
-                foreach (var id in pathIds)
-                {
-                    idList += "'" + id + "', ";
-                }
-
-                if (idList.Length > 2)
-                    idList = idList.Remove(idList.Length - 2, 2);
-
-                fromClause = $" FROM Patient " +
-                $"INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId " +
-                $" WHERE PathReport.PathReportId IN ({idList})";
-            }
-
-            sqlQuery.Append(fromClause);
-
-            // Execute the SQL query and populate dtoList with the results for columns before PhoneNumber
-
-            var connection = _context.Database.GetDbConnection();
-            var command = connection.CreateCommand();
-            command.CommandText = sqlQuery.ToString();
-
-            var sqlConnection = connection as SqlConnection;
-            if (sqlConnection == null)
-            {
-                throw new NotSupportedException("This method is only implemented for SqlConnection.");
-            }
-
-            var results = new List<dynamic>();
-            await connection.OpenAsync();
-
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-                while (await reader.ReadAsync())
-                {
-                    var row = new ExpandoObject() as IDictionary<string, object>;
-                    for (int i = 0; i < reader.FieldCount; i++)
-                    {
-                        row.Add(reader.GetName(i), reader.GetValue(i));
-                    }
-                    results.Add(row);
-                }
-            }
-
-            foreach (var result in results)
+            // Initialize dto rows from pre-query result
+            foreach (var result in preRows)
             {
                 var row = new List<dynamic>();
-
-                foreach (var resultKey in ((IDictionary<string, object>)result).Keys)
-                {
-                    var newResult = (IDictionary<string, object>)result;
-                    var newListItem = newResult[resultKey];
-                    row.Add(newListItem);
-
-                }
+                foreach (var kvp in result)
+                    row.Add(kvp.Value);
                 dtoList.Add(row);
             }
 
-            await connection.CloseAsync();
-
-            // Now add flattened phone numbers to each dto in dtoList   
-
-            var phoneNumbers = _context.Patients
-                .Where(s => s.StudyId == studyId)
-                .SelectMany(s => s.PatientPhoneNumbers)
-                .ToList();
+            // Add flattened phone columns (EF query scoped by same export type)
+            var phoneLookup = await GetPhoneLookupAsync(studyId, exportType, batchId, pathIds);
 
             foreach (var dto in dtoList)
             {
-                var phones = phoneNumbers.Where(p => p.PatientId == dto[0]).ToList();
+                var patientId = dto[0] is Guid g ? g : Guid.Parse(dto[0].ToString()!);
+
+                phoneLookup.TryGetValue(patientId, out List<PatientPhoneNumber>? phones);
+                phones ??= new List<PatientPhoneNumber>();
+
                 for (int i = 0; i < maxPhoneNumbers; i++)
                 {
-                    var phone = phones.ElementAtOrDefault(i);
+                    var phone = (i < phones.Count) ? phones[i] : null;
                     dto.Add(phone?.PhoneNumber ?? string.Empty);
                     dto.Add(phone?.PhoneType ?? string.Empty);
                     dto.Add(phone?.PhoneNumberComments ?? string.Empty);
@@ -1036,133 +963,205 @@ namespace RCA_StudyManagementSystem.Controllers
                 }
             }
 
-            var phoneNumberEnd = "IsPrimaryPhone" + maxPhoneNumbers.ToString();
-            var startAdding = false;
-            sqlQuery = new StringBuilder("SELECT ");
-            sqlQuery.Append($"Patient.PatientId, ");
+            // Query #2: post-phone columns + PatientId
+            var postSql = BuildSelectSql(postPhoneHeaders, exportType, includePhoneJson: false, pathIds: pathIds);
+            var postRows = await ExecuteDynamicRowsAsync(postSql.Sql, postSql.Parameters, studyId, batchId, pathIds);
 
-            if(headers.Count() > 0)
+            // Append post-query fields to existing dto rows (skip PatientId because it's already first column in dto)
+            for (int i = 0; i < postRows.Count && i < dtoList.Count; i++)
             {
-                foreach (var header in headers)
+                bool isFirst = true;
+                foreach (var kvp in postRows[i])
                 {
-                    if (startAdding)
-                    {
-                        if (header.ExportTitle != null && header.ExportTitle.Length > 0)
-                        {
-                            sqlQuery.Append($"{header.TableName}.{header.HeaderName} AS '{header.ExportTitle}', ");
-                        }
-                        else
-                        {
-                            sqlQuery.Append($"{header.TableName}.{header.HeaderName}, ");
-                        }
-                    }
-                    if (header.HeaderName == phoneNumberEnd)
-                    {
-                        startAdding = true;
-                    }
+                    if (isFirst) { isFirst = false; continue; } // skip PatientId
+                    dtoList[i].Add(kvp.Value);
                 }
             }
-            else if(reportHeaders.Count() > 0)
+        }
+
+        private sealed record HeaderMeta(string TableName, string HeaderName, string? ExportTitle);
+
+        private sealed class SqlBuildResult
+        {
+            public string Sql { get; init; } = string.Empty;
+            public List<SqlParameter> Parameters { get; init; } = new();
+        }
+
+        private SqlBuildResult BuildSelectSql(
+            List<HeaderMeta> selectedHeaders,
+            string? exportType,
+            bool includePhoneJson,
+            List<Guid>? pathIds)
+        {
+            var sb = new StringBuilder("SELECT Patient.PatientId");
+
+            foreach (var h in selectedHeaders)
             {
-                foreach (var header in reportHeaders)
+                string table = h.TableName;
+                if (string.Equals(table, "PatientPhoneNumber", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (startAdding)
-                    {
-                        if (header.ExportTitle != null && header.ExportTitle.Length > 0)
-                        {
-                            sqlQuery.Append($"{header.TableName}.{header.HeaderName} AS '{header.ExportTitle}', ");
-                        }
-                        else
-                        {
-                            sqlQuery.Append($"{header.TableName}.{header.HeaderName}, ");
-                        }
-                    }
-                    if (header.HeaderName == phoneNumberEnd)
-                    {
-                        startAdding = true;
-                    }
+                    continue;
                 }
-            }
- 
-
-            // Remove the last comma and space
-            if (sqlQuery.Length > 2)
-                sqlQuery.Remove(sqlQuery.Length - 2, 2);
-
-            if (exportType == "Current")
-            {
-                fromClause = $" FROM Patient " +
-                $"INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId AND PathReport.ExportStatus = 'Ready' AND PathReport.IsOnHold != 1"
-                + $" WHERE StudyId = '{studyId}'";
-            }
-            if (exportType == "Past")
-            {
-                fromClause = $" FROM Patient " +
-                $"INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId " +
-                $"INNER JOIN PathReportExport On PathReportExport.PathReportId = PathReport.PathReportId" +
-                $" WHERE BatchId = '{batchId}'";
-            }
-            if (exportType == "Selected")
-            {
-                string idList = string.Empty;
-                foreach (var id in pathIds)
-                {
-                    idList += "'" + id + "', ";
-                }
-
-                if (idList.Length > 2)
-                    idList = idList.Remove(idList.Length - 2, 2);
-
-                fromClause = $" FROM Patient " +
-                $"INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId " +
-                $" WHERE PathReport.PathReportId IN ({idList})";
+                if (!string.IsNullOrWhiteSpace(h.ExportTitle))
+                    sb.Append($", {h.TableName}.{h.HeaderName} AS [{h.ExportTitle}]");
+                else
+                    sb.Append($", {h.TableName}.{h.HeaderName}");
             }
 
-            sqlQuery.Append(fromClause);
-
-            // Execute the SQL query and populate dtoList with the results for columns after PhoneNumber
-
-            connection = _context.Database.GetDbConnection();
-            command = connection.CreateCommand();
-            command.CommandText = sqlQuery.ToString();
-
-            sqlConnection = connection as SqlConnection;
-            if (sqlConnection == null)
+            if (includePhoneJson)
             {
+                sb.Append(@",
+(
+    SELECT
+        pn.PhoneNumber,
+        pn.PhoneType,
+        pn.PhoneNumberComments,
+        CASE WHEN pn.IsPrimary = 1 THEN 'Yes' ELSE 'No' END AS IsPrimary
+    FROM PatientPhoneNumber pn
+    WHERE pn.PatientId = Patient.PatientId
+    FOR JSON PATH
+) AS PhoneNumbersJson");
+            }
+
+            sb.Append(" FROM Patient ");
+            sb.Append("INNER JOIN PathReport ON Patient.PatientId = PathReport.PatientId ");
+
+            var parameters = new List<SqlParameter>();
+
+            switch (exportType)
+            {
+                case "Current":
+                    sb.Append("WHERE PathReport.ExportStatus = @exportStatus ");
+                    sb.Append("AND ISNULL(PathReport.IsOnHold, 0) <> 1 ");
+                    sb.Append("AND Patient.StudyId = @studyId ");
+                    parameters.Add(new SqlParameter("@exportStatus", SqlDbType.NVarChar, 50) { Value = "Ready" });
+                    parameters.Add(new SqlParameter("@studyId", SqlDbType.UniqueIdentifier));
+                    break;
+
+                case "Past":
+                    sb.Append("INNER JOIN PathReportExport ON PathReportExport.PathReportId = PathReport.PathReportId ");
+                    sb.Append("WHERE PathReportExport.BatchId = @batchId ");
+                    parameters.Add(new SqlParameter("@batchId", SqlDbType.UniqueIdentifier));
+                    break;
+
+                case "Selected":
+                    if (pathIds == null || pathIds.Count == 0)
+                    {
+                        // Force empty result safely
+                        sb.Append("WHERE 1 = 0 ");
+                    }
+                    else
+                    {
+                        var inParams = new List<string>();
+                        for (int i = 0; i < pathIds.Count; i++)
+                        {
+                            var pName = $"@pathId{i}";
+                            inParams.Add(pName);
+                            parameters.Add(new SqlParameter(pName, SqlDbType.UniqueIdentifier));
+                        }
+
+                        sb.Append($"WHERE PathReport.PathReportId IN ({string.Join(", ", inParams)}) ");
+                    }
+                    break;
+
+                default:
+                    // unknown export type => empty result
+                    sb.Append("WHERE 1 = 0 ");
+                    break;
+            }
+
+            return new SqlBuildResult { Sql = sb.ToString(), Parameters = parameters };
+        }
+
+        private async Task<List<IDictionary<string, object>>> ExecuteDynamicRowsAsync(
+            string sql,
+            List<SqlParameter> parametersTemplate,
+            Guid studyId,
+            Guid? batchId,
+            List<Guid>? pathIds)
+        {
+            var connection = _context.Database.GetDbConnection();
+            if (connection is not SqlConnection)
                 throw new NotSupportedException("This method is only implemented for SqlConnection.");
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = sql;
+
+            // Clone/add parameter values
+            foreach (var p in parametersTemplate)
+            {
+                var cp = new SqlParameter(p.ParameterName, p.SqlDbType, p.Size)
+                {
+                    Value = p.ParameterName switch
+                    {
+                        "@studyId" => studyId,
+                        "@batchId" => (object?)batchId ?? DBNull.Value,
+                        _ when p.ParameterName.StartsWith("@pathId", StringComparison.Ordinal) =>
+                            pathIds![int.Parse(p.ParameterName.Replace("@pathId", ""))],
+                        _ => p.Value ?? DBNull.Value
+                    }
+                };
+                command.Parameters.Add(cp);
             }
 
-            results = new List<dynamic>();
+            var results = new List<IDictionary<string, object>>();
             await connection.OpenAsync();
 
-            using (var reader = await command.ExecuteReaderAsync())
+            try
             {
+                await using var reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    var row = new ExpandoObject() as IDictionary<string, object>;
+                    IDictionary<string, object> row = new ExpandoObject();
                     for (int i = 0; i < reader.FieldCount; i++)
                     {
-                        row.Add(reader.GetName(i), reader.GetValue(i));
+                        row[reader.GetName(i)] = reader.IsDBNull(i) ? string.Empty : reader.GetValue(i);
                     }
                     results.Add(row);
                 }
             }
-
-            var dtoIndex = 0;
-            foreach (var result in results)
+            finally
             {
-                foreach (var resultKey in ((IDictionary<string, object>)result).Keys)
-                {
-                    var newResult = (IDictionary<string, object>)result;
-                    var newListItem = newResult[resultKey];
-                    //row.Add(newListItem);
-                    dtoList[dtoIndex].Add(newListItem);
-                }
-                dtoIndex++;
+                await connection.CloseAsync();
             }
 
-            await connection.CloseAsync();
+            return results;
+        }
 
+        private async Task<Dictionary<Guid, List<PatientPhoneNumber>>> GetPhoneLookupAsync(
+            Guid studyId,
+            string? exportType,
+            Guid? batchId,
+            List<Guid>? pathIds)
+        {
+            IQueryable<PathReport> reportQuery = _context.PathReports.AsNoTracking();
+
+            reportQuery = exportType switch
+            {
+                "Current" => reportQuery.Where(r => r.ExportStatus == "Ready" && !r.IsOnHold),
+                "Past" => reportQuery.Where(r => r.PathReportExports.Any(e => e.BatchId == batchId)),
+                "Selected" => (pathIds != null && pathIds.Count > 0)
+                    ? reportQuery.Where(r => pathIds.Contains(r.PathReportId))
+                    : reportQuery.Where(_ => false),
+                _ => reportQuery.Where(_ => false)
+            };
+
+            var patientIds = await reportQuery
+                .Where(r => r.Patient.StudyId == studyId)
+                .Select(r => r.PatientId)
+                .Distinct()
+                .ToListAsync();
+
+            var phones = await _context.PatientPhoneNumbers
+                .AsNoTracking()
+                .Where(p => patientIds.Contains(p.PatientId))
+                .OrderByDescending(p => p.IsPrimary)
+                .ThenBy(p => p.PatientPhoneNumberId) // replace with your stable ordering column
+                .ToListAsync();
+
+            return phones
+                .GroupBy(p => p.PatientId)
+                .ToDictionary(g => g.Key, g => g.ToList());
         }
 
         // DELETE: api/PathReports/deleteplaceholders
