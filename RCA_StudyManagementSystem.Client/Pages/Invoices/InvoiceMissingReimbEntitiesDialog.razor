@@ -1,0 +1,49 @@
+﻿@using MudBlazor
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Interfaces
+@using RCA_StudyManagementSystem.Client.Pages.Invoices
+
+@rendermode InteractiveAuto
+
+@inject IDialogService DialogService
+@inject IHospitalData HospitalData
+
+<MudDialog>
+    <TitleContent>
+        <!-- Flex containers align your title and your custom X button cleanly on a single row -->
+        <div class="d-flex align-center justify-space-between w-100 pr-2">
+            <MudText Typo="Typo.h5" Class="font-weight-bold">
+                Hospitals Missing Reimbursement Entities
+            </MudText>
+
+            <!-- This manual X button calls MudDialog.Cancel() from your code-behind class -->
+            <MudIconButton Icon="@Icons.Material.Filled.Close"
+                           Color="Color.Default"
+                           Size="Size.Medium"
+                           OnClick="Cancel" />
+        </div>
+    </TitleContent>
+    <DialogContent>
+        <div class="mb-4">
+            <!-- Swapped 'Color.Error' out for an explicit Hex style to guarantee deep red rather than pink -->
+            <MudText Typo="Typo.body1" Style="color: #dc3545;" Class="font-weight-bold mb-2">
+                You need to add reimbursement entities for the following hospitals before you can generate invoices.
+            </MudText>
+            <MudText Typo="Typo.body1" Style="color: #dc3545;" Class="font-weight-bold mb-2">
+                You can also remove the hospital from the list of invoices by going to the path report and checking "Do Not Invoice".
+            </MudText>
+            <MudText Typo="Typo.body2" Style="font-style: italic;">
+                If you need help, ask the Developer to help you find the right path report.
+            </MudText>
+        </div>
+
+        <MudDataGrid Items="@MissingHospitals" @ref="MissingGrid" Filterable="false" SortMode="SortMode.None" Hover="true">
+            <Columns>
+                <PropertyColumn Property="x => x.HospitalName" Title="Hospital Name" />
+                <PropertyColumn Property="x => x.Address1" Title="Address" />
+                <PropertyColumn Property="x => x.City" Title="City" />
+            </Columns>
+        </MudDataGrid>
+    </DialogContent>
+</MudDialog>

@@ -113,6 +113,34 @@ namespace RCA_StudyManagementSystem.Controllers
             return quarter;
         }
 
+        // GET: api/Invoices/checkhospitals/{startDate}/{endDate}/{quarter}
+        [HttpGet("checkhospitals/{startDate}/{endDate}/{quarter}")]
+        public async Task<ActionResult<IEnumerable<Hospital>>> CheckInvoiceHospitals(string startDate, string endDate, int quarter)
+        {
+            DateTime startDateDate = DateTime.Parse(startDate);
+            DateTime endDateDate = DateTime.Parse(endDate);
+            var pathReports = await _context.PathReports
+                .Include(p => p.Patient)
+                .ThenInclude(pt => pt.Study)
+                .Where(pr => pr.DoNotInvoice == false &&
+                             pr.RcaExportDate >= startDateDate &&
+                                pr.RcaExportDate <= endDateDate)
+                .AsNoTracking()
+                .TagWithCallSite()
+                .ToListAsync();
+            var hospitalIds = pathReports
+                .Select(pr => pr.HospitalId)
+                .Distinct()
+                .ToList();
+            var hospitals = await _context.Hospitals
+                .Where(h => hospitalIds.Contains(h.HospitalId))
+                .AsNoTracking()
+                .TagWithCallSite()
+                .ToListAsync();
+
+            return hospitals;
+        }
+
         // GET: api/Invoices/generate/{startDate}/{endDate}/{quarter}
         [HttpGet("generate/{startDate}/{endDate}/{quarter}")]
         public async Task<ActionResult<IEnumerable<Invoice>>> GenerateInvoices(string startDate, string endDate, int quarter)

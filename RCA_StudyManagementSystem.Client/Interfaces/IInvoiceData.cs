@@ -8,6 +8,8 @@ namespace RCA_StudyManagementSystem.Client.Interfaces
 
         Task<IEnumerable<Invoice>> ListInvoicesSentAsync(CancellationToken token);
 
+        Task<IEnumerable<Hospital>> CheckInvoiceHospitalsAsync(string startDate, string endDate, int quarter);
+
         Task<IEnumerable<Invoice>> GenerateInvoicesAsync(string startDate, string endDate, int quarter);
 
         Task<int> GetLastQuarterAsync(CancellationToken token);

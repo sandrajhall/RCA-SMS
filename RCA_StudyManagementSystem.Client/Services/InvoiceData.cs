@@ -31,6 +31,12 @@ namespace RCA_StudyManagementSystem.Client.Services
             return response;
         }
 
+        public async Task<IEnumerable<Hospital>> CheckInvoiceHospitalsAsync(string startDate, string endDate, int quarter)
+        {
+            var response = await _httpClient.GetFromJsonAsync<IEnumerable<Hospital>>(_navigationManager.ToAbsoluteUri($"api/invoices/checkhospitals/{startDate}/{endDate}/{quarter}"));
+            return response;
+        }
+
         public async Task<IEnumerable<Invoice>> GenerateInvoicesAsync(string startDate, string endDate, int quarter)
         {
             var response = await _httpClient.GetFromJsonAsync<IEnumerable<Invoice>>(_navigationManager.ToAbsoluteUri($"api/invoices/generate/{startDate}/{endDate}/{quarter}"));
@@ -67,5 +73,7 @@ namespace RCA_StudyManagementSystem.Client.Services
         {
             await _httpClient.DeleteAsync(_navigationManager.ToAbsoluteUri($"api/invoices/{id}"));
         }
+
+
     }
 }

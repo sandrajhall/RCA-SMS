@@ -325,14 +325,40 @@ namespace RCA_StudyManagementSystem.Client.Pages.Invoices
                 endDate = new DateTime(DateTime.Now.Year, endMonth, DateTime.DaysInMonth(DateTime.Now.Year, endMonth));
             }
             
+            var invoiceHospitals = await InvoiceData.CheckInvoiceHospitalsAsync(startDate.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture), endDate.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture), LastQuarter);
+            var missingList = new List<Hospital>();
 
-            var invoices = await InvoiceData.GenerateInvoicesAsync(startDate.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture), endDate.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture), LastQuarter);
-            _displayItems = invoices;
+            foreach (var hospital in invoiceHospitals)
+            {
+                if(hospital.ReimbursementEntityId == null || hospital.ReimbursementEntityId == Guid.Empty)
+                {
+                    missingList.Add(hospital);
+                }   
+            }
 
-            IsNewQuarter = false;
+            if (missingList.Count > 0)
+            {
+                await Task.Yield(); // Forces Blazor to update the UI thread layout first
 
-            await InvokeAsync(StateHasChanged);
-            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+                var parameters = new DialogParameters<InvoiceMissingReimbEntitiesDialog>();
+                parameters.Add(p => p.MissingHospitals, missingList);
+                var options = _maxWidth;
+
+                await DialogService.ShowAsync<InvoiceMissingReimbEntitiesDialog>("Missing Reimbursement Entity", parameters, options);
+                return;
+            }
+
+            else
+            {
+
+                var invoices = await InvoiceData.GenerateInvoicesAsync(startDate.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture), endDate.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture), LastQuarter);
+                _displayItems = invoices;
+
+                IsNewQuarter = false;
+
+                await InvokeAsync(StateHasChanged);
+                NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+            }
 
         }
 
