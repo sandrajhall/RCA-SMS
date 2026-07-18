@@ -99,7 +99,8 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                     .ThenInclude(l => l.Lookup)
                 .Include(sh => sh.StudyHistologies!.Where(a => a.IsActive))
                     .ThenInclude(h => h.Histology)
-                    .AsNoTracking()
+                .AsNoTracking()
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(s => s.StudyId == id);
 
             if (study == null)
