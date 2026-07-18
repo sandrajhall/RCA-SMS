@@ -40,6 +40,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Invoices
         private List<string> _events = new();
         private CancellationToken token;
 
+        public bool IsLoading { get; set; } = true;
         public bool IsNewQuarter = false;
         public int LastQuarter = 0;
         public int CurrentQuarter = 0;
@@ -64,34 +65,44 @@ namespace RCA_StudyManagementSystem.Client.Pages.Invoices
 
         protected override async Task OnInitializedAsync()
         {
-            Console.WriteLine("OnInitializedAsync method called!");
 
-
-            Invoices = await InvoiceData.ListInvoicesNotSentAsync(CancellationToken);
-            _displayItems = Invoices;
-
-            invGrid.FilterDefinitions = InvGridStateView.FilterDefinitions;
-            invGrid.SortDefinitions = new Dictionary<string, SortDefinition<Invoice>>(InvGridStateView.SortDefinitions);
-
-            invGrid.CurrentPage = InvGridStateView.CurrentPage;
-
-            IsNewQuarter = await CheckNewQuarter();
-
-            var invoicesSent = await InvoiceData.ListInvoicesSentAsync(CancellationToken);
-            var invoicesLastQuarter = new List<Invoice>();
-
-            if (LastQuarter == 4)
+            try
             {
-                invoicesLastQuarter = invoicesSent.Where(i => i.InvoiceQuarter == $"{DateTime.Now.Year-1} Quarter {LastQuarter}").ToList();
-            }
-            else
-            {
-                invoicesLastQuarter = invoicesSent.Where(i => i.InvoiceQuarter == $"{DateTime.Now.Year} Quarter {LastQuarter}").ToList();
-            }
+                IsLoading = true;
 
-            if (IsNewQuarter && invoicesLastQuarter.Count() > 0)
-            { 
-                InvoicesCreated = true;
+                Console.WriteLine("OnInitializedAsync method called!");
+
+
+                Invoices = await InvoiceData.ListInvoicesNotSentAsync(CancellationToken);
+                _displayItems = Invoices;
+
+                invGrid.FilterDefinitions = InvGridStateView.FilterDefinitions;
+                invGrid.SortDefinitions = new Dictionary<string, SortDefinition<Invoice>>(InvGridStateView.SortDefinitions);
+
+                invGrid.CurrentPage = InvGridStateView.CurrentPage;
+
+                IsNewQuarter = await CheckNewQuarter();
+
+                var invoicesSent = await InvoiceData.ListInvoicesSentAsync(CancellationToken);
+                var invoicesLastQuarter = new List<Invoice>();
+
+                if (LastQuarter == 4)
+                {
+                    invoicesLastQuarter = invoicesSent.Where(i => i.InvoiceQuarter == $"{DateTime.Now.Year - 1} Quarter {LastQuarter}").ToList();
+                }
+                else
+                {
+                    invoicesLastQuarter = invoicesSent.Where(i => i.InvoiceQuarter == $"{DateTime.Now.Year} Quarter {LastQuarter}").ToList();
+                }
+
+                if (IsNewQuarter && invoicesLastQuarter.Count() > 0)
+                {
+                    InvoicesCreated = true;
+                }
+            }
+            finally
+            {
+                IsLoading = false; // Turns off loading and forces Blazor to draw the true final state
             }
 
             return;
@@ -316,24 +327,24 @@ namespace RCA_StudyManagementSystem.Client.Pages.Invoices
             var endDate = DateTime.Now;
             if (LastQuarter == 4)
             {
-                startDate = new DateTime(DateTime.Now.Year-1, startMonth, 1);
-                endDate = new DateTime(DateTime.Now.Year-1, endMonth, DateTime.DaysInMonth(DateTime.Now.Year, endMonth));
+                startDate = new DateTime(DateTime.Now.Year - 1, startMonth, 1);
+                endDate = new DateTime(DateTime.Now.Year - 1, endMonth, DateTime.DaysInMonth(DateTime.Now.Year, endMonth));
             }
             else
             {
                 startDate = new DateTime(DateTime.Now.Year, startMonth, 1);
                 endDate = new DateTime(DateTime.Now.Year, endMonth, DateTime.DaysInMonth(DateTime.Now.Year, endMonth));
             }
-            
+
             var invoiceHospitals = await InvoiceData.CheckInvoiceHospitalsAsync(startDate.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture), endDate.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture), LastQuarter);
             var missingList = new List<Hospital>();
 
             foreach (var hospital in invoiceHospitals)
             {
-                if(hospital.ReimbursementEntityId == null || hospital.ReimbursementEntityId == Guid.Empty)
+                if (hospital.ReimbursementEntityId == null || hospital.ReimbursementEntityId == Guid.Empty)
                 {
                     missingList.Add(hospital);
-                }   
+                }
             }
 
             if (missingList.Count > 0)
