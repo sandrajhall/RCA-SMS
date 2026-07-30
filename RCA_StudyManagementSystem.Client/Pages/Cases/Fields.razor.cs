@@ -134,6 +134,89 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         protected override async Task OnInitializedAsync()
         {
+            foreach (var pathReport in Patient.PathReports)
+            {
+                if (pathReport?.Site2?.Length > 0)
+                {
+                    pathReport.IsShownSite2 = true;
+                }
+
+                if (pathReport?.ExportStatus == "Path too early")
+                {
+                    PathMinAgeCheck(pathReport);
+                }
+
+                if (pathReport.HospitalEntity == null && !string.IsNullOrEmpty(pathReport.SubmittingHospital))
+                {
+                    if (pathReport.HospitalId == null)
+                    {
+                        pathReport.HospitalId = await HospitalData.GetHospitalIdAsync(pathReport.SubmittingHospital);
+                    }
+
+                    if (pathReport.HospitalId != null)
+                    {
+                        pathReport.HospitalEntity = await HospitalData.GetHospitalAsync(pathReport.HospitalId.Value);
+                    }
+                }
+
+                if (pathReport.OrigHospitalEntity == null && !string.IsNullOrEmpty(pathReport.OriginatingHospitalName))
+                {
+                    if (pathReport.OrigHospitalId == null)
+                    {
+                        pathReport.OrigHospitalId = await HospitalData.GetHospitalIdAsync(pathReport.OriginatingHospitalName);
+                    }
+
+                    if (pathReport.OrigHospitalId != null)
+                    {
+                        pathReport.OrigHospitalEntity = await HospitalData.GetHospitalAsync(pathReport.OrigHospitalId.Value);
+                    }
+                }
+
+                if (pathReport.Reimb1HospitalEntity == null && !string.IsNullOrEmpty(pathReport.Reimbursement1))
+                {
+                    var reimb1Id = await HospitalData.GetHospitalIdAsync(pathReport.Reimbursement1);
+
+                    if (reimb1Id != null)
+                    {
+                        pathReport.Reimb1HospitalEntity = await HospitalData.GetHospitalAsync(reimb1Id);
+                    }
+                }
+
+                if (pathReport.Reimb2HospitalEntity == null && !string.IsNullOrEmpty(pathReport.Reimbursement2))
+                {
+                    var reimb2Id = await HospitalData.GetHospitalIdAsync(pathReport.Reimbursement2);
+
+                    if (reimb2Id != null)
+                    {
+                        pathReport.Reimb2HospitalEntity = await HospitalData.GetHospitalAsync(reimb2Id);
+                    }
+                }
+
+                if (pathReport.DoctorEntity1 == null && pathReport.DoctorId != null)
+                {
+
+                    pathReport.DoctorEntity1 = await DoctorData.GetDoctorAsync(pathReport.DoctorId.Value);
+                }
+
+                if (pathReport.DoctorEntity2 == null && pathReport.Doctor2Id != null)
+                {
+
+                    pathReport.DoctorEntity2 = await DoctorData.GetDoctorAsync(pathReport.Doctor2Id.Value);
+                }
+
+                if (pathReport.PathologistEntity1 == null && pathReport.PathologistId != null)
+                {
+
+                    pathReport.PathologistEntity1 = await DoctorData.GetDoctorAsync(pathReport.PathologistId.Value);
+                }
+
+                if (pathReport.PathologistEntity2 == null && pathReport.Pathologist2Id != null)
+                {
+
+                    pathReport.PathologistEntity2 = await DoctorData.GetDoctorAsync(pathReport.Pathologist2Id.Value);
+                }
+
+            }
 
         }
 
@@ -233,90 +316,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                     }
                 }
 
-                foreach (var pathReport in Patient.PathReports)
-                {
-                    if (pathReport?.Site2?.Length > 0)
-                    {
-                        pathReport.IsShownSite2 = true;
-                    }
-
-                    if (pathReport?.ExportStatus == "Path too early")
-                    {
-                        PathMinAgeCheck(pathReport);
-                    }
-
-                    if (pathReport.HospitalEntity == null && !string.IsNullOrEmpty(pathReport.SubmittingHospital))
-                    {
-                        if (pathReport.HospitalId == null)
-                        {
-                            pathReport.HospitalId = await HospitalData.GetHospitalIdAsync(pathReport.SubmittingHospital);
-                        }
-
-                        if (pathReport.HospitalId != null)
-                        {
-                            pathReport.HospitalEntity = await HospitalData.GetHospitalAsync(pathReport.HospitalId.Value);
-                        }
-                    }
-
-                    if (pathReport.OrigHospitalEntity == null && !string.IsNullOrEmpty(pathReport.OriginatingHospitalName))
-                    {
-                        if (pathReport.OrigHospitalId == null)
-                        {
-                            pathReport.OrigHospitalId = await HospitalData.GetHospitalIdAsync(pathReport.OriginatingHospitalName);
-                        }
-
-                        if (pathReport.OrigHospitalId != null)
-                        {
-                            pathReport.OrigHospitalEntity = await HospitalData.GetHospitalAsync(pathReport.OrigHospitalId.Value);
-                        }
-                    }
-
-                    if (pathReport.Reimb1HospitalEntity == null && !string.IsNullOrEmpty(pathReport.Reimbursement1))
-                    {    
-                        var reimb1Id = await HospitalData.GetHospitalIdAsync(pathReport.Reimbursement1);      
-
-                        if (reimb1Id != null)
-                        {
-                            pathReport.Reimb1HospitalEntity = await HospitalData.GetHospitalAsync(reimb1Id);
-                        }
-                    }
-
-                    if (pathReport.Reimb2HospitalEntity == null && !string.IsNullOrEmpty(pathReport.Reimbursement2))
-                    {
-                        var reimb2Id = await HospitalData.GetHospitalIdAsync(pathReport.Reimbursement2);
-
-                        if (reimb2Id != null)
-                        {
-                            pathReport.Reimb1HospitalEntity = await HospitalData.GetHospitalAsync(reimb2Id);
-                        }
-                    }
-
-                    if (pathReport.DoctorEntity1 == null && pathReport.DoctorId != null)
-                    {
-
-                            pathReport.DoctorEntity1 = await DoctorData.GetDoctorAsync(pathReport.DoctorId.Value);
-                    }
-                    
-                    if (pathReport.DoctorEntity2 == null && pathReport.Doctor2Id != null)
-                    {
-
-                        pathReport.DoctorEntity2 = await DoctorData.GetDoctorAsync(pathReport.Doctor2Id.Value);
-                    }
-
-                    if (pathReport.PathologistEntity1 == null && pathReport.PathologistId != null)
-                    {
-
-                        pathReport.PathologistEntity1 = await DoctorData.GetDoctorAsync(pathReport.PathologistId.Value);
-                    }
-
-                    if (pathReport.PathologistEntity2 == null && pathReport.Pathologist2Id != null)
-                    {
-
-                        pathReport.PathologistEntity2 = await DoctorData.GetDoctorAsync(pathReport.Pathologist2Id.Value);
-                    }
-
-                }
-
+               
 
                 Study = await StudyData.GetStudyAsync(Patient.StudyId);
 
