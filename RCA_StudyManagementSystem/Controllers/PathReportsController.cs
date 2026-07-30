@@ -60,6 +60,7 @@ namespace RCA_StudyManagementSystem.Controllers
                 .Where(s => s.Patient!.Study!.IsArchived == false)
                 .AsNoTracking()
                 .TagWithCallSite()
+                .AsSplitQuery()
                 .ToListAsync();
 
 
@@ -298,6 +299,9 @@ namespace RCA_StudyManagementSystem.Controllers
                     .Include(x => x.Patient)
                     .Include(s => s.Patient!.Study)
                     .Where(s => s.Patient!.Study!.IsArchived == false && s.CreatedDate >= oneWeekAgo)
+                    .AsNoTracking()
+                    .TagWithCallSite()
+                    .AsSplitQuery()
                     .ToListAsync();
             }
             if (limit == "ThreeMonths")
@@ -307,6 +311,9 @@ namespace RCA_StudyManagementSystem.Controllers
                     .Include(x => x.Patient)
                     .Include(s => s.Patient!.Study)
                     .Where(s => s.Patient!.Study!.IsArchived == false && s.CreatedDate >= threeMonthsAgo)
+                    .AsNoTracking()
+                    .TagWithCallSite()
+                    .AsSplitQuery()
                     .ToListAsync();
             }
             if (limit == "Year")
@@ -316,6 +323,9 @@ namespace RCA_StudyManagementSystem.Controllers
                     .Include(x => x.Patient)
                     .Include(s => s.Patient!.Study)
                     .Where(s => s.Patient!.Study!.IsArchived == false && s.CreatedDate >= oneYearAgo)
+                    .AsNoTracking()
+                    .TagWithCallSite()
+                    .AsSplitQuery()
                     .ToListAsync();
             }
             if (limit == "All")
@@ -324,6 +334,9 @@ namespace RCA_StudyManagementSystem.Controllers
                     .Include(x => x.Patient)
                     .Include(s => s.Patient!.Study)
                     .Where(s => s.Patient!.Study!.IsArchived == false)
+                    .AsNoTracking()
+                    .TagWithCallSite()
+                    .AsSplitQuery()
                     .ToListAsync();
             }
 
@@ -408,6 +421,9 @@ namespace RCA_StudyManagementSystem.Controllers
                .Include(x => x.Patient)
                .Include(s => s.Patient!.Study)
                 .Where(s => s.Patient!.Study!.IsArchived == true)
+                .AsNoTracking()
+                .TagWithCallSite()
+                .AsSplitQuery()
                .ToListAsync();
 
             var result = new List<PathReportView>();

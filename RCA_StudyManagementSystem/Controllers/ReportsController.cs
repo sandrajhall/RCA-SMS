@@ -50,6 +50,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                 })
                 .AsNoTracking()
                 .TagWithCallSite()
+                .AsSplitQuery()
                 .ToListAsync();
 
 
@@ -84,6 +85,9 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                 .Include(p => p.Patient.PathReports)
                 .Include(s => s.Study)
                 .Where(s => s.Date >= startDate && s.Date <= endDate && s.Patient.StudyId == studyId && s.Status == "Participating/potential")
+                .AsNoTracking()
+                .TagWithCallSite()
+                .AsSplitQuery()
                 .ToListAsync();
 
                 foreach (var item in enrolled)
@@ -277,6 +281,9 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                     SubmittedPathCount = 0,  // Placeholder, will be calculated in the loop below
                     EnrolledPathCount = 0 // Placeholder, will be calculated in the loop below
                 })
+                .AsNoTracking()
+                .TagWithCallSite()
+                .AsSplitQuery()
                 .ToListAsync();
 
 
@@ -308,6 +315,9 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                 .Include(p => p.Patient.PathReports)
                 .Include(s => s.Study)
                 .Where(s => s.Date >= startDate && s.Date <= endDate && s.Patient.StudyId == studyId && s.Status == "Participating/potential")
+                .AsNoTracking()
+                .TagWithCallSite()
+                .AsSplitQuery()
                 .ToListAsync();
 
             foreach (var item in enrolled)

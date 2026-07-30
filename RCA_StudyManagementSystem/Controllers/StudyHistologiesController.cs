@@ -57,6 +57,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                 })
                 .AsNoTracking()
                 .TagWithCallSite()
+                .AsSplitQuery()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} StudyHistologyView.", query.Count());
@@ -88,6 +89,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                 })
             .AsNoTracking()
             .TagWithCallSite()
+            .AsSplitQuery()
             .AsQueryable();
 
             _logger.LogInformation("Returning all {Count} StudyHistologyView.", query.Count());
@@ -122,6 +124,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                 })
             .AsNoTracking()
             .TagWithCallSite()
+            .AsSplitQuery()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} StudyHistologyView.", query.Count());
@@ -139,6 +142,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             var query = _context.StudyHistologies
                 .Include(sl => sl.Histology)
                 .Include(sl => sl.Study)
+                .AsSplitQuery()
                 .Where(sl => sl.StudyId == studyId) // Filter by histology type and active status
                 .OrderBy(sl => sl.Order)
                 .Select(sl => sl.Histology.HistologyName)
@@ -178,6 +182,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                 .Include(s => s.Study)
                 .Include(h => h.Histology)
                 .Where(sl => sl.StudyId == studyId && sl.Order == oldCode)
+                .AsSplitQuery()
                 .AsQueryable();
 
             var histology = await query.Select(sl => sl.Histology).FirstOrDefaultAsync();

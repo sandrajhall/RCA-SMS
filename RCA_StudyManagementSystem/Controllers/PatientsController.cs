@@ -53,6 +53,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             .Where(s => s.IsActive) // Filter to only include active patients
             .AsNoTracking()
             .TagWithCallSite()
+            .AsSplitQuery()
             .AsQueryable();
 
             _logger.LogInformation("Returning {Count} Patients.", query.Count());
@@ -88,6 +89,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             var patient = await _context.Patients
                 .Include(b => b.PathReports)
                 .Include(b => b.PatientPhoneNumbers)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(s => s.PatientId == id);
 
             if (patient == null)
@@ -110,6 +112,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             var patient = await _context.Patients
                 .Include(b => b.PathReports)
                 .Include(b => b.PatientPhoneNumbers)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(s => s.CaseNumber == caseNumber);
 
             if (patient == null)
@@ -255,6 +258,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                 .ThenInclude(pr => pr.PathReportExports)!
                 .ThenInclude(pre => pre.Batch)
                 .Include(b => b.PatientPhoneNumbers)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(s => s.PatientId == id);
 
             if (patient == null)
