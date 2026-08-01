@@ -153,6 +153,12 @@ namespace RCA_StudyManagementSystem.Data
                .HasForeignKey(ps => ps.StudyId)
                .OnDelete(DeleteBehavior.NoAction); // Fixes error when trying to run migrations related to PatientStatus and Study entities
 
+           modelBuilder.Entity<Doctor>()
+               .HasIndex(d => new { d.IsActive, d.LastName });
+
+           modelBuilder.Entity<Hospital>()
+              .HasIndex(h => new { h.IsActive, h.HospitalName });
+
         }
     }
 

@@ -134,6 +134,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
 
         protected override async Task OnInitializedAsync()
         {
+            // Load autocomplete data for hospitals and doctors first
+
             foreach (var pathReport in Patient.PathReports)
             {
                 if (pathReport?.Site2?.Length > 0)

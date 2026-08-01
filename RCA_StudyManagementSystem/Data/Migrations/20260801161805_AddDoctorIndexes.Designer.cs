@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RCA_StudyManagementSystem.Data;
 
@@ -11,9 +12,11 @@ using RCA_StudyManagementSystem.Data;
 namespace RCA_StudyManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260801161805_AddDoctorIndexes")]
+    partial class AddDoctorIndexes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -616,7 +619,7 @@ namespace RCA_StudyManagementSystem.Migrations
 
                     b.Property<string>("HospitalName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HospitalShortName")
                         .HasColumnType("nvarchar(max)");
@@ -661,8 +664,6 @@ namespace RCA_StudyManagementSystem.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("HospitalId");
-
-                    b.HasIndex("IsActive", "HospitalName");
 
                     b.ToTable("Hospital", (string)null);
 
