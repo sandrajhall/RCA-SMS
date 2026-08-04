@@ -1,0 +1,83 @@
+﻿@attribute [Authorize]
+@page "/app/reports/ccrsummary"
+
+@using Microsoft.AspNetCore.Authorization
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.ViewModels
+@using RCA_StudyManagementSystem.Client.Interfaces
+@using MudBlazor
+@using System.Linq
+
+@inject IJSRuntime JSRuntime
+@inject IStudyData StudyData
+@inject IDailyPathSubmissionData DailyPathSubmissionData
+@inject IHospitalData HospitalData
+@inject ILookupData LookupData
+@inject IPatientData PatientData
+@inject IPatientStatusData PatientStatusData
+@inject ISnackbar Snackbar
+@inject AuthenticationStateProvider AuthStateProvider
+
+@rendermode InteractiveAuto
+
+<style>
+
+    .my-custom-grid .mud-table-toolbar {
+        background-color: @StudyColor !important;
+        /* Ensure it still behaves like a flex container */
+        display: flex;    
+    }
+</style>
+
+<MudDataGrid Items="@Rows" T="CCRSummaryView" SortMode="SortMode.Single" Filterable="true" Class="my-custom-grid"
+             Dense EditMode="@DataGridEditMode.Cell" ReadOnly="false">
+    <ToolBarContent>
+            <MudText Typo="Typo.h6">CCR Summary</MudText>
+            <div style="width: 200px;" class="ml-8">
+
+                <MudSelect id="studySelect" T="Study" @bind-Value="studySelectValue" @bind-Text="studySelectText" Typo="Typo.subtitle1" Margin="Margin.Dense"
+                           Label="Study" HelperText="" Placeholder="Select Study" Dense="true"
+                           SelectedValuesChanged="@((value) => OnStudySelectChanged(value.First<Study>()))"
+                           aria-hidden="false">
+                    @foreach (var option in StudyList)
+                    {
+                        <MudSelectItem T="Study" Value="@option">@option.Prefix</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        <MudSpacer />
+
+        <div style="width: 100px;" class="ml-3">
+            <MudSelect T="int" Value="SelectedYear" Label="Year" Dense="true" Class="ml-4" ValueChanged="YearChanged">
+
+                <MudSelectItem T="int" Value="(DateTime.Now.Year) - 2">@(DateTime.Now.Year - 2)</MudSelectItem>
+                <MudSelectItem T="int" Value="(DateTime.Now.Year) - 1">@(DateTime.Now.Year - 1)</MudSelectItem>
+                <MudSelectItem T="int" Value="(DateTime.Now.Year)">@(DateTime.Now.Year)</MudSelectItem>
+
+            </MudSelect>
+        </div>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Success" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="Generate">Generate Report</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Info" Class="ml-2" Size="Size.Small" ButtonType="ButtonType.Submit" OnClick="OnExport">Download Report</MudButton>
+
+    </ToolBarContent>
+    <Columns>
+        <!-- Static Column -->
+        <PropertyColumn Property="x => x.CaseNumber" Title="Case Number" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.FName" Title="First Name" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.LName" Title="Last Name" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.DOB" Title="Date of Birth" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.PathDate" Title="Path Date" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.PathNo" Title="Path Number" Filterable="false" Editable="false" />
+        <PropertyColumn Property="x => x.HospName" Title="Hospital Name" Filterable="false" Editable="false" />
+
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="CCRSummaryView" />
+    </PagerContent>
+</MudDataGrid>
+<br />
+<br />
+
+

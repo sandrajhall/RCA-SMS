@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CsvHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -355,6 +356,198 @@ namespace RCA_StudyManagementSystem.Api.Controllers
 
             return true;
         }
+
+        // GET: api/Patients/ccrsummary/{studyid}/{year}
+        [OutputCache(PolicyName = "PatientTagPolicy")]
+        [HttpGet("ccrsummary/{studyid}/{year}")]
+        public async Task<ActionResult<IEnumerable<CCRSummaryView>>> GetCCRSummary(Guid studyid, int year)
+        {
+            var patients = await _context.Patients
+                .Where(c => c.StudyId == studyid)
+                .Include(p => p.PathReports)
+                .Where(p => p.PathReports.Any(pr => pr.DateOfProcedure.HasValue && pr.DateOfProcedure.Value.Year == year))
+                .ToListAsync();
+
+            if (patients == null || !patients.Any())
+                return NotFound();
+
+
+            if (!patients.Any())
+                return Ok(Enumerable.Empty<CCRSummaryView>());
+
+            var doctorIds = patients
+                .SelectMany(p => p.PathReports)
+                .Where(pr => pr.DoctorId != null)
+                .Select(pr => pr.DoctorId.Value)
+                .Distinct()
+                .ToList();
+
+            var hospitalIds = patients
+                .SelectMany(p => p.PathReports)
+                .Where(pr => pr.HospitalId != null)
+                .Select(pr => pr.HospitalId.Value)
+                .Distinct()
+                .ToList();
+
+            var doctors = await _context.Doctors
+                .Where(d => doctorIds.Contains(d.DoctorId))
+                .ToListAsync();
+
+            var hospitals = await _context.Hospitals
+                .Where(h => hospitalIds.Contains(h.HospitalId))
+                .ToListAsync();
+
+            var result = patients.Select(p =>
+            {
+                var doctor = doctors.FirstOrDefault(d => d.DoctorId == p.PathReports.FirstOrDefault()?.DoctorId);
+                var hospital = hospitals.FirstOrDefault(h => h.HospitalId == p.PathReports.FirstOrDefault()?.HospitalId);
+
+                return new CCRSummaryView
+                {
+                    CaseNumber = p.CaseNumber.ToString(),
+
+                    FName = p.FirstName,
+                    LName = p.LastName,
+                    MName = p.MiddleName,
+                    Suffix = p.Suffix,
+                    PreferredName = p.PreferredName,
+
+                    DOB = p.DateOfBirth.Value.ToShortDateString(),
+                    SSN = p.SocialSecurityNumber,
+                    Race = p.Race,
+                    Sex = p .Gender,
+
+                    PathDate = p.PathReports.FirstOrDefault()?.DateOfProcedure.Value.ToShortDateString(),
+                    PathNo = p.PathReports.FirstOrDefault()?.SubmittingHospitalPathReportNumber,
+
+                    MdFName = doctor?.FirstName,
+                    MdLName = doctor?.LastName,
+                    MidInitial = doctor?.MiddleName,
+                    MdSuffix = doctor?.Suffix,
+
+                    Addr1 = doctor?.Address1,
+                    Addr2 = doctor?.Address2,
+                    Addr3 = doctor?.Address3,
+
+                    MdCity = doctor?.City,
+                    MdState = doctor?.State,
+                    MdZip = doctor?.ZipCode,
+
+                    Phone1 = doctor?.PhoneNumber1,
+                    Phone2 = doctor?.PhoneNumber2,
+                    MdFax = doctor?.FaxNumber,
+
+                    HospName = hospital?.HospitalName,
+                    Address1 = hospital?.Address1,
+                    Address2 = hospital?.Address2,
+                    Phone = hospital?.PhoneNumber,
+
+                    HospFax = hospital?.FaxNumber,
+                    HospCity = hospital?.City,
+                    HospState = hospital?.State,
+                    HospZip = hospital?.ZipCode,
+
+                    ContactPerson = ""
+                };
+            }).ToList();
+
+            return Ok(result);
+        }
+
+        [HttpGet("ccrsummarycsv/{studyid}/{year}")]
+        public async Task<string> GetCCRSummaryCSV(Guid studyid, int year)
+        {
+            var pathReports = await _context.PathReports
+                .Where(pr => pr.Patient.StudyId == studyid &&
+                             pr.DateOfProcedure.HasValue &&
+                             pr.DateOfProcedure.Value.Year == year)
+                .Include(pr => pr.Patient)
+                .AsNoTracking()
+                .ToListAsync();
+
+            if (!pathReports.Any())
+                return string.Empty;
+
+            var doctorIds = pathReports
+                .Where(pr => pr.DoctorId != null)
+                .Select(pr => pr.DoctorId.Value)
+                .Distinct()
+                .ToList();
+
+            var hospitalIds = pathReports
+                .Where(pr => pr.HospitalId != null)
+                .Select(pr => pr.HospitalId.Value)
+                .Distinct()
+                .ToList();
+
+            var doctors = await _context.Doctors
+                .Where(d => doctorIds.Contains(d.DoctorId))
+                .AsNoTracking()
+                .ToListAsync();
+
+            var hospitals = await _context.Hospitals
+                .Where(h => hospitalIds.Contains(h.HospitalId))
+                .AsNoTracking()
+                .ToListAsync();
+
+            var result = new List<CCRSummaryView>();
+
+            foreach (var pr in pathReports)
+            {
+                var patient = pr.Patient;
+                var doctor = doctors.FirstOrDefault(d => d.DoctorId == pr.DoctorId);
+                var hospital = hospitals.FirstOrDefault(h => h.HospitalId == pr.HospitalId);
+
+                result.Add(new CCRSummaryView
+                {
+                    CaseNumber = patient.CaseNumber.ToString(),
+                    FName = patient.FirstName,
+                    LName = patient.LastName,
+                    MName = patient.MiddleName,
+                    Suffix = patient.Suffix,
+                    PreferredName = patient.PreferredName,
+                    DOB = patient.DateOfBirth?.ToString("MM/dd/yyyy"),
+                    SSN = patient.SocialSecurityNumber,
+                    Race = patient.Race,
+                    Sex = patient.Gender,
+
+                    PathDate = pr.DateOfProcedure?.ToString("MM/dd/yyyy"),
+                    PathNo = pr.SubmittingHospitalPathReportNumber,
+
+                    MdFName = doctor?.FirstName,
+                    MdLName = doctor?.LastName,
+                    MidInitial = doctor?.MiddleName,
+                    MdSuffix = doctor?.Suffix,
+                    Addr1 = doctor?.Address1,
+                    Addr2 = doctor?.Address2,
+                    Addr3 = doctor?.Address3,
+                    MdCity = doctor?.City,
+                    MdState = doctor?.State,
+                    MdZip = doctor?.ZipCode,
+                    Phone1 = doctor?.PhoneNumber1,
+                    Phone2 = doctor?.PhoneNumber2,
+                    MdFax = doctor?.FaxNumber,
+
+                    HospName = hospital?.HospitalName,
+                    Address1 = hospital?.Address1,
+                    Address2 = hospital?.Address2,
+                    Phone = hospital?.PhoneNumber,
+                    HospFax = hospital?.FaxNumber,
+                    HospCity = hospital?.City,
+                    HospState = hospital?.State,
+                    HospZip = hospital?.ZipCode,
+                    ContactPerson = ""
+                });
+            }
+
+            using var writer = new StringWriter();
+            using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+            csv.WriteRecords(result);
+
+            return writer.ToString();
+        }
+
+
 
         // POST: api/Patients
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

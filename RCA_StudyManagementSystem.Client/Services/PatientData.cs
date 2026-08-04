@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Newtonsoft.Json.Linq;
 using RCA_StudyManagementSystem.Client.Interfaces;
 using RCA_StudyManagementSystem.Shared.Domain;
+using RCA_StudyManagementSystem.Shared.ViewModels;
 using System.Net;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
@@ -91,6 +92,16 @@ namespace RCA_StudyManagementSystem.Client.Services
         public async Task<bool> CheckNameAsync(string name)
         {
             return await _httpClient.GetFromJsonAsync<bool>(_navigationManager.ToAbsoluteUri($"api/patients/name/{name}"));
+        }
+
+        public async Task<IEnumerable<CCRSummaryView>> GetCCRSummaryAsync(Guid studyid, int year)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<CCRSummaryView>>(_navigationManager.ToAbsoluteUri($"api/patients/ccrsummary/{studyid}/{year}"));
+        }
+
+        public async Task<string> GetCCRSummaryCSVAsync(Guid studyid, int year)
+        {
+            return await _httpClient.GetStringAsync(_navigationManager.ToAbsoluteUri($"api/patients/ccrsummarycsv/{studyid}/{year}"));
         }
 
         public async Task<Guid> CreatePatientAsync(string userId, Patient patient)

@@ -1,4 +1,5 @@
 ﻿using RCA_StudyManagementSystem.Shared.Domain;
+using RCA_StudyManagementSystem.Shared.ViewModels;
 
 namespace RCA_StudyManagementSystem.Client.Interfaces
 {
@@ -29,6 +30,9 @@ namespace RCA_StudyManagementSystem.Client.Interfaces
         Task<bool> CheckDOBAsync(DateTime? dob);
 
         Task<bool> CheckNameAsync(string name);
+
+        Task<IEnumerable<CCRSummaryView>> GetCCRSummaryAsync(Guid studyid, int year);
+        Task<string> GetCCRSummaryCSVAsync(Guid studyid, int year);
 
         Task<Guid> CreatePatientAsync(string userId, Patient patient);
 
