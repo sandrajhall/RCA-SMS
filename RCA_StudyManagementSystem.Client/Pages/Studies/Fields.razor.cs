@@ -825,32 +825,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                         SelectedReportHeaderOption.Add(requiredItem);
                     }
                 }
-
-                // Ensure all phone number fields are selected by default
-                var phoneNumberItem = uiItems.Where(x => x.HeaderName == "PhoneNumber").FirstOrDefault();
-                if (phoneNumberItem != null && !SelectedReportHeaderOption.Contains(phoneNumberItem))
-                {
-                    phoneNumberItem.IsSelected = true; // Ensure PhoneNumber is always selected
-                    SelectedReportHeaderOption.Add(phoneNumberItem);
-                }
-                var phoneTypeItem = uiItems.Where(x => x.HeaderName == "PhoneType").FirstOrDefault();
-                if (phoneTypeItem != null && !SelectedReportHeaderOption.Contains(phoneTypeItem))
-                {
-                    phoneTypeItem.IsSelected = true; // Ensure PhoneNumberType is always selected
-                    SelectedReportHeaderOption.Add(phoneTypeItem);
-                }
-                var phoneNumberCommentsItem = uiItems.Where(x => x.HeaderName == "PhoneNumberComments").FirstOrDefault();
-                if (phoneNumberCommentsItem != null && !SelectedReportHeaderOption.Contains(phoneNumberCommentsItem))
-                {
-                    phoneNumberCommentsItem.IsSelected = true; // Ensure PhoneNumberComments is always selected
-                    SelectedReportHeaderOption.Add(phoneNumberCommentsItem);
-                }
-                var phoneNumberIsPrimaryItem = uiItems.Where(x => x.HeaderName == "IsPrimary").FirstOrDefault();
-                if (phoneNumberIsPrimaryItem != null && !SelectedReportHeaderOption.Contains(phoneNumberIsPrimaryItem))
-                {
-                    phoneNumberIsPrimaryItem.IsSelected = true; // Ensure IsPrimary is always selected
-                    SelectedReportHeaderOption.Add(phoneNumberIsPrimaryItem);
-                }
                 return;
             }
 
@@ -872,30 +846,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
         public async Task SelectedItemReportHeaderOptionChanged()
         {
-            var phoneNumberItem = luReportHeaderOption.Where(x => x.HeaderName == "PhoneNumber").FirstOrDefault();
-            if (phoneNumberItem != null && !SelectedReportHeaderOption.Contains(phoneNumberItem))
-            {
-                phoneNumberItem.IsSelected = true; // Ensure PhoneNumber is always selected
-                SelectedReportHeaderOption.Add(phoneNumberItem);
-            }
-            var phoneTypeItem = luReportHeaderOption.Where(x => x.HeaderName == "PhoneType").FirstOrDefault();
-            if (phoneTypeItem != null && !SelectedReportHeaderOption.Contains(phoneTypeItem))
-            {
-                phoneTypeItem.IsSelected = true; // Ensure PhoneNumberType is always selected
-                SelectedReportHeaderOption.Add(phoneTypeItem);
-            }
-            var phoneNumberCommentsItem = luReportHeaderOption.Where(x => x.HeaderName == "PhoneNumberComments").FirstOrDefault();
-            if (phoneNumberCommentsItem != null && !SelectedReportHeaderOption.Contains(phoneNumberCommentsItem))
-            {
-                phoneNumberCommentsItem.IsSelected = true; // Ensure PhoneNumberComments is always selected
-                SelectedReportHeaderOption.Add(phoneNumberCommentsItem);
-            }
-            var phoneNumberIsPrimaryItem = luReportHeaderOption.Where(x => x.HeaderName == "IsPrimary").FirstOrDefault();
-            if (phoneNumberIsPrimaryItem != null && !SelectedReportHeaderOption.Contains(phoneNumberIsPrimaryItem))
-            {
-                phoneNumberIsPrimaryItem.IsSelected = true; // Ensure IsPrimary is always selected
-                SelectedReportHeaderOption.Add(phoneNumberIsPrimaryItem);
-            }
+
 
             await StudyReportHeaderViewsChanged.InvokeAsync(SelectedReportHeaderOption.ToList());
 
@@ -903,30 +854,6 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
 
         public async Task OnSelectAllReportHeaderOptionChanged()
         {
-            var phoneNumberItem = luReportHeaderOption.Where(x => x.HeaderName == "PhoneNumber").FirstOrDefault();
-            if (phoneNumberItem != null && !SelectedReportHeaderOption.Contains(phoneNumberItem))
-            {
-                phoneNumberItem.IsSelected = true; // Ensure PhoneNumber is always selected
-                SelectedReportHeaderOption.Add(phoneNumberItem);
-            }
-            var phoneTypeItem = luReportHeaderOption.Where(x => x.HeaderName == "PhoneType").FirstOrDefault();
-            if (phoneTypeItem != null && !SelectedReportHeaderOption.Contains(phoneTypeItem))
-            {
-                phoneTypeItem.IsSelected = true; // Ensure PhoneNumberType is always selected
-                SelectedReportHeaderOption.Add(phoneTypeItem);
-            }
-            var phoneNumberCommentsItem = luReportHeaderOption.Where(x => x.HeaderName == "PhoneNumberComments").FirstOrDefault();
-            if (phoneNumberCommentsItem != null && !SelectedReportHeaderOption.Contains(phoneNumberCommentsItem))
-            {
-                phoneNumberCommentsItem.IsSelected = true; // Ensure PhoneNumberComments is always selected
-                SelectedReportHeaderOption.Add(phoneNumberCommentsItem);
-            }
-            var phoneNumberIsPrimaryItem = luReportHeaderOption.Where(x => x.HeaderName == "IsPrimary").FirstOrDefault();
-            if (phoneNumberIsPrimaryItem != null && !SelectedReportHeaderOption.Contains(phoneNumberIsPrimaryItem))
-            {
-                phoneNumberIsPrimaryItem.IsSelected = true; // Ensure IsPrimary is always selected
-                SelectedReportHeaderOption.Add(phoneNumberIsPrimaryItem);
-            }
             await StudyReportHeaderViewsChanged.InvokeAsync(SelectedReportHeaderOption.ToList());
 
         }
