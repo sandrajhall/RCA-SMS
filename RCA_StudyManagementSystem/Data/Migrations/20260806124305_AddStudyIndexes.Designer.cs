@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RCA_StudyManagementSystem.Data;
 
@@ -11,9 +12,11 @@ using RCA_StudyManagementSystem.Data;
 namespace RCA_StudyManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260806124305_AddStudyIndexes")]
+    partial class AddStudyIndexes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2011,7 +2014,7 @@ namespace RCA_StudyManagementSystem.Migrations
 
                     b.HasIndex("HistologyId");
 
-                    b.HasIndex("StudyId", "IsActive");
+                    b.HasIndex("StudyId");
 
                     b.ToTable("StudyHistology");
                 });
@@ -2048,8 +2051,6 @@ namespace RCA_StudyManagementSystem.Migrations
                     b.HasKey("StudyId", "LookupId");
 
                     b.HasIndex("LookupId");
-
-                    b.HasIndex("StudyId", "IsActive");
 
                     b.ToTable("StudyLookup");
                 });

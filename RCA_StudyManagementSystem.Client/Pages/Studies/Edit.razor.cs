@@ -694,8 +694,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     var headerRecord = await StudyHeaderData.GetStudyHeaderAsync(existingHeader.StudyHeaderId);
 
                     // If it exists, update the existing lookupView record with the new values
-                    headerRecord.Order = headerRecord.Order;
-                    headerRecord.ExportTitle = headerRecord.ExportTitle ?? string.Empty; // Ensure ExportTitle is not null
+                    headerRecord.Order = headerView.Order;
+                    headerRecord.ExportTitle = headerView.ExportTitle ?? string.Empty; // Ensure ExportTitle is not null
                     headerRecord.IsActive = true;
 
                     await StudyHeaderData.UpdateStudyHeaderAsync(headerRecord.StudyHeaderId, userId, headerRecord); // Update the existing headerView
@@ -749,8 +749,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Studies
                     var headerRecord = await StudyReportHeaderData.GetStudyReportHeaderAsync(existingHeader.StudyReportHeaderId);
 
                     // If it exists, update the existing lookupView record with the new values
-                    headerRecord.Order = headerRecord.Order;
-                    headerRecord.ExportTitle = headerRecord.ExportTitle ?? string.Empty; // Ensure ExportTitle is not null
+                    headerRecord.Order = headerView.Order;
+                    headerRecord.ExportTitle = headerView.ExportTitle ?? string.Empty; // Ensure ExportTitle is not null
                     headerRecord.IsActive = true;
 
                     await StudyReportHeaderData.UpdateStudyReportHeaderAsync(headerRecord.StudyReportHeaderId, userId, headerRecord); // Update the existing headerView

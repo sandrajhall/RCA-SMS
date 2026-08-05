@@ -159,6 +159,21 @@ namespace RCA_StudyManagementSystem.Data
            modelBuilder.Entity<Hospital>()
               .HasIndex(h => new { h.IsActive, h.HospitalName });
 
+            modelBuilder.Entity<StudyContact>()
+                .HasIndex(sc => sc.StudyId);
+
+            modelBuilder.Entity<StudyLookup>()
+                .HasIndex(sl => new { sl.StudyId, sl.IsActive });
+
+            modelBuilder.Entity<StudyLookup>()
+                .HasIndex(sl => sl.LookupId);
+
+            modelBuilder.Entity<StudyHistology>()
+                .HasIndex(sh => new { sh.StudyId, sh.IsActive });
+
+            modelBuilder.Entity<StudyHistology>()
+                .HasIndex(sh => sh.HistologyId);
+
         }
     }
 
