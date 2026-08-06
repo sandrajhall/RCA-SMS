@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Data;
@@ -47,33 +48,63 @@ namespace RCA_StudyManagementSystem.Controllers
 
             return dailyPathSubmission;
         }
+
         [HttpGet("monthly/{year}/{month}/{studyId}")]
-        public async Task<List<MonthlyPathSubmissionView>> GetMonthlySubmissions(int year, int month, Guid studyId)
+        public async Task<ActionResult<List<MonthlyPathSubmissionView>>> GetMonthlySubmissions(int year, int month, Guid studyId)
         {
-            var startDate = new DateTime(year, month, 1);
-            var endDate = startDate.AddMonths(1).AddDays(-1);
-
-            var hospitals = await _context.Hospitals
-                .Include(h => h.DailyPathSubmissions
-                    .Where(s => s.Date >= startDate && s.Date <= endDate && s.StudyId == studyId))
-                .AsNoTracking()
-                .TagWithCallSite()
-                .ToListAsync();
-
-            var monthlyList = hospitals.Select(h => new MonthlyPathSubmissionView
+            try
             {
-                HospitalId = h.HospitalId,
-                HospitalName = h.HospitalName,
-                HospitalShortName = h.HospitalShortName,
-                StudyId = studyId,
-                // Map the existing DB records to the dictionary
-                DailyValues = h.DailyPathSubmissions.ToDictionary(
-                    s => s.Date.Day,
-                    s => s.Value
-                )
-            }).ToList();
+                var startDate = new DateTime(year, month, 1);
+                var endDate = startDate.AddMonths(1);
 
-            return monthlyList;
+                var hospitals = await _context.Hospitals
+                    .AsNoTracking()
+                    .Select(h => new
+                    {
+                        h.HospitalId,
+                        h.HospitalName,
+                        h.HospitalShortName
+                    })
+                    .ToListAsync();
+
+                var submissions = await _context.DailyPathSubmissions
+                    .AsNoTracking()
+                    .Where(s => s.StudyId == studyId &&
+                                s.Date >= startDate &&
+                                s.Date < endDate)
+                    .Select(s => new
+                    {
+                        s.HospitalId,
+                        Day = s.Date.Day,
+                        Value = s.Value ?? string.Empty
+                    })
+                    .ToListAsync();
+
+                var submissionLookup = submissions
+                    .GroupBy(s => s.HospitalId)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.GroupBy(x => x.Day)
+                              .ToDictionary(dayGroup => dayGroup.Key, dayGroup => dayGroup.Last().Value)
+                    );
+
+                var result = hospitals.Select(h => new MonthlyPathSubmissionView
+                {
+                    HospitalId = h.HospitalId,
+                    HospitalName = h.HospitalName,
+                    HospitalShortName = h.HospitalShortName,
+                    StudyId = studyId,
+                    DailyValues = submissionLookup.TryGetValue(h.HospitalId, out var values)
+                        ? values
+                        : new Dictionary<int, string>()
+                }).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while loading monthly submissions.");
+            }
         }
 
 

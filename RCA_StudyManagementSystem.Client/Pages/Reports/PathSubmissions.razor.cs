@@ -20,8 +20,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
         private int year;
         private int month;
 
-        protected Study studySelectValue;
-        protected string studySelectText;
+        protected string StudySelectText;
+        private bool _isLoading;
 
         private IEnumerable<Study> StudyList = new List<Study>();
         private CancellationToken token;
@@ -44,7 +44,25 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
         }
         private MonthlyPathSubmissionView _selectedItem;
         private void SelectRow(MonthlyPathSubmissionView item) => _selectedItem = item;
+        private string SelectedStudyIdString { get; set; } = string.Empty;
+        private Study? _studySelectValue;
 
+        private Study? StudySelectValue
+        {
+            get => _studySelectValue;
+            set
+            {
+                if (Equals(_studySelectValue, value))
+                    return;
+
+                _studySelectValue = value;
+
+                if (value is not null)
+                {
+                    _ = OnStudyChanged(value.StudyId.ToString());
+                }
+            }
+        }
         // quick filter - filter globally across multiple columns with the same input
         private Func<MonthlyPathSubmissionView, bool> _quickFilter => x =>
         {
@@ -59,7 +77,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
             return false;
         };
 
-        protected async override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             SelectedMonth = DateTime.Now.ToString("MMMM", CultureInfo.InvariantCulture);
             SelectedYear = DateTime.Now.Year;
@@ -70,75 +88,86 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
                 var study = await StudyData.GetStudyAsync(StudyId);
                 if (study != null)
                 {
-                    await OnStudySelectChanged(study);
+                    await OnStudyChanged(study.StudyId.ToString());
                 }
             }
 
-            await LoadGrid();
         }
 
         private async Task LoadGrid()
         {
-            Rows.Clear();
-            year = SelectedYear;
-            month = GetMonthNumber(SelectedMonth);
-            StudyColor = StudyList.FirstOrDefault(s => s.StudyId == StudyId)?.ColorLight ?? "#FFFFFF"; // Default to white if not found
+            if (StudyId == Guid.Empty || _isLoading)
+                return;
 
-            // Generates list of month names (January - December)
-            months = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.MonthNames
-                .Where(m => !string.IsNullOrEmpty(m))
-                .ToList();
-
-            // Generate list of all days in the current month
-            DaysInMonth = Enumerable.Range(1, DateTime.DaysInMonth(year, month))
-                .Select(day => new DateTime(year, month, day))
-                .ToList();
-
-            var submissions = await DailyPathSubmissionData.ListMonthlyPathSubmissionAsync(year, month, StudyId);
-
-            foreach (var submission in submissions)
+            try
             {
-                var row = new MonthlyPathSubmissionView
-                {
-                    HospitalId = submission.HospitalId,
-                    HospitalName = submission.HospitalName,
-                    HospitalShortName = submission.HospitalShortName,
-                    StudyId = submission.StudyId,
-                    DailyValues = submission.DailyValues
-                };
-                Rows.Add(row);
-            }
+                _isLoading = true;
 
-            var hospitals = await HospitalData.ListHospitalsAsync(token);
+                Rows.Clear();
+                year = SelectedYear;
+                month = GetMonthNumber(SelectedMonth);
+                StudyColor = StudyList.FirstOrDefault(s => s.StudyId == StudyId)?.ColorLight ?? "#FFFFFF"; // Default to white if not found
 
-            foreach (var hospital in hospitals)
-            {
-                if (!Rows.Any(r => r.HospitalId == hospital.HospitalId))
+                // Generates list of month names (January - December)
+                months = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.MonthNames
+                    .Where(m => !string.IsNullOrEmpty(m))
+                    .ToList();
+
+                // Generate list of all days in the current month
+                DaysInMonth = Enumerable.Range(1, DateTime.DaysInMonth(year, month))
+                    .Select(day => new DateTime(year, month, day))
+                    .ToList();
+
+                var submissions = await DailyPathSubmissionData.ListMonthlyPathSubmissionAsync(year, month, StudyId);
+
+                foreach (var submission in submissions)
                 {
-                    var emptyRow = new MonthlyPathSubmissionView
+                    var row = new MonthlyPathSubmissionView
                     {
-                        HospitalId = hospital.HospitalId,
-                        HospitalName = hospital.HospitalName,
-                        HospitalShortName = hospital.HospitalShortName,
-                        StudyId = StudyId,
-                        DailyValues = new Dictionary<int, string>() // Start with an empty dictionary
+                        HospitalId = submission.HospitalId,
+                        HospitalName = submission.HospitalName,
+                        HospitalShortName = submission.HospitalShortName,
+                        StudyId = submission.StudyId,
+                        DailyValues = submission.DailyValues
                     };
-
-                    Rows.Add(emptyRow);
+                    Rows.Add(row);
                 }
-            }
 
+                var hospitals = await HospitalData.ListHospitalsAsync(token);
 
-            // Ensure all days of the month are represented in the dictionary for each row
-            foreach (var row in Rows)
-            {
-                foreach (var day in DaysInMonth)
+                foreach (var hospital in hospitals)
                 {
-                    if (!row.DailyValues.ContainsKey(day.Day))
+                    if (!Rows.Any(r => r.HospitalId == hospital.HospitalId))
                     {
-                        row.DailyValues[day.Day] = string.Empty; // Prevent "null" rendering issues
+                        var emptyRow = new MonthlyPathSubmissionView
+                        {
+                            HospitalId = hospital.HospitalId,
+                            HospitalName = hospital.HospitalName,
+                            HospitalShortName = hospital.HospitalShortName,
+                            StudyId = StudyId,
+                            DailyValues = new Dictionary<int, string>() // Start with an empty dictionary
+                        };
+
+                        Rows.Add(emptyRow);
                     }
                 }
+
+
+                // Ensure all days of the month are represented in the dictionary for each row
+                foreach (var row in Rows)
+                {
+                    foreach (var day in DaysInMonth)
+                    {
+                        if (!row.DailyValues.ContainsKey(day.Day))
+                        {
+                            row.DailyValues[day.Day] = string.Empty; // Prevent "null" rendering issues
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                _isLoading = false;
             }
         }
 
@@ -152,16 +181,38 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
             return string.Empty;
         }
 
-        private async Task OnStudySelectChanged(Study value)
+        //private async Task OnStudySelectChanged(Study value)
+        //{
+        //    StudySelectValue = value;
+        //    StudySelectText = value.Name;
+
+        //    StudyId = value.StudyId; // Update the StudyId for the form
+
+        //    StudyColor = value.ColorLight; // Update the color based on the selected study
+
+        //    await LoadGrid();
+        //}
+
+        private async Task OnStudyChanged(string value)
         {
-            studySelectValue = value;
-            studySelectText = value.Name;
+            SelectedStudyIdString = value ?? string.Empty;
 
-            StudyId = value.StudyId; // Update the StudyId for the form
+            if (!Guid.TryParse(SelectedStudyIdString, out var selectedStudyId))
+            {
+                StudyId = Guid.Empty;
+                StudyColor = "#FFFFFF";
+                Rows.Clear();
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
 
-            StudyColor = value.ColorLight; // Update the color based on the selected study
+            StudyId = selectedStudyId;
 
-            await LoadGrid();
+            var study = StudyList.FirstOrDefault(s => s.StudyId == StudyId);
+            if (study != null)
+            {
+                StudyColor = study.ColorLight;
+            }
 
             await InvokeAsync(StateHasChanged);
         }
@@ -169,13 +220,13 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
         private async Task YearChanged(int value)
         {
             SelectedYear = value;
-            await LoadGrid();
+            await InvokeAsync(StateHasChanged);
         }
 
         private async Task MonthChanged(string value)
         {
             SelectedMonth = value;
-            await LoadGrid();
+            await InvokeAsync(StateHasChanged);
         }
 
         private async Task OnCellValueChanged(MonthlyPathSubmissionView item, int day, string newValue)
