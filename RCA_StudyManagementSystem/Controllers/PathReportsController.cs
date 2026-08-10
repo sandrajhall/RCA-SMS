@@ -363,86 +363,74 @@ namespace RCA_StudyManagementSystem.Controllers
         [HttpGet("archived")]
         public async Task<ActionResult<IEnumerable<PathReportView>>> GetArchivedPathReports()
         {
-            var pathReports = await _context.PathReports
-               .Include(x => x.Patient)
-               .Include(s => s.Patient!.Study)
-                .Where(s => s.Patient!.Study!.IsArchived == true)
+            var result = await _context.PathReports
                 .AsNoTracking()
                 .TagWithCallSite()
-                .AsSplitQuery()
-               .ToListAsync();
+                .Where(x => x.Patient!.Study!.IsArchived)
+                .GroupJoin(
+                    _context.Hospitals.AsNoTracking(),
+                    pr => new { Name = pr.SubmittingHospital, City = pr.HospCity },
+                    h => new { Name = h.HospitalName, City = h.City },
+                    (pr, hospitals) => new { pr, hospitals }
+                )
+                .SelectMany(
+                    x => x.hospitals.DefaultIfEmpty(),
+                    (x, h) => new PathReportView
+                    {
+                        PathReportId = x.pr.PathReportId,
+                        MigratedCCRNumber = x.pr.MigratedCCRNumber,
+                        PatientId = x.pr.PatientId,
+                        PathIndex = x.pr.PathIndex,
+                        CaseNumber = x.pr.CaseNumber,
+                        StudyPrefix = x.pr.StudyPrefix,
+                        StudyColor = x.pr.StudyColor,
+                        SubmittingHospital = x.pr.SubmittingHospital,
+                        SubmittingHospitalPathReportNumber = x.pr.SubmittingHospitalPathReportNumber,
+                        OriginatingHospitalPathReportNumber = x.pr.OriginatingHospitalPathReportNumber,
+                        OriginatingHospitalComments = x.pr.OriginatingHospitalComments,
+                        SlidesResideAtSubmittingHospital = x.pr.SlidesResideAtSubmittingHospital,
+                        DateOfProcedure = x.pr.DateOfProcedure,
+                        AgeAtProcedure = x.pr.AgeAtProcedure,
+                        ExportStatus = x.pr.ExportStatus,
+                        RcaExportDate = x.pr.RcaExportDate,
+                        Reimbursement1 = x.pr.Reimbursement1,
+                        Reimbursement2 = x.pr.Reimbursement2,
+                        Site = x.pr.Site,
+                        SiteCode = x.pr.SiteCode,
+                        PathProcedure = x.pr.PathProcedure,
+                        PathComments = x.pr.PathComments,
+                        IsOnHold = x.pr.IsOnHold,
+                        HistologyDiagnosis1 = x.pr.HistologyDiagnosis1,
+                        HistologyCode1 = x.pr.HistologyCode1,
+                        HistologyBehavior1 = x.pr.HistologyBehavior1,
+                        HistologyDiagnosisComments1 = x.pr.HistologyDiagnosisComments1,
+                        AuthorizingProvider = x.pr.AuthorizingProvider,
+                        AuthorizingProviderComments = x.pr.AuthorizingProviderComments,
+                        Site2 = x.pr.Site2,
+                        SiteCode2 = x.pr.SiteCode2,
+                        PathProcedure2 = x.pr.PathProcedure2,
+                        PathComments2 = x.pr.PathComments2,
+                        HistologyDiagnosis2 = x.pr.HistologyDiagnosis2,
+                        HistologyCode2 = x.pr.HistologyCode2,
+                        HistologyBehavior2 = x.pr.HistologyBehavior2,
+                        HistologyDiagnosisComments2 = x.pr.HistologyDiagnosisComments2,
+                        HospCity = x.pr.HospCity,
+                        BatchNumber = x.pr.BatchNumber,
 
-            var result = new List<PathReportView>();
-            foreach (var x in pathReports)
-            {
-                result.Add(new PathReportView
-                {
-                    PathReportId = x.PathReportId,
-                    MigratedCCRNumber = x.MigratedCCRNumber,
-                    PatientId = x.PatientId,
-                    PathIndex = x.PathIndex,
-                    CaseNumber = x.CaseNumber,
-                    StudyPrefix = x.StudyPrefix,
-                    StudyColor = x.StudyColor,
-                    SubmittingHospital = x.SubmittingHospital,
-                    SubmittingHospitalPathReportNumber = x.SubmittingHospitalPathReportNumber,
-                    OriginatingHospitalPathReportNumber = x.OriginatingHospitalPathReportNumber,
-                    OriginatingHospitalComments = x.OriginatingHospitalComments,
-                    SlidesResideAtSubmittingHospital = x.SlidesResideAtSubmittingHospital,
-                    DateOfProcedure = x.DateOfProcedure,
-                    AgeAtProcedure = x.AgeAtProcedure,
-                    ExportStatus = x.ExportStatus,
-                    RcaExportDate = x.RcaExportDate,
-                    Reimbursement1 = x.Reimbursement1,
-                    Reimbursement2 = x.Reimbursement2,
-                    Site = x.Site,
-                    SiteCode = x.SiteCode,
-                    PathProcedure = x.PathProcedure,
-                    PathComments = x.PathComments,
-                    IsOnHold = x.IsOnHold,
-                    HistologyDiagnosis1 = x.HistologyDiagnosis1,
-                    HistologyCode1 = x.HistologyCode1,
-                    HistologyBehavior1 = x.HistologyBehavior1,
-                    HistologyDiagnosisComments1 = x.HistologyDiagnosisComments1,
-                    AuthorizingProvider = x.AuthorizingProvider,
-                    AuthorizingProviderComments = x.AuthorizingProviderComments,
-                    Site2 = x.Site2,
-                    SiteCode2 = x.SiteCode2,
-                    PathProcedure2 = x.PathProcedure2,
-                    PathComments2 = x.PathComments2,
-                    HistologyDiagnosis2 = x.HistologyDiagnosis2,
-                    HistologyCode2 = x.HistologyCode2,
-                    HistologyBehavior2 = x.HistologyBehavior2,
-                    HistologyDiagnosisComments2 = x.HistologyDiagnosisComments2,
-                    HospCity = x.HospCity,
-                    BatchNumber = x.BatchNumber,
-                    // Include patient details
-                    LastName = x.Patient?.LastName ?? string.Empty,
-                    FirstName = x.Patient?.FirstName ?? string.Empty,
-                    MiddleName = x.Patient?.MiddleName ?? string.Empty,
-                    DisplayName = x.Patient?.DisplayName ?? string.Empty,
-                    DateOfBirth = x.Patient?.DateOfBirth.HasValue == true ? x.Patient.DateOfBirth.Value.ToShortDateString() : string.Empty,
-                    SocialSecurityNumber = x.Patient?.SocialSecurityNumber,
-                    StudyId = x.Patient?.StudyId ?? Guid.Empty,
-                });
-            }
+                        LastName = x.pr.Patient!.LastName ?? string.Empty,
+                        FirstName = x.pr.Patient!.FirstName ?? string.Empty,
+                        MiddleName = x.pr.Patient!.MiddleName ?? string.Empty,
+                        DisplayName = x.pr.Patient!.DisplayName ?? string.Empty,
+                        DateOfBirth = x.pr.Patient!.DateOfBirth.HasValue
+                            ? x.pr.Patient.DateOfBirth.Value.ToShortDateString()
+                            : string.Empty,
+                        SocialSecurityNumber = x.pr.Patient!.SocialSecurityNumber,
+                        StudyId = x.pr.Patient!.StudyId,
 
-            // Get the current request's details
-            var request = _httpContextAccessor.HttpContext.Request;
-
-            // Construct the base URL dynamically
-            var baseUrl = $"{request.Scheme}://{request.Host}";
-
-            // Create an HttpClient instance
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri(baseUrl);
-
-            // Call api directly to get hospital short names
-            foreach (var item in result)
-            {
-
-                item.HospShortName = await httpClient.GetStringAsync($"api/hospitals/shortname/{item.SubmittingHospital}/{item.HospCity}");
-            }
+                        HospShortName = h != null ? h.HospitalShortName : string.Empty
+                    }
+                )
+                .ToListAsync();
 
             return result;
         }
