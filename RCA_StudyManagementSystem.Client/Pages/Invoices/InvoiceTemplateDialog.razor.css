@@ -1,0 +1,98 @@
+﻿.invoice-table-shell {
+    border: 1px solid #bdbdbd;
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #111;
+}
+
+.invoice-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 0.9rem;
+}
+
+    .invoice-table th,
+    .invoice-table td {
+        border: 1px solid #9f9f9f;
+        padding: 0.4rem 0.45rem;
+        vertical-align: middle;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .invoice-table thead th {
+        background: #e6e6e6;
+        font-weight: 700;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+
+
+.facility-col {
+    text-align: left;
+    width: 260px; /* increase this if needed */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.study-col,
+.total-col {
+    text-align: center;
+    width: 110px;
+}
+
+.invoice-table tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.subtotal-row td {
+    background: #efefef;
+    font-weight: 700;
+}
+
+.footer-label {
+    text-align: left;
+}
+
+.footer-value {
+    text-align: center;
+}
+
+.page-break-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+@media print {
+    .invoice-table-shell {
+        border: none;
+        box-shadow: none;
+    }
+
+    .invoice-table thead {
+        display: table-header-group;
+    }
+
+    .invoice-table tfoot {
+        display: table-footer-group;
+    }
+
+    .page-break-avoid {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    body {
+        margin: 0;
+    }
+}

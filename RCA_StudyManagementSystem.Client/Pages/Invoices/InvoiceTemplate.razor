@@ -181,7 +181,7 @@
                 </div>
                 <div class="d-flex">
                     <MudContainer Class="mx-20">
-                        <div class="d-flex flex-row mt-8 mb-3">
+                        @* <div class="d-flex flex-row mt-8 mb-3">
                             <MudText><b>Facility</b></MudText><MudSpacer /><MudText><b>Study - Num Path Reports - Amount</b></MudText>
                         </div>
                         <MudText Typo="Typo.body1">
@@ -205,7 +205,60 @@
                         </MudText>
                         <div class="d-flex flex-row mt-8 mb-3">
                             <MudText><b></b></MudText><MudSpacer /><MudText><b>Total Amount: $@Invoice.TotalAmount</b></MudText>
-                        </div>
+                        </div> *@
+                <MudPaper Class="invoice-table-shell pa-4">
+                    <div class="invoice-table-wrap">
+                        <table class="invoice-table">
+                            <thead>
+                                <tr>
+                                    <th class="facility-col">Facility</th>
+                                    @foreach (var study in Studies)
+                                    {
+                                        <th class="study-col">@study.InvoiceDesignation</th>
+                                    }
+                                    <th class="total-col">Total</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var group in GroupedItems)
+                                {
+                                    <tr class="page-break-avoid">
+                                        <td class="facility-col">@group.HospitalName</td>
+
+                                        @foreach (var study in Studies)
+                                        {
+                                            <td class="study-col">
+                                                @GetStudyPathReportCount(group.Items, study.StudyId)
+                                            </td>
+                                        }
+
+                                        <td class="total-col">
+                                            @FormatCurrency(GetGroupPathReportCount(group.Items) * PaymentPerPath)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                            <tfoot>
+                                <tr class="subtotal-row">
+                                    <td class="facility-col footer-label">Total</td>
+
+                                    @foreach (var study in Studies)
+                                    {
+                                        <td class="study-col footer-value">
+                                            @GetTotalStudyPathReportCount(study.StudyId)
+                                        </td>
+                                    }
+
+                                    <td class="total-col footer-value">
+                                        @FormatCurrency(GetGrandTotalPathReports() * PaymentPerPath)
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </MudPaper>
                         <div class="d-flex flex-row mt-10 mb-5">Signed: ____________________________________________________________________</div>
                         <div class="d-flex flex-row mb-5">Title: ______________________________________________________________________</div>
                         <div class="d-flex flex-row mb-5">Date: ______________________________________________________________________</div>
