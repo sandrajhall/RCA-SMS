@@ -92,6 +92,18 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
                 }
             }
 
+            year = SelectedYear;
+            month = GetMonthNumber(SelectedMonth);
+
+            // Generates list of month names (January - December)
+            months = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.MonthNames
+                .Where(m => !string.IsNullOrEmpty(m))
+                .ToList();
+
+            // Generate list of all days in the current month
+            DaysInMonth = Enumerable.Range(1, DateTime.DaysInMonth(year, month))
+                .Select(day => new DateTime(year, month, day))
+                .ToList();
         }
 
         private async Task LoadGrid()
