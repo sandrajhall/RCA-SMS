@@ -30,11 +30,11 @@
                                 background-color: @Study.ColorLight !important;
                             }
             </style>
-            <MudContainer Class="ml-2 mt-2">
+            <MudContainer Class="ml-2 mt-2" style="height: 40px">
                 <MudText Typo="Typo.h4">@Study.Name</MudText>
                 <div class="mt-n12 d-flex justify-end">
-                    <MudIconButton Size="@Size.Large" Icon="@Icons.Material.Outlined.Edit" Href="@($"/app/studies/edit/{Study.StudyId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
-                </div>
+@*                     <MudIconButton Size="@Size.Large" Icon="@Icons.Material.Outlined.Edit" Href="@($"/app/studies/edit/{Study.StudyId}")" Variant="Variant.Text" Color="Color.Primary">Edit</MudIconButton>
+ *@                </div>
             </MudContainer>
         </MudPaper>
         <br />
