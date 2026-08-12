@@ -44,5 +44,7 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         public Guid? ModifiedUserId { get; set; }
 
         public ICollection<DailyPathSubmission>? DailyPathSubmissions { get; set; }
+        public ICollection<Patient> Patients { get; set; } = new List<Patient>();
+        public ICollection<PathReport> PathReports { get; set; } = new List<PathReport>();
     }
 }

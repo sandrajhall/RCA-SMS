@@ -59,6 +59,8 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         public string? InvoiceDesignation { get; set; } = null; // Designation for invoicing purposes
 
         public ICollection<PatientStatus>? PatientStatuses { get; set; } // Navigation property for related patient status records
+        public ICollection<Patient> Patients { get; set; } = new List<Patient>();
+
 
         [NotMapped]
         public int DaysSinceLastEnrollment

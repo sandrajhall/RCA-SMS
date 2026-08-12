@@ -185,6 +185,7 @@ namespace RCA_StudyManagementSystem.Shared.Domain
         public Guid? ModifiedUserId { get; set; }
 
         public Patient? Patient { get; set; } // Navigation property to the Patient entity
+        public Hospital? Hospital { get; set; }
 
         public ICollection<PathReportExport>? PathReportExports { get; set; } // Navigation property to related PathReportExport entities
 

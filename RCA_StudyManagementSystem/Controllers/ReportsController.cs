@@ -30,119 +30,123 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             _logger = logger;
         }
 
-        // Gets the Paths Count by Study and Date Range
         [HttpGet("PathsByStudyByDate/{studyId}/{startDateStr}/{endDateStr}")]
-        public async Task<ActionResult<IEnumerable<PathCountByStudyByDate>>> GetPathsByStudyByDate(Guid studyId, string startDateStr, string endDateStr)
+        public async Task<ActionResult<IEnumerable<PathCountByStudyByDate>>> GetPathsByStudyByDate(
+     Guid studyId, string startDateStr, string endDateStr)
         {
             DateTime startDate = DateTime.Parse(startDateStr);
             DateTime endDate = DateTime.Parse(endDateStr);
 
-            var submissions = await _context.DailyPathSubmissions
-                .Include(d => d.Hospitals)
-                .Include(s => s.Studies)
-                .Where(s => s.Date >= startDate && s.Date <= endDate && s.StudyId == studyId)
-                .GroupBy(s => s.Hospitals.HospitalName)
-                .Select(g => new PathCountByStudyByDate
-                {
-                    HospitalName = g.Key,
-                    EligiblePathCount = 0, // Placeholder, as this will be calculated in the main query
-                    SubmittedPathCount = 0  // Placeholder, will be calculated in the loop below
-                })
-                .AsNoTracking()
-                .TagWithCallSite()
-                .AsSplitQuery()
-                .ToListAsync();
-
-
-            foreach (var item in submissions)
-            {
-                // Find all DailyPathSubmissions for this hospital in the date range
-                var hospitalSubmissions = await _context.DailyPathSubmissions
-                    .Where(s => s.Hospitals.HospitalName == item.HospitalName && s.Date >= startDate && s.Date <= endDate)
-                    .ToListAsync();
-
-                item.SubmittedPathCount = hospitalSubmissions.Sum(s => int.TryParse(s.Value, out int count) ? count : 0);
-            }
-
-
             try
             {
-                var query = _context.PathReports
-                    .Join(_context.Patients,
-                        p => p.PatientId,
-                        c => c.PatientId,
-                        (p, c) => new { p, c })
-                    .Join(_context.Hospitals,
-                        pc => pc.p.HospitalId,
-                        h => h.HospitalId,
-                        (pc, h) => new { pc.p, pc.c, h })
-                    .Join(_context.Studies,
-                        pch => pch.c.StudyId,
-                        s => s.StudyId,
-                        (pch, s) => new { pch.p, pch.c, pch.h, s })
-                    .Where(x => x.p.RcaExportDate >= startDate
-                             && x.p.RcaExportDate <= endDate
-                             && studyId == x.s.StudyId)
-                    .GroupBy(x => x.h.HospitalName)
+                // Submitted counts by hospital
+                var submissionsRaw = await _context.DailyPathSubmissions
+                    .Where(s => s.Date >= startDate
+                             && s.Date <= endDate
+                             && s.StudyId == studyId)
+                    .Select(s => new
+                    {
+                        HospitalName = s.Hospitals.HospitalName,
+                        Value = s.Value
+                    })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var submissions = submissionsRaw
+                    .GroupBy(s => s.HospitalName)
                     .Select(g => new PathCountByStudyByDate
                     {
                         HospitalName = g.Key,
-                        EligiblePathCount = g.Count()
-                    });
+                        SubmittedPathCount = g.Sum(x => int.TryParse(x.Value, out var count) ? count : 0),
+                        EligiblePathCount = 0,
+                        EnrolledPathCount = 0
+                    })
+                    .ToList();
 
-                var result = await query.ToListAsync();
-
-                var enrolled = await _context.PatientStatuses
-                .Include(c => c.Patient)
-                .Include(p => p.Patient.PathReports)
-                .Include(s => s.Study)
-                .Where(s => s.Date >= startDate && s.Date <= endDate && s.Patient.StudyId == studyId && s.Status == "Participating/potential")
-                .AsNoTracking()
-                .TagWithCallSite()
-                .AsSplitQuery()
-                .ToListAsync();
-
-                foreach (var item in enrolled)
-                {
-                    var hospitalName = item.Patient.PathReports.Select(pr => pr.SubmittingHospital).FirstOrDefault();
-                    if (!string.IsNullOrEmpty(hospitalName))
+                // Eligible counts by hospital
+                var eligible = await _context.PathReports
+                    .Where(p => p.RcaExportDate >= startDate
+                             && p.RcaExportDate <= endDate
+                             && p.Patient.StudyId == studyId)
+                    .GroupBy(p => p.Hospital.HospitalName)
+                    .Select(g => new
                     {
-                        var submission = submissions.FirstOrDefault(s => s.HospitalName == hospitalName);
-                        if (submission != null)
-                        {
-                            submission.EnrolledPathCount += 1;
-                        }
-                        else
-                        {
-                            submissions.Add(new PathCountByStudyByDate
-                            {
-                                HospitalName = hospitalName,
-                                EligiblePathCount = 0,
-                                SubmittedPathCount = 0,
-                                EnrolledPathCount = 1
-                            });
-                        }
-                    }
-                }
+                        HospitalName = g.Key,
+                        EligiblePathCount = g.Count()
+                    })
+                    .AsNoTracking()
+                    .ToListAsync();
 
+                // Enrolled counts by hospital
+                var enrolled = await _context.PatientStatuses
+                    .Where(s => s.Date >= startDate
+                             && s.Date <= endDate
+                             && s.Patient.StudyId == studyId
+                             && s.Status == "Participating/potential")
+                    .Select(s => new
+                    {
+                        HospitalName = s.Patient.PathReports
+                            .OrderByDescending(pr => pr.DateOfProcedure)
+                            .Select(pr => pr.SubmittingHospital)
+                            .FirstOrDefault()
+                    })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var enrolledCounts = enrolled
+                    .Where(x => !string.IsNullOrEmpty(x.HospitalName))
+                    .GroupBy(x => x.HospitalName!)
+                    .Select(g => new
+                    {
+                        HospitalName = g.Key,
+                        Count = g.Count()
+                    })
+                    .ToList();
+
+                // Merge results
                 foreach (var item in submissions)
                 {
-                    var eligible = result.FirstOrDefault(s => s.HospitalName == item.HospitalName);
-                    if (eligible != null)
+                    var eligibleMatch = eligible.FirstOrDefault(x => x.HospitalName == item.HospitalName);
+                    if (eligibleMatch != null)
                     {
-                        item.EligiblePathCount = eligible.EligiblePathCount;
+                        item.EligiblePathCount = eligibleMatch.EligiblePathCount;
+                    }
+
+                    var enrolledMatch = enrolledCounts.FirstOrDefault(x => x.HospitalName == item.HospitalName);
+                    if (enrolledMatch != null)
+                    {
+                        item.EnrolledPathCount = enrolledMatch.Count;
                     }
                 }
-                foreach (var item in result)
+
+                // Add hospitals that appear only in eligible
+                foreach (var item in eligible)
                 {
-                    var submission = submissions.FirstOrDefault(s => s.HospitalName == item.HospitalName);
-                    if (submission == null)
+                    if (!submissions.Any(s => s.HospitalName == item.HospitalName))
                     {
+                        var enrolledMatch = enrolledCounts.FirstOrDefault(x => x.HospitalName == item.HospitalName);
+
                         submissions.Add(new PathCountByStudyByDate
                         {
                             HospitalName = item.HospitalName,
                             EligiblePathCount = item.EligiblePathCount,
-                            SubmittedPathCount = 0
+                            SubmittedPathCount = 0,
+                            EnrolledPathCount = enrolledMatch?.Count ?? 0
+                        });
+                    }
+                }
+
+                // Add hospitals that appear only in enrolled
+                foreach (var item in enrolledCounts)
+                {
+                    if (!submissions.Any(s => s.HospitalName == item.HospitalName))
+                    {
+                        submissions.Add(new PathCountByStudyByDate
+                        {
+                            HospitalName = item.HospitalName,
+                            EligiblePathCount = 0,
+                            SubmittedPathCount = 0,
+                            EnrolledPathCount = item.Count
                         });
                     }
                 }
@@ -156,36 +160,26 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             }
         }
 
-        // CESC Path Reports by Date
+        // CECS Path Reports by Date
         [HttpGet("CECSPathsByDate/{startDateStr}/{endDateStr}")]
         public async Task<ActionResult<IEnumerable<PathCountByStudyByDate>>> GetCECSPathsByDate(string startDateStr, string endDateStr)
         {
             DateTime startDate = DateTime.Parse(startDateStr);
             DateTime endDate = DateTime.Parse(endDateStr);
+
             try
             {
                 var query = _context.PathReports
-                    .Join(_context.Patients,
-                        p => p.PatientId,
-                        c => c.PatientId,
-                        (p, c) => new { p, c })
-                    .Join(_context.Hospitals,
-                        pc => pc.p.HospitalId,
-                        h => h.HospitalId,
-                        (pc, h) => new { pc.p, pc.c, h })
-                    .Join(_context.Studies,
-                        pch => pch.c.StudyId,
-                        s => s.StudyId,
-                        (pch, s) => new { pch.p, pch.c, pch.h, s })
-                    .Where(x => x.p.RcaExportDate >= startDate
-                                && x.p.RcaExportDate <= endDate
-                                && x.s.Prefix == "CECS")
-                    .GroupBy(x => x.h.HospitalName)
+                    .Where(p => p.RcaExportDate >= startDate
+                             && p.RcaExportDate <= endDate
+                             && p.Patient.Study.Prefix == "CECS")
+                    .GroupBy(p => p.Hospital.HospitalName)
                     .Select(g => new PathCountByStudyByDate
                     {
                         HospitalName = g.Key,
                         EligiblePathCount = g.Count()
                     });
+
                 var result = await query.ToListAsync();
                 return Ok(result);
             }
@@ -202,32 +196,15 @@ namespace RCA_StudyManagementSystem.Api.Controllers
         {
             DateTime startDate = DateTime.Parse(startDateStr);
             DateTime endDate = DateTime.Parse(endDateStr);
+
             try
             {
-                var query = _context.PathReports
-                    .Join(_context.Patients,
-                        p => p.PatientId,
-                        c => c.PatientId,
-                        (p, c) => new { p, c })
-                    .Join(_context.Hospitals,
-                        pc => pc.p.HospitalId,
-                        h => h.HospitalId,
-                        (pc, h) => new { pc.p, pc.c, h })
-                    .Join(_context.Studies,
-                        pch => pch.c.StudyId,
-                        s => s.StudyId,
-                        (pch, s) => new { pch.p, pch.c, pch.h, s })
-                    .Where(x => x.p.RcaExportDate >= startDate
-                             && x.p.RcaExportDate <= endDate
-                             && x.s.Prefix == "CECS")
-                    .GroupBy(x => x.c.PatientId)
-                    .Select(g => new PathCountByStudyByDate
-                    {
-                        HospitalName = g.Key.ToString(),
-                        EligiblePathCount = g.Count()
-                    });
+                int totalCases = await _context.PathReports
+                    .Where(p => p.RcaExportDate >= startDate
+                             && p.RcaExportDate <= endDate
+                             && p.Patient.Study.Prefix == "CECS")
+                    .CountAsync();
 
-                int totalCases = query.Sum(g => g.EligiblePathCount);
                 return Ok(totalCases);
             }
             catch (Exception ex)
@@ -243,26 +220,20 @@ namespace RCA_StudyManagementSystem.Api.Controllers
         {
             DateTime startDate = DateTime.Parse(startDateStr);
             DateTime endDate = DateTime.Parse(endDateStr);
+
             try
             {
                 var query = _context.PathReports
-                    .Join(_context.Patients,
-                        p => p.PatientId,
-                        c => c.PatientId,
-                        (p, c) => new { p, c })
-                    .Join(_context.Studies,
-                        pc => pc.c.StudyId,
-                        s => s.StudyId,
-                        (pc, s) => new { pc.p, pc.c, s })
-                    .Where(x => x.p.RcaExportDate >= startDate
-                             && x.p.RcaExportDate <= endDate
-                             && x.s.Prefix == "CECS")
-                    .GroupBy(x => x.c.Race)
+                    .Where(p => p.RcaExportDate >= startDate
+                             && p.RcaExportDate <= endDate
+                             && p.Patient.Study.Prefix == "CECS")
+                    .GroupBy(p => p.Patient.Race)
                     .Select(g => new RaceCountByDate
                     {
                         RaceName = g.Key,
                         PathCount = g.Count()
                     });
+
                 var result = await query.ToListAsync();
                 return Ok(result);
             }
@@ -271,7 +242,6 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                 _logger.LogError(ex, "Error retrieving CECS Race by Date");
                 return StatusCode(500, "Internal server error");
             }
-
         }
 
         // CECS Ethnicity Count by Date
@@ -280,26 +250,20 @@ namespace RCA_StudyManagementSystem.Api.Controllers
         {
             DateTime startDate = DateTime.Parse(startDateStr);
             DateTime endDate = DateTime.Parse(endDateStr);
+
             try
             {
                 var query = _context.PathReports
-                    .Join(_context.Patients,
-                        p => p.PatientId,
-                        c => c.PatientId,
-                        (p, c) => new { p, c })
-                    .Join(_context.Studies,
-                        pc => pc.c.StudyId,
-                        s => s.StudyId,
-                        (pc, s) => new { pc.p, pc.c, s })
-                    .Where(x => x.p.RcaExportDate >= startDate
-                             && x.p.RcaExportDate <= endDate
-                             && x.s.Prefix == "CECS")
-                    .GroupBy(x => x.c.Ethnicity)
+                    .Where(p => p.RcaExportDate >= startDate
+                             && p.RcaExportDate <= endDate
+                             && p.Patient.Study.Prefix == "CECS")
+                    .GroupBy(p => p.Patient.Ethnicity)
                     .Select(g => new EthnicityCountByDate
                     {
                         EthnicityName = g.Key,
                         PathCount = g.Count()
                     });
+
                 var result = await query.ToListAsync();
                 return Ok(result);
             }
@@ -308,9 +272,7 @@ namespace RCA_StudyManagementSystem.Api.Controllers
                 _logger.LogError(ex, "Error retrieving CECS Ethnicity by Date");
                 return StatusCode(500, "Internal server error");
             }
-
         }
-
         [HttpGet("PathsByStudyByDateCSV/{studyId}/{startDateStr}/{endDateStr}")]
         public async Task<string> GetPathsByStudyByDateCSV(Guid studyId, string startDateStr, string endDateStr)
         {
@@ -346,27 +308,15 @@ namespace RCA_StudyManagementSystem.Api.Controllers
             }
 
             var query = _context.PathReports
-                .Join(_context.Patients,
-                    p => p.PatientId,
-                    c => c.PatientId,
-                    (p, c) => new { p, c })
-                .Join(_context.Hospitals,
-                    pc => pc.p.HospitalId,
-                    h => h.HospitalId,
-                    (pc, h) => new { pc.p, pc.c, h })
-                .Join(_context.Studies,
-                    pch => pch.c.StudyId,
-                    s => s.StudyId,
-                    (pch, s) => new { pch.p, pch.c, pch.h, s })
-                .Where(x => x.p.RcaExportDate >= startDate
-                         && x.p.RcaExportDate <= endDate
-                         && x.s.StudyId == studyId)
-                .GroupBy(x => x.h.HospitalName)
-                .Select(g => new PathCountByStudyByDate
-                {
-                    HospitalName = g.Key,
-                    EligiblePathCount = g.Count()
-                });
+                 .Where(p => p.RcaExportDate >= startDate
+                          && p.RcaExportDate <= endDate
+                          && p.Patient.Study.StudyId == studyId)
+                 .GroupBy(p => p.Hospital.HospitalName)
+                 .Select(g => new PathCountByStudyByDate
+                 {
+                     HospitalName = g.Key,
+                     EligiblePathCount = g.Count()
+                 });
             var result = await query.ToListAsync();
 
             var enrolled = await _context.PatientStatuses

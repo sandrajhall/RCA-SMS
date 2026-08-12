@@ -88,6 +88,12 @@ namespace RCA_StudyManagementSystem.Data
                     ttb.UseHistoryTable("PathReportHistory");
                 }));
 
+            modelBuilder.Entity<PathReport>()
+                .HasOne(p => p.Hospital)
+                .WithMany(h => h.PathReports)
+                .HasForeignKey(p => p.HospitalId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<Doctor>()
                 .ToTable("Doctor", b => b.IsTemporal(ttb =>
                 {
