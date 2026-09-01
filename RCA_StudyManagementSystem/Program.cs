@@ -12,6 +12,7 @@ using MudBlazor.Services;
 using RCA_StudyManagementSystem.Client.Interfaces;
 using RCA_StudyManagementSystem.Client.Pages;
 using RCA_StudyManagementSystem.Client.Services;
+using RCA_StudyManagementSystem.Client.Stores;
 using RCA_StudyManagementSystem.Client.Utilities;
 using RCA_StudyManagementSystem.Components;
 using RCA_StudyManagementSystem.Components.Account;
@@ -22,6 +23,7 @@ using RCA_StudyManagementSystem.Middleware;
 using RCA_StudyManagementSystem.Services;
 using RCA_StudyManagementSystem.Shared;
 using RCA_StudyManagementSystem.Shared.Domain;
+using RCA_StudyManagementSystem.Shared.ImportViews;
 using RCA_StudyManagementSystem.Shared.ViewModels;
 using System.Text.Json.Serialization;
 
@@ -182,6 +184,8 @@ builder.Services.AddScoped<IUserData, UserData>();
 builder.Services.AddScoped<GenerateCaseNumber>();
 builder.Services.AddScoped<GenerateBatchNumber>();
 builder.Services.AddScoped<UserContext>();
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<UNCRexPdfStore>();
 
 builder.Services.AddScoped<GridStateView<Patient>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<PathReportView>>(); // Register for a specific data item type
@@ -191,6 +195,7 @@ builder.Services.AddScoped<GridStateView<DoNotContact>>(); // Register for a spe
 builder.Services.AddScoped<GridStateView<RCAContact>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<ReimbursementEntity>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<Invoice>>(); // Register for a specific data item type
+builder.Services.AddScoped<GridStateView<UNCRexImportView>>(); // Register for a specific data item type
 
 builder.Services.AddBlazoredLocalStorage();
 

@@ -1,0 +1,483 @@
+﻿@using MudBlazor
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Pages.Cases
+@using RCA_StudyManagementSystem.Client.Interfaces
+
+@rendermode InteractiveAuto
+
+@inject IDialogService DialogService
+@inject IStudyData StudyData
+@inject IHospitalData HospitalData
+
+<MudDialog>
+    <DialogContent>
+
+        <MudPagination Color="Color.Primary" ShowFirstButton="true" ShowLastButton="true"
+                       Count="@totalPages"
+                       Selected="@currPage"
+                       SelectedChanged="OnPageChanged"
+                       Class="mt-4 d-flex justify-end" Style="position: fixed; top: 20px; right: 40px; z-index: 1500" />
+
+        <div style=" height:900px; ">
+
+            <PageTitle>UNC Rex Import</PageTitle>
+
+            <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
+
+                <MudText Typo="Typo.h4" Class="mb-4">
+                    UNC Rex Import - Study: @Model.Study
+                </MudText>
+
+                <MudForm @ref="_form">
+
+                    <!-- Patient Information -->
+                    <MudPaper Class="pa-4 mb-4" Elevation="2">
+                        <MudText Typo="Typo.h6" Class="mb-3">
+                            Patient Information
+                        </MudText>
+
+                        <MudGrid Spacing="2">
+
+                            <MudItem xs="12" sm="6" md="3">
+                                <MudTextField T="string"
+                                              Label="MRN"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.PAT_MRN_ID" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="3">
+                                <MudTextField T="string"
+                                              Label="Patient ID"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.PAT_ID" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="3">
+                                <MudTextField T="string"
+                                              Label="Last Name"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.PAT_LAST_NAME" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="3">
+                                <MudTextField T="string"
+                                              Label="First Name"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.PAT_FIRST_NAME" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="3">
+                                <MudTextField T="string"
+                                              Label="Middle Name"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.PAT_MIDDLE_NAME" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="3">
+                                <MudTextField T="string"
+                                              Label="Preferred Language"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.PreferredLang" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="3">
+                                <MudDatePicker Label="Date of Birth"
+                                               Variant="Variant.Outlined"
+                                               DateFormat="MM/dd/yyyy"
+                                               @bind-Date="Model.DOB" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="3">
+                                <MudTextField T="string"
+                                              Label="Gender"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.Gender" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="3">
+                                <MudTextField T="string"
+                                              Label="Race"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.Race" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="3">
+                                <MudTextField T="string"
+                                              Label="Marital Status"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.Marital_Status" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="3">
+                                <MudTextField T="string"
+                                              Label="SSN"
+                                              InputType="InputType.Password"
+                                              Variant="Variant.Outlined"
+                                              AutoComplete="off"
+                                              @bind-Value="Model.SSN" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="3">
+                                <MudTextField T="string"
+                                              Label="Phone Number"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.PhoneNumber" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="6">
+                                <MudTextField T="string"
+                                              Label="Email Address"
+                                              InputType="InputType.Email"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.EMAIL_ADDRESS" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Address"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.ADD_LINE_1" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="City"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.CITY" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="State"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.State" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="ZIP Code"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.ZIP" />
+                            </MudItem>
+
+                        </MudGrid>
+                    </MudPaper>
+
+                    <!-- Case and Specimen Information -->
+                    <MudPaper Class="pa-4 mb-4" Elevation="2">
+                        <MudText Typo="Typo.h6" Class="mb-3">
+                            Case and Specimen Information
+                        </MudText>
+
+                        <MudGrid Spacing="2">
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="Lab Name"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.LAB_NAME" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="Case ID"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.CASE_ID" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="Result ID"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.RESULT_ID" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="Specimen Number"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.SPEC_NUMBER_LN1" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="Specimen ID"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.SPECIMEN_ID" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="Specimen Source Name"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.SpecSource_Name" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="Specimen Source Code"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.SpecSource_Code" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="Specimen Type"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.SpecType_Name" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="Case Status"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.CaseStatus" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="Case Type ID"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.CASE_TYPE_ID" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="Submitter"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.Submitter" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudDatePicker Label="Collected Date"
+                                               Variant="Variant.Outlined"
+                                               DateFormat="MM/dd/yyyy"
+                                               @bind-Date="Model.CollectedDate" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudDatePicker Label="Signed-Out Date"
+                                               Variant="Variant.Outlined"
+                                               DateFormat="MM/dd/yyyy"
+                                               @bind-Date="Model.SignedOutDate" />
+                            </MudItem>
+
+                        </MudGrid>
+                    </MudPaper>
+
+                    <!-- Diagnosis and Results -->
+                    <MudPaper Class="pa-4 mb-4" Elevation="2">
+                        <MudText Typo="Typo.h6" Class="mb-3">
+                            Diagnosis and Results
+                        </MudText>
+
+                        <MudGrid Spacing="2">
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Final Diagnosis"
+                                              Variant="Variant.Outlined"
+                                              Lines="5"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.FinalDiagnosis" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Diagnosis Name"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.DX_NAME" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="ICD-10"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.ICD_10" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="SNOMED"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.SNOMED" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField T="string"
+                                              Label="SNOMED Result"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.SNOMED_Rslt" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Positive Terms"
+                                              Variant="Variant.Outlined"
+                                              Lines="4"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.PosTerm" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Negative Terms"
+                                              Variant="Variant.Outlined"
+                                              Lines="4"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.NegTerm" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Synoptic Terms"
+                                              Variant="Variant.Outlined"
+                                              Lines="4"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.SynopticTerms" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Order Comments"
+                                              Variant="Variant.Outlined"
+                                              Lines="4"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.Order_Comments" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Diagnostic Comment"
+                                              Variant="Variant.Outlined"
+                                              Lines="4"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.Diag_Comment" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Clinical History"
+                                              Variant="Variant.Outlined"
+                                              Lines="4"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.Clinical_History" />
+                            </MudItem>
+
+                        </MudGrid>
+                    </MudPaper>
+
+                    <!-- Providers and Reports -->
+                    <MudPaper Class="pa-4 mb-4" Elevation="2">
+                        <MudText Typo="Typo.h6" Class="mb-3">
+                            Providers and Reports
+                        </MudText>
+
+                        <MudGrid Spacing="2">
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Authorizing Provider"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.AuthorizingProvider" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Pathologist"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="Model.Pathologist" />
+                            </MudItem>
+
+                            <MudItem xs="12">
+                                <MudTextField T="string"
+                                              Label="Synoptic Report"
+                                              Variant="Variant.Outlined"
+                                              Lines="8"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.Synoptic_Report" />
+                            </MudItem>
+
+                            <MudItem xs="12">
+                                <MudTextField T="string"
+                                              Label="Gross Description"
+                                              Variant="Variant.Outlined"
+                                              Lines="8"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.Gross_Description" />
+                            </MudItem>
+
+                        </MudGrid>
+                    </MudPaper>
+
+                    <!-- Addenda -->
+                    <MudPaper Class="pa-4 mb-4" Elevation="2">
+                        <MudText Typo="Typo.h6" Class="mb-3">
+                            Addenda
+                        </MudText>
+
+                        <MudGrid Spacing="2">
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Addendum 1"
+                                              Variant="Variant.Outlined"
+                                              Lines="5"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.Addendum_1" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Addendum 2"
+                                              Variant="Variant.Outlined"
+                                              Lines="5"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.Addendum_2" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Addendum 3"
+                                              Variant="Variant.Outlined"
+                                              Lines="5"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.Addendum_3" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Addendum 4"
+                                              Variant="Variant.Outlined"
+                                              Lines="5"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.Addendum_4" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                              Label="Addendum 5"
+                                              Variant="Variant.Outlined"
+                                              Lines="5"
+                                              AutoGrow="true"
+                                              @bind-Value="Model.Addendum_5" />
+                            </MudItem>
+
+                        </MudGrid>
+                    </MudPaper>
+
+                </MudForm>
+
+                @if (!string.IsNullOrWhiteSpace(StatusMessage))
+                {
+                    <MudAlert Severity="Severity.Success" Class="mt-3">
+                        @StatusMessage
+                    </MudAlert>
+                }
+
+            </MudContainer>
+        </div>
+    </DialogContent>
+
+</MudDialog>

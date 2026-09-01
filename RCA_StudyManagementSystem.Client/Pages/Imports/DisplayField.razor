@@ -1,0 +1,20 @@
+﻿<div class="pdf-field @(FullWidth ? "full-width" : string.Empty)">
+    <div class="pdf-label">
+        @Label
+    </div>
+
+    <div class="pdf-value">
+        @(string.IsNullOrWhiteSpace(Value) ? "—" : Value)
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public bool FullWidth { get; set; }
+}

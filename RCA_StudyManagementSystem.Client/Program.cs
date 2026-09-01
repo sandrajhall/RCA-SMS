@@ -10,6 +10,7 @@ using RCA_StudyManagementSystem.Client.Services;
 using RCA_StudyManagementSystem.Client.Utilities;
 using RCA_StudyManagementSystem.Shared.Domain;
 using RCA_StudyManagementSystem.Shared.ViewModels;
+using RCA_StudyManagementSystem.Shared.ImportViews;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -72,6 +73,7 @@ builder.Services.AddScoped<IUserData, UserData>();
 builder.Services.AddScoped<GenerateCaseNumber>();
 builder.Services.AddScoped<GenerateBatchNumber>();
 
+
 builder.Services.AddScoped<GridStateView<Patient>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<PathReportView>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<Hospital>>(); // Register for a specific data item type
@@ -80,6 +82,7 @@ builder.Services.AddScoped<GridStateView<DoNotContact>>(); // Register for a spe
 builder.Services.AddScoped<GridStateView<RCAContact>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<ReimbursementEntity>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<Invoice>>(); // Register for a specific data item type
+builder.Services.AddScoped<GridStateView<UNCRexImportView>>(); // Register for a specific data item type        
 
 builder.Services.AddBlazoredLocalStorage();
 

@@ -1,0 +1,99 @@
+﻿.pdf-page {
+    width: 100%;
+    min-height: 100vh;
+    padding: 24px;
+    background: white;
+    color: black;
+    overflow: visible;
+}
+
+.pdf-header {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #333;
+}
+
+.pdf-section {
+    margin-bottom: 20px;
+    padding: 16px;
+    border: 1px solid #cfcfcf;
+    border-radius: 4px;
+    page-break-inside: avoid;
+    overflow: visible;
+}
+
+.section-title {
+    display: block;
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #cfcfcf;
+}
+
+.field-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    overflow: visible;
+}
+
+.pdf-field {
+    min-width: 0;
+    height: auto;
+    overflow: visible;
+    page-break-inside: avoid;
+}
+
+    .pdf-field.full-width {
+        grid-column: 1 / -1;
+    }
+
+.pdf-label {
+    margin-bottom: 4px;
+    color: #555;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.pdf-value {
+    min-height: 28px;
+    height: auto;
+    padding: 7px 9px;
+    border: 1px solid #bdbdbd;
+    border-radius: 3px;
+    white-space: pre-wrap;
+    overflow: visible;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    background: #fff;
+}
+
+@@media (max-width: 900px) {
+    .field-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@@media (max-width: 600px) {
+    .field-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pdf-field.full-width {
+        grid-column: auto;
+    }
+}
+
+@@media print {
+    .pdf-page {
+        padding: 0;
+    }
+
+    .pdf-section {
+        border: 1px solid #999;
+        box-shadow: none;
+    }
+
+    .pdf-value {
+        color: #000;
+    }
+}

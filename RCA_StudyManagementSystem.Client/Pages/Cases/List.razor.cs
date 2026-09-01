@@ -1119,6 +1119,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                         }
                                         newPath.Reimbursement1 = ReimbursementHospital1.HospitalName;
                                     }
+                                    else
+                                    {
+                                        newPath.DoNotInvoice = true;
+                                    }
 
                                     if (!string.IsNullOrEmpty(row[54]?.ToString().Trim()))
                                     {
@@ -1671,6 +1675,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                             ReimbursementHospital1 = await HospitalData.GetHospitalByMigratedIdAsync(ReimbursementHospital1.DuplicateOfHospitalId);
                                         }
                                         newPath.Reimbursement1 = ReimbursementHospital1.HospitalName;
+                                    }
+                                    else
+                                    {
+                                        newPath.DoNotInvoice = true;
                                     }
 
                                     if (!string.IsNullOrEmpty(row[36]?.ToString().Trim()))
@@ -2226,6 +2234,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                         }
                                         newPath.Reimbursement1 = ReimbursementHospital1.HospitalName;
                                     }
+                                    else
+                                    {
+                                        newPath.DoNotInvoice = true;
+                                    }
 
                                     if (!string.IsNullOrEmpty(row[54]?.ToString().Trim()))
                                     {
@@ -2768,6 +2780,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                         }
                                         newPath.Reimbursement1 = ReimbursementHospital1.HospitalName;
                                     }
+                                    else
+                                    {
+                                        newPath.DoNotInvoice = true;
+                                    }
 
                                     if (string.IsNullOrEmpty(row[21]?.ToString().Trim()))
                                     {
@@ -3302,6 +3318,8 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                     }
 
                                     newPath.HistologyDiagnosisComments1 = row[45]?.ToString().Trim() ?? string.Empty;
+                                    newPath.Reimbursement1 = string.Empty;
+                                    newPath.DoNotInvoice = true;
 
                                     newPath.P16 = row[74]?.ToString().Trim() ?? string.Empty;
                                     newPath.HPV_Value = row[75]?.ToString().Trim() ?? string.Empty;
@@ -3884,6 +3902,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                                             ReimbursementHospital1 = await HospitalData.GetHospitalByMigratedIdAsync(ReimbursementHospital1.DuplicateOfHospitalId);
                                         }
                                         newPath.Reimbursement1 = ReimbursementHospital1.HospitalName;
+                                    }
+                                    else
+                                    {
+                                        newPath.DoNotInvoice = true;
                                     }
 
                                     if (!string.IsNullOrEmpty(row[54]?.ToString().Trim()))

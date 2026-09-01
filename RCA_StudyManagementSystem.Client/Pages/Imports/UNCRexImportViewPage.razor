@@ -1,0 +1,192 @@
+﻿@attribute [Authorize]
+
+@page "/app/uncreximports/view/{Token}"
+
+@using Microsoft.AspNetCore.Authorization
+@using RCA_StudyManagementSystem.Shared.Layout
+@using RCA_StudyManagementSystem.Client.Stores
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.Domain
+@using MudBlazor
+
+@layout NullLayout
+
+@inject UNCRexPdfStore PdfStore
+
+<PageTitle>UNC Rex Import</PageTitle>
+
+@if (Model is null)
+{
+    <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
+        @if (_loading)
+        {
+            <MudProgressCircular Indeterminate="true" />
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Error">
+                The requested UNC Rex record could not be found.
+            </MudAlert>
+        }
+    </MudContainer>
+}
+else
+{
+    <div class="pdf-page">
+        <div class="pdf-header">
+            <MudText Typo="Typo.h4">
+                UNC Rex Import
+            </MudText>
+
+            <MudText Typo="Typo.subtitle1">
+                Study: @Display(Model.Study)
+            </MudText>
+        </div>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Patient Information
+            </MudText>
+
+            <div class="field-grid">
+                <DisplayField Label="MRN" Value="@Model.PAT_MRN_ID" />
+                <DisplayField Label="Patient ID" Value="@Model.PAT_ID" />
+                <DisplayField Label="Last Name" Value="@Model.PAT_LAST_NAME" />
+                <DisplayField Label="First Name" Value="@Model.PAT_FIRST_NAME" />
+                <DisplayField Label="Middle Name" Value="@Model.PAT_MIDDLE_NAME" />
+                <DisplayField Label="Preferred Language" Value="@Model.PreferredLang" />
+                <DisplayField Label="Date of Birth" Value="@FormatDate(Model.DOB)" />
+                <DisplayField Label="Gender" Value="@Model.Gender" />
+                <DisplayField Label="Race" Value="@Model.Race" />
+                <DisplayField Label="Marital Status" Value="@Model.Marital_Status" />
+                <DisplayField Label="SSN" Value="@Model.SSN" />
+                <DisplayField Label="Phone Number" Value="@Model.PhoneNumber" />
+                <DisplayField Label="Email Address" Value="@Model.EMAIL_ADDRESS" />
+                <DisplayField Label="Address" Value="@Model.ADD_LINE_1" />
+                <DisplayField Label="City" Value="@Model.CITY" />
+                <DisplayField Label="State" Value="@Model.State" />
+                <DisplayField Label="ZIP Code" Value="@Model.ZIP" />
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Case and Specimen Information
+            </MudText>
+
+            <div class="field-grid">
+                <DisplayField Label="Lab Name" Value="@Model.LAB_NAME" />
+                <DisplayField Label="Case ID" Value="@Model.CASE_ID" />
+                <DisplayField Label="Result ID" Value="@Model.RESULT_ID" />
+                <DisplayField Label="Specimen Number" Value="@Model.SPEC_NUMBER_LN1" />
+                <DisplayField Label="Specimen ID" Value="@Model.SPECIMEN_ID" />
+                <DisplayField Label="Specimen Source Name" Value="@Model.SpecSource_Name" />
+                <DisplayField Label="Specimen Source Code" Value="@Model.SpecSource_Code" />
+                <DisplayField Label="Specimen Type" Value="@Model.SpecType_Name" />
+                <DisplayField Label="Case Status" Value="@Model.CaseStatus" />
+                <DisplayField Label="Case Type ID" Value="@Model.CASE_TYPE_ID" />
+                <DisplayField Label="Submitter" Value="@Model.Submitter" />
+                <DisplayField Label="Collected Date" Value="@FormatDate(Model.CollectedDate)" />
+                <DisplayField Label="Signed-Out Date" Value="@FormatDate(Model.SignedOutDate)" />
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Diagnosis and Results
+            </MudText>
+
+            <div class="field-grid">
+                <DisplayField Label="Final Diagnosis"
+                             Value="@Model.FinalDiagnosis"
+                             FullWidth="true" />
+
+                <DisplayField Label="Diagnosis Name"
+                             Value="@Model.DX_NAME" />
+
+                <DisplayField Label="ICD-10"
+                             Value="@Model.ICD_10" />
+
+                <DisplayField Label="SNOMED"
+                             Value="@Model.SNOMED" />
+
+                <DisplayField Label="SNOMED Result"
+                             Value="@Model.SNOMED_Rslt" />
+
+                <DisplayField Label="Positive Terms"
+                             Value="@Model.PosTerm"
+                             FullWidth="true" />
+
+                <DisplayField Label="Negative Terms"
+                             Value="@Model.NegTerm"
+                             FullWidth="true" />
+
+                <DisplayField Label="Synoptic Terms"
+                             Value="@Model.SynopticTerms"
+                             FullWidth="true" />
+
+                <DisplayField Label="Order Comments"
+                             Value="@Model.Order_Comments"
+                             FullWidth="true" />
+
+                <DisplayField Label="Diagnostic Comment"
+                             Value="@Model.Diag_Comment"
+                             FullWidth="true" />
+
+                <DisplayField Label="Clinical History"
+                             Value="@Model.Clinical_History"
+                             FullWidth="true" />
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Providers and Reports
+            </MudText>
+
+            <div class="field-grid">
+                <DisplayField Label="Authorizing Provider"
+                             Value="@Model.AuthorizingProvider" />
+
+                <DisplayField Label="Pathologist"
+                             Value="@Model.Pathologist" />
+
+                <DisplayField Label="Synoptic Report"
+                             Value="@Model.Synoptic_Report"
+                             FullWidth="true" />
+
+                <DisplayField Label="Gross Description"
+                             Value="@Model.Gross_Description"
+                             FullWidth="true" />
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Addenda
+            </MudText>
+
+            <div class="field-grid">
+                <DisplayField Label="Addendum 1"
+                             Value="@Model.Addendum_1"
+                             FullWidth="true" />
+
+                <DisplayField Label="Addendum 2"
+                             Value="@Model.Addendum_2"
+                             FullWidth="true" />
+
+                <DisplayField Label="Addendum 3"
+                             Value="@Model.Addendum_3"
+                             FullWidth="true" />
+
+                <DisplayField Label="Addendum 4"
+                             Value="@Model.Addendum_4"
+                             FullWidth="true" />
+
+                <DisplayField Label="Addendum 5"
+                             Value="@Model.Addendum_5"
+                             FullWidth="true" />
+            </div>
+        </section>
+    </div>
+}

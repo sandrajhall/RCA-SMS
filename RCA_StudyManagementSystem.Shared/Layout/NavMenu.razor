@@ -107,6 +107,25 @@
                 }
 
                 <div class="nav-item">
+                    <a class="nav-link" href="javascript:void(0)" @onclick="HandleImportsClick" style="color: white;">
+                        <MudIcon Icon="@Icons.Material.Filled.CloudUpload" Class="nav-icon mr-2" />
+                        <span class="nav-text">Imports</span>
+                    </a>
+                </div>
+
+                @if (expandImports)
+                {
+                    <div class="sub-menu">
+                        <div class="nav-item">
+                            <NavLink class="nav-link" href="app/uncreximport/list" style="color: white;">
+                                <MudIcon Icon="@Icons.Material.Filled.CloudUpload" Class="nav-icon mr-2" />
+                                <span class="nav-text">UNC Rex Import</span>
+                            </NavLink>
+                        </div>
+                    </div>
+                }
+
+                <div class="nav-item">
                     <a class="nav-link" href="javascript:void(0)" @onclick="HandleListingsClick" style="color: white;">
                         <MudIcon Icon="@Icons.Material.Filled.ListAlt" Class="nav-icon mr-2" />
                         <span class="nav-text">Lists</span>
@@ -378,6 +397,7 @@
     private bool expandRCAContacts;
     private bool expandInvoices;
     private bool expandReports;
+    private bool expandImports;
 
     private bool isAdmin;
     private bool isBusiness;
@@ -398,6 +418,7 @@
     private void HandleRCAContactsClick() => expandRCAContacts = !expandRCAContacts;
     private void HandleInvoicesClick() => expandInvoices = !expandInvoices;
     private void HandleReportsClick() => expandReports = !expandReports;
+    private void HandleImportsClick() => expandImports = !expandImports;
 
     protected override async Task OnInitializedAsync()
     {

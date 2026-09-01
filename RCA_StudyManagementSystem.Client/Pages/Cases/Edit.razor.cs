@@ -205,6 +205,14 @@ namespace RCA_StudyManagementSystem.Client.Pages.Cases
                     Patient.PathReports.ToList().ForEach(pr => pr.StudyPrefix = prefix); // Set the study prefix for each path report
                     Patient.PathReports.ToList().ForEach(pr => pr.StudyColor = StudyColor); // Set the study color for each path report
 
+                    foreach (var pathReport in Patient.PathReports)
+                    {
+                        if (string.IsNullOrEmpty(pathReport.Reimbursement1))
+                        {
+                            pathReport.DoNotInvoice = true; // Set the DoNotInvoice flag for each path report if there is no reimbursement1 value
+                        }
+                    }
+
                     var auth = await AuthStateProvider.GetAuthenticationStateAsync();
                     var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
