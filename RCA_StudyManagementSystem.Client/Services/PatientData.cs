@@ -94,9 +94,12 @@ namespace RCA_StudyManagementSystem.Client.Services
             return await _httpClient.GetFromJsonAsync<bool>(_navigationManager.ToAbsoluteUri($"api/patients/name/{name}"));
         }
 
-        public async Task<IEnumerable<CCRSummaryView>> GetCCRSummaryAsync(Guid studyid, int year)
+        public async Task<List<CCRSummaryView>> GetCCRSummaryAsync(
+    Guid studyId,
+    int year)
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<CCRSummaryView>>(_navigationManager.ToAbsoluteUri($"api/patients/ccrsummary/{studyid}/{year}"));
+            var response = await _httpClient.GetFromJsonAsync<IEnumerable<CCRSummaryView>>(_navigationManager.ToAbsoluteUri($"api/patients/ccrsummary/{studyId}/{year}"));
+            return response?.ToList() ?? new List<CCRSummaryView>();
         }
 
         public async Task<string> GetCCRSummaryCSVAsync(Guid studyid, int year)

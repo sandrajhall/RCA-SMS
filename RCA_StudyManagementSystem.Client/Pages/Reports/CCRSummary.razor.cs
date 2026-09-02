@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.OleDb;
 using System.Globalization;
+using System.Net;
 using static MudBlazor.CategoryTypes;
 
 namespace RCA_StudyManagementSystem.Client.Pages.Reports
@@ -52,56 +53,77 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
 
 
 
-        protected async override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-
             StudyList = await StudyData.ListStudiesAsync();
+
+            SelectedYear = DateTime.UtcNow.Year;
+
             if (StudyId != Guid.Empty)
             {
                 var study = await StudyData.GetStudyAsync(StudyId);
+
                 if (study != null)
                 {
-                    await OnStudySelectChanged(study);
+                    OnStudySelectChanged(study);
+
+                    // Load the report automatically on initial load
+                    await LoadGrid();
                 }
             }
-            SelectedYear = DateTime.UtcNow.Year;
-
-            await LoadGrid();
         }
 
         private async Task LoadGrid()
         {
-            Rows.Clear();
-
-            if (StudyId != Guid.Empty)
+            try
             {
+                Rows = new List<CCRSummaryView>();
 
-                Rows = (List<CCRSummaryView>)await PatientData.GetCCRSummaryAsync(StudyId, SelectedYear);
+                if (StudyId == Guid.Empty || SelectedYear == 0)
+                {
+                    return;
+                }
+
+                Console.WriteLine($"StudyId: {StudyId}");
+                Console.WriteLine($"SelectedYear: {SelectedYear}");
+
+                Rows = await PatientData.GetCCRSummaryAsync(
+                    StudyId,
+                    SelectedYear);
+
+                if (Rows.Count == 0)
+                {
+                    Snackbar.Add(
+                        $"No report rows were returned for {SelectedYear}.",
+                        Severity.Info);
+                }
             }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
 
+                Snackbar.Add(
+                    $"No report rows were returned for {SelectedYear}.",
+                    Severity.Error,
+                    options => options.RequireInteraction = true);
+            }
         }
 
 
 
-        private async Task OnStudySelectChanged(Study value)
+        private void OnStudySelectChanged(Study value)
         {
             studySelectValue = value;
             studySelectText = value.Name;
             studyPrefix = value.Prefix;
 
-            StudyId = value.StudyId; // Update the StudyId for the form
-
-            StudyColor = value.ColorLight; // Update the color based on the selected study
-
-            //await LoadGrid();
-
-            //await InvokeAsync(StateHasChanged);
+            StudyId = value.StudyId;
+            StudyColor = value.ColorLight;
         }
 
-        private async Task YearChanged(int value)
+        private void YearChanged(int value)
         {
             SelectedYear = value;
-            await LoadGrid();
         }
 
 
@@ -113,17 +135,18 @@ namespace RCA_StudyManagementSystem.Client.Pages.Reports
                 ShowError();
                 return;
             }
-            if (SelectedYear == null)
+
+            if (SelectedYear == 0)
             {
-                Snackbar.Add("Please select a valid year.", Severity.Error, options =>
-                {
-                    options.RequireInteraction = true; // User must manually dismiss
-                });
+                Snackbar.Add(
+                    "Please select a valid year.",
+                    Severity.Error,
+                    options => options.RequireInteraction = true);
+
                 return;
             }
 
-
-            Rows = (List<CCRSummaryView>)await PatientData.GetCCRSummaryAsync(StudyId, SelectedYear);
+            await LoadGrid();
         }
 
         private async Task OnExport()

@@ -31,7 +31,7 @@ namespace RCA_StudyManagementSystem.Client.Interfaces
 
         Task<bool> CheckNameAsync(string name);
 
-        Task<IEnumerable<CCRSummaryView>> GetCCRSummaryAsync(Guid studyid, int year);
+        Task<List<CCRSummaryView>> GetCCRSummaryAsync(Guid studyid, int year);
         Task<string> GetCCRSummaryCSVAsync(Guid studyid, int year);
 
         Task<Guid> CreatePatientAsync(string userId, Patient patient);
