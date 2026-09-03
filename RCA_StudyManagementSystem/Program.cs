@@ -186,6 +186,7 @@ builder.Services.AddScoped<GenerateBatchNumber>();
 builder.Services.AddScoped<UserContext>();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<UNCRexPdfStore>();
+builder.Services.AddSingleton<UNCRandolphPdfStore>();
 
 builder.Services.AddScoped<GridStateView<Patient>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<PathReportView>>(); // Register for a specific data item type
@@ -196,6 +197,7 @@ builder.Services.AddScoped<GridStateView<RCAContact>>(); // Register for a speci
 builder.Services.AddScoped<GridStateView<ReimbursementEntity>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<Invoice>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<UNCRexImportView>>(); // Register for a specific data item type
+builder.Services.AddScoped<GridStateView<UNCRandolphImportView>>(); // Register for a specific data item type
 
 builder.Services.AddBlazoredLocalStorage();
 

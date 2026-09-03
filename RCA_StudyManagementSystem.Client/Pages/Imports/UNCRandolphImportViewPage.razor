@@ -1,0 +1,233 @@
+﻿@attribute [Authorize]
+
+@page "/app/uncrandolphimports/view/{Token}"
+
+@using Microsoft.AspNetCore.Authorization
+@using RCA_StudyManagementSystem.Shared.Layout
+@using RCA_StudyManagementSystem.Client.Stores
+@using RCA_StudyManagementSystem.Shared.Domain
+@using MudBlazor
+
+@layout NullLayout
+
+@inject UNCRandolphPdfStore PdfStore
+
+<PageTitle>UNC Randolph Import</PageTitle>
+
+@if (_loading)
+{
+    <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
+        <MudProgressCircular Indeterminate="true"
+                             Color="Color.Primary" />
+    </MudContainer>
+}
+else if (Model is null)
+{
+    <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
+        <MudAlert Severity="Severity.Error">
+            The requested UNC Randolph record could not be found.
+        </MudAlert>
+    </MudContainer>
+}
+else
+{
+    <main class="pdf-page">
+
+        <header class="pdf-header">
+            <div>
+                <MudText Typo="Typo.h4">
+                    UNC Randolph
+                </MudText>
+
+                <MudText Typo="Typo.subtitle1">
+                    Study: @Model.Study
+                </MudText>
+            </div>
+
+            <div class="header-information">
+                <div>
+                    <strong>Facility:</strong>
+                    @Display(Model.FACILITY)
+                </div>
+
+                <div>
+                    <strong>MRN:</strong>
+                    @Display(Model.MRN)
+                </div>
+
+                <div>
+                    <strong>Specimen:</strong>
+                    @Display(Model.C_Specimen_Specnum_Formatted)
+                </div>
+            </div>
+        </header>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Patient Information
+            </MudText>
+
+            <div class="field-grid">
+
+                <DisplayField Label="MRN"
+                              Value="@Display(Model.MRN)" />
+
+                <DisplayField Label="Last Name"
+                              Value="@Display(Model.LAST_NAME)" />
+
+                <DisplayField Label="First Name"
+                              Value="@Display(Model.FIRST_NAME)" />
+
+                <DisplayField Label="Middle Initial"
+                              Value="@Display(Model.MIDDLE_INITIAL)" />
+
+                <DisplayField Label="Date of Birth"
+                              Value="@FormatDate(Model.BIRTH_DATE)" />
+
+                <DisplayField Label="Sex"
+                              Value="@Display(Model.SEX)" />
+
+                <DisplayField Label="Race"
+                              Value="@Display(Model.RACE)" />
+
+                <DisplayField Label="Marital Status"
+                              Value="@Display(Model.MARITAL_STATUS)" />
+
+                <DisplayField Label="Language"
+                              Value="@Display(Model.Language)" />
+
+                <DisplayField Label="SSN"
+                              Value="@Display(Model.SSN)" />
+
+                <DisplayField Label="Home Phone"
+                              Value="@Display(Model.HOME_PHONE)" />
+
+                <DisplayField Label="Address"
+                              Value="@Display(Model.ADDRESS)"
+                              FullWidth="true" />
+
+                <DisplayField Label="City"
+                              Value="@Display(Model.CITY)" />
+
+                <DisplayField Label="State"
+                              Value="@Display(Model.STATE)" />
+
+                <DisplayField Label="ZIP Code"
+                              Value="@Display(Model.ZIP)" />
+
+                <DisplayField Label="Discharge Disposition"
+                              Value="@Display(Model.DISCHARGE_DISPOSITION)"
+                              FullWidth="true" />
+
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Case and Specimen Information
+            </MudText>
+
+            <div class="field-grid">
+
+                <DisplayField Label="Facility"
+                              Value="@Display(Model.FACILITY)" />
+
+                <DisplayField Label="Specimen Number"
+                              Value="@Display(Model.C_Specimen_Specnum_Formatted)" />
+
+                <DisplayField Label="Accession Date"
+                              Value="@FormatDate(Model.C_Specimen_Accession_Date)" />
+
+                <DisplayField Label="Accession Time"
+                              Value="@Display(Model.C_Specimen_Accession_Time)" />
+
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Authorizing Physician
+            </MudText>
+
+            <div class="field-grid">
+
+                <DisplayField Label="Last Name"
+                              Value="@Display(Model.AUTHRZING_Last_Name)" />
+
+                <DisplayField Label="First Name"
+                              Value="@Display(Model.AUTHRZING_First_Name)" />
+
+                <DisplayField Label="Middle Name"
+                              Value="@Display(Model.AUTHRZING_Middle_Name)" />
+
+                <DisplayField Label="Street"
+                              Value="@Display(Model.C_D_Person_Phy_Street)"
+                              FullWidth="true" />
+
+                <DisplayField Label="City"
+                              Value="@Display(Model.C_D_Person_Phy_City)" />
+
+                <DisplayField Label="State"
+                              Value="@Display(Model.C_D_Person_Phy_State)" />
+
+                <DisplayField Label="ZIP Code"
+                              Value="@Display(Model.C_D_Person_Phy_Zip)" />
+
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Pathology Information
+            </MudText>
+
+            <div class="field-grid">
+
+                <DisplayField Label="Clinical History"
+                              Value="@Display(Model.Clinical_History)"
+                              FullWidth="true" />
+
+                <DisplayField Label="Gross Description"
+                              Value="@Display(Model.Gross_Description)"
+                              FullWidth="true" />
+
+                <DisplayField Label="Final Microscopic Diagnosis"
+                              Value="@Display(Model.Final_Microscopic_Diagnosis)"
+                              FullWidth="true" />
+
+                <DisplayField Label="Comments"
+                              Value="@Display(Model.Comments)"
+                              FullWidth="true" />
+
+                <DisplayField Label="Pathologist"
+                              Value="@Display(Model.Pathologist)" />
+
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Addendum
+            </MudText>
+
+            <div class="field-grid">
+
+                <DisplayField Label="Addendum"
+                              Value="@Display(Model.Addendum)"
+                              FullWidth="true" />
+
+            </div>
+        </section>
+
+        <footer class="report-footer">
+            <div>
+                UNC Randolph Pathology Report
+            </div>
+
+            <div>
+                MRN: @Display(Model.MRN)
+            </div>
+        </footer>
+
+    </main>
+}
