@@ -13,7 +13,7 @@
 
 @inject UNCRexPdfStore PdfStore
 
-<PageTitle>UNC Rex Import</PageTitle>
+<PageTitle>UNC Affiliates Import</PageTitle>
 
 @if (Model is null)
 {
@@ -25,7 +25,7 @@
         else
         {
             <MudAlert Severity="Severity.Error">
-                The requested UNC Rex record could not be found.
+                The requested UNC record could not be found.
             </MudAlert>
         }
     </MudContainer>
@@ -35,7 +35,7 @@ else
     <div class="pdf-page">
         <div class="pdf-header">
             <MudText Typo="Typo.h4">
-                UNC Rex Import
+                UNC @Model.HospitalName
             </MudText>
 
             <MudText Typo="Typo.subtitle1">

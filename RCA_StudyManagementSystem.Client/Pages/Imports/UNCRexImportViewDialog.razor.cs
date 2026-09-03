@@ -100,7 +100,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
             }
 
             // Replace this with your database or API call.
-            StatusMessage = "The UNC Rex import was submitted successfully.";
+            StatusMessage = "The UNC import was submitted successfully.";
         }
 
         private void ClearForm()

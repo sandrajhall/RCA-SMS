@@ -9,13 +9,13 @@
 @using RCA_StudyManagementSystem.Shared.ImportViews
 @using RCA_StudyManagementSystem.Client.Stores
 @using MudBlazor
-@using System.Linq
 
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 @inject GridStateView<UNCRexImportView> ImportGridStateView
 @inject ILocalStorageService LocalStorage
 @inject UNCRexPdfStore PdfStore
+@inject ISnackbar Snackbar
 
 @rendermode InteractiveAuto
 
@@ -28,7 +28,21 @@
              CurrentPageChanged=@((currentPage) => OnCurrentPageChanged(currentPage))
              FilterMode="DataGridFilterMode.ColumnFilterRow" AllowUnsorted="false" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">UNC Rex Imports</MudText>
+        <MudText Typo="Typo.h6">UNC Affiliates Imports</MudText>
+        <div style="width: 200px;" class="ml-6">
+            <MudSelect T="string"
+                       Value="SelectedHospital"
+                       Placeholder="Select Hospital"
+                       Label=""
+                       Dense="true"
+                       ValueChanged="NameChanged">
+                <MudSelectItem T="string" Value="@("Caldwell")">Caldwell</MudSelectItem>
+                <MudSelectItem T="string" Value="@("Johnston")">Johnston</MudSelectItem>
+                <MudSelectItem T="string" Value="@("Onslow")">Onslow</MudSelectItem>
+                <MudSelectItem T="string" Value="@("Rex")">Rex</MudSelectItem>
+                <MudSelectItem T="string" Value="@("Rockingham")">Rockingham</MudSelectItem>
+            </MudSelect>
+        </div>
         <MudSpacer />
         <InputFile id="fileInput" OnChange="Import" hidden />
 

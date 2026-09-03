@@ -37,6 +37,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
 
         private const string GridStateStorageKey = "ImportDataGridState"; // Key for local storage
 
+        public string SelectedHospital { get; set; } = string.Empty;
 
         private string? _searchString;
         private List<string> _events = new();
@@ -196,6 +197,15 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
 
         private async Task Import(InputFileChangeEventArgs e)
         {
+
+            if (string.IsNullOrWhiteSpace(SelectedHospital))
+            {
+                Snackbar.Add(
+                    "Please select a hospital.",
+                    Severity.Error,
+                    options => options.RequireInteraction = true);
+                return;
+            }
             Encoding.RegisterProvider(
                 System.Text.CodePagesEncodingProvider.Instance);
 
@@ -233,6 +243,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
                     var record = new UNCRexImportView
                     {
                         Study = studyName,
+                        HospitalName = SelectedHospital,
 
                         PAT_MRN_ID = GetString(row, "PAT_MRN_ID"),
                         PAT_ID = GetString(row, "PAT_ID"),
@@ -361,7 +372,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
 
             var options = _options;
 
-            return await DialogService.ShowAsync<UNCRexImportViewDialog>("UNCRex Import View", parameters, options);
+            return await DialogService.ShowAsync<UNCRexImportViewDialog>($"{SelectedHospital} Import View", parameters, options);
 
         }
 
@@ -458,6 +469,11 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
             }
 
             return null;
+        }
+
+        private void NameChanged(string value)
+        {
+            SelectedHospital = value;
         }
 
         public async void Dispose()

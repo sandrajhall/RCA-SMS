@@ -60,5 +60,6 @@ namespace RCA_StudyManagementSystem.Shared.ImportViews
         public string? Gross_Description { get; set; }
 
         public string? Study { get; set; }
+        public string? HospitalName { get; set; } = null;
     }
 }
