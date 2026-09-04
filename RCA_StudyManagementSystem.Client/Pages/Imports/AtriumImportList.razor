@@ -1,0 +1,81 @@
+﻿@attribute [Authorize]
+@page "/app/atriumimport/list"
+
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Authorization
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.ViewModels
+@using RCA_StudyManagementSystem.Shared.ImportViews
+@using RCA_StudyManagementSystem.Client.Stores
+@using MudBlazor
+
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject GridStateView<AtriumImportView> ImportGridStateView
+@inject ILocalStorageService LocalStorage
+@inject AtriumPdfStore PdfStore
+@inject ISnackbar Snackbar
+
+@rendermode InteractiveAuto
+
+
+<MudDataGrid T="AtriumImportView" @ref="importGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
+             QuickFilter="@_quickFilter" Dense
+             FilterDefinitions="@ImportGridStateView.FilterDefinitions"
+             SortDefinitions="@ImportGridStateView.SortDefinitions"
+             CurrentPage="@ImportGridStateView.CurrentPage"
+             CurrentPageChanged=@((currentPage) => OnCurrentPageChanged(currentPage))
+             FilterMode="DataGridFilterMode.ColumnFilterRow" AllowUnsorted="false" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Atrium Health Imports</MudText>
+        <div style="width: 200px;" class="ml-6">
+            <MudSelect T="string"
+                       Value="SelectedHospital"
+                       Placeholder="Select Hospital"
+                       Label=""
+                       Dense="true"
+                       ValueChanged="NameChanged">
+                <MudSelectItem T="string" Value="@("AtriumHealth")">Atrium Health</MudSelectItem>
+                <MudSelectItem T="string" Value="@("AHWFB")">AHWFB</MudSelectItem>
+                <MudSelectItem T="string" Value="@("AHWFBHighPoint")">AHWFB High Point</MudSelectItem>
+                <MudSelectItem T="string" Value="@("AHWFBLexington")">AHWFB Lexington</MudSelectItem>
+            </MudSelect>
+        </div>
+        <MudSpacer />
+        <InputFile id="fileInput" OnChange="Import" hidden />
+
+        <label for="fileInput"
+               class="mud-button-root mud-button mud-button-filled mud-button-filled-primary mud-button-filled-size-small mud-ripple ml-2"
+               style="display: inline-flex; align-items: center; cursor: pointer;">
+            Upload File
+        </label> @*        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
+                                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable="true"></MudTextField> *@
+    </ToolBarContent>
+    <ColGroup>
+    </ColGroup>
+    <Columns>
+
+        <PropertyColumn Property="x => x.MRN" Title="ID" Filterable="false" />
+        <PropertyColumn Property="x => x.Last_Name" Title="Last Name" Filterable="false" />
+        <PropertyColumn Property="x => x.First_Name" Title="First Name" Filterable="false" />
+        <PropertyColumn Property="x => x.City" Title="City" Filterable="false" />
+        <PropertyColumn Property="x => x.Study" Title="Study" Filterable="false" />
+
+        <TemplateColumn HeaderText="Actions">
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item, context.Item)) Variant="Variant.Text" Color="Color.Primary">View</MudIconButton>
+               @if (!string.IsNullOrWhiteSpace(context.Item.MRN) &&
+     PdfTokens.TryGetValue(context.Item.MRN, out var pdfToken))
+{
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.PictureAsPdf" Href="@($"/app/atriumimports/importpdf/{pdfToken}")" Target="_blank" Variant="Variant.Text" Color="Color.Primary">PDF</MudIconButton>
+}
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="AtriumImportView" />
+    </PagerContent>
+</MudDataGrid>
+@* <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"  OnClick="OnImport">Import Hospitals</MudButton>
+ *@

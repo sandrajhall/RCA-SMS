@@ -1,0 +1,217 @@
+﻿@attribute [Authorize]
+
+@page "/app/atriumimports/view/{Token}"
+
+@using Microsoft.AspNetCore.Authorization
+@using RCA_StudyManagementSystem.Shared.Layout
+@using RCA_StudyManagementSystem.Client.Stores
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.Domain
+@using MudBlazor
+
+@layout NullLayout
+
+@inject AtriumPdfStore PdfStore
+
+<PageTitle>Atrium Health Import</PageTitle>
+
+@if (Model is null)
+{
+    <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
+        @if (_loading)
+        {
+            <MudProgressCircular Indeterminate="true" />
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Error">
+                The requested Atrium Health record could not be found.
+            </MudAlert>
+        }
+    </MudContainer>
+}
+else
+{
+    <main class="pdf-page">
+
+        <header class="pdf-header">
+            <div>
+                <MudText Typo="Typo.h4">
+                    Atrium Health Pathology Report
+                </MudText>
+
+                <MudText Typo="Typo.subtitle1">
+                    @Display(Model.Facility_Name)
+                </MudText>
+            </div>
+
+            <div class="header-information">
+                <div>
+                    <strong>MRN:</strong>
+                    @Display(Model.MRN)
+                </div>
+
+                <div>
+                    <strong>Requisition:</strong>
+                    @Display(Model.Requisition_ID)
+                </div>
+
+                <div>
+                    <strong>Report:</strong>
+                    @Display(Model.Path_Report_Number)
+                </div>
+            </div>
+        </header>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Patient Information
+            </MudText>
+
+            <div class="field-grid">
+                <DisplayField Label="Facility"
+                              Value="@Display(Model.Facility_Name)" />
+
+                <DisplayField Label="MRN"
+                              Value="@Display(Model.MRN)" />
+
+                <DisplayField Label="Requisition ID"
+                              Value="@Display(Model.Requisition_ID)" />
+
+                <DisplayField Label="Last Name"
+                              Value="@Display(Model.Last_Name)" />
+
+                <DisplayField Label="First Name"
+                              Value="@Display(Model.First_Name)" />
+
+                <DisplayField Label="Middle Name"
+                              Value="@Display(Model.Middle_Name)" />
+
+                <DisplayField Label="Date of Birth"
+                              Value="@FormatDate(Model.DOB)" />
+
+                <DisplayField Label="SSN"
+                              Value="@Display(Model.SSN)" />
+
+                <DisplayField Label="Gender"
+                              Value="@Display(Model.Gender)" />
+
+                <DisplayField Label="Race"
+                              Value="@Display(Model.PatientRace)" />
+
+                <DisplayField Label="Ethnicity"
+                              Value="@Display(Model.Ethnicity)" />
+
+                <DisplayField Label="Language"
+                              Value="@Display(Model.Language)" />
+
+                <DisplayField Label="Marital Status"
+                              Value="@Display(Model.MaritalStatus)" />
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Contact Information
+            </MudText>
+
+            <div class="field-grid">
+                <DisplayField Label="Address Line 1"
+                              Value="@Display(Model.Address_Line1)"
+                              FullWidth="true" />
+
+                <DisplayField Label="Address Line 2"
+                              Value="@Display(Model.Address_Line2)"
+                              FullWidth="true" />
+
+                <DisplayField Label="City"
+                              Value="@Display(Model.City)" />
+
+                <DisplayField Label="State"
+                              Value="@Display(Model.State)" />
+
+                <DisplayField Label="ZIP"
+                              Value="@Display(Model.Zip)" />
+
+                <DisplayField Label="Home Phone"
+                              Value="@Display(Model.Phone_Number_Home)" />
+
+                <DisplayField Label="Mobile Phone"
+                              Value="@Display(Model.Phone_Number_Mobile)" />
+
+                <DisplayField Label="Email"
+                              Value="@Display(Model.Email)"
+                              FullWidth="true" />
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Case and Specimen Information
+            </MudText>
+
+            <div class="field-grid">
+                <DisplayField Label="Specimen Source"
+                              Value="@Display(Model.SpecimenSource)" />
+
+                <DisplayField Label="Pathology Report Number"
+                              Value="@Display(Model.Path_Report_Number)" />
+
+                <DisplayField Label="Date Collected"
+                              Value="@FormatDate(Model.Date_Collected)" />
+
+                <DisplayField Label="Lab Name"
+                              Value="@Display(Model.Lab_Name)" />
+
+                <DisplayField Label="Authorizing Provider"
+                              Value="@Display(Model.Authorizing_Provider)" />
+
+                <DisplayField Label="Pathologist"
+                              Value="@Display(Model.Pathologist)" />
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Diagnosis and Results
+            </MudText>
+
+            <div class="field-grid">
+                <DisplayField Label="Final Diagnosis"
+                              Value="@Display(Model.Final_Diagnosis)"
+                              FullWidth="true" />
+
+                <DisplayField Label="Diagnostic Comments"
+                              Value="@Display(Model.Dx_Comments)"
+                              FullWidth="true" />
+
+                <DisplayField Label="Clinical History"
+                              Value="@Display(Model.Clinical_History)"
+                              FullWidth="true" />
+
+                <DisplayField Label="Gross Description"
+                              Value="@Display(Model.Gross_Description)"
+                              FullWidth="true" />
+
+                <DisplayField Label="Synoptic Report"
+                              Value="@Display(Model.SynopticReport)"
+                              FullWidth="true" />
+
+                <DisplayField Label="Addendums"
+                              Value="@Display(Model.Addendums)"
+                              FullWidth="true" />
+            </div>
+        </section>
+
+        <footer class="report-footer">
+            <div>
+                Atrium Pathology Report
+            </div>
+
+            <div>
+                MRN: @Display(Model.MRN)
+            </div>
+        </footer>
+
+    </main>
+}

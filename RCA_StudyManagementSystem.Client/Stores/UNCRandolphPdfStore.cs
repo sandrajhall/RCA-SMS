@@ -15,8 +15,7 @@ namespace RCA_StudyManagementSystem.Client.Stores
 
         public string Store(UNCRandolphImportView record)
         {
-            var token = Convert.ToHexString(
-                RandomNumberGenerator.GetBytes(32));
+            var token = "UNCRandolph" + record.MRN;
 
             _cache.Set(
                 GetKey(token),

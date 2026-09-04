@@ -4,18 +4,18 @@ using System.Security.Cryptography;
 
 namespace RCA_StudyManagementSystem.Client.Stores
 {
-    public sealed class UNCRexPdfStore
+    public sealed class AtriumPdfStore
     {
         private readonly IMemoryCache _cache;
 
-        public UNCRexPdfStore(IMemoryCache cache)
+        public AtriumPdfStore(IMemoryCache cache)
         {
             _cache = cache;
         }
 
-        public string Store(UNCRexImportView record)
+        public string Store(AtriumImportView record)
         {
-            var token = "UNC" + record.HospitalName + record.PAT_MRN_ID;
+            var token = record.HospitalName + record.MRN;
 
             _cache.Set(
                 GetKey(token),
@@ -25,14 +25,14 @@ namespace RCA_StudyManagementSystem.Client.Stores
             return token;
         }
 
-        public UNCRexImportView? Get(string token)
+        public AtriumImportView ? Get(string token)
         {
-            return _cache.Get<UNCRexImportView>(GetKey(token));
+            return _cache.Get<AtriumImportView>(GetKey(token));
         }
 
         private static string GetKey(string token)
         {
-            return $"uncrex-pdf:{token}";
+            return $"atrium-pdf:{token}";
         }
     }
 }
