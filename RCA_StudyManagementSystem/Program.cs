@@ -188,6 +188,8 @@ builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<UNCRexPdfStore>();
 builder.Services.AddSingleton<UNCRandolphPdfStore>();
 builder.Services.AddSingleton<AtriumPdfStore>();
+builder.Services.AddSingleton<ConePdfStore>();
+
 
 
 builder.Services.AddScoped<GridStateView<Patient>>(); // Register for a specific data item type
@@ -201,6 +203,7 @@ builder.Services.AddScoped<GridStateView<Invoice>>(); // Register for a specific
 builder.Services.AddScoped<GridStateView<UNCRexImportView>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<UNCRandolphImportView>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<AtriumImportView>>(); // Register for a specific data item type
+builder.Services.AddScoped<GridStateView<ConeImportView>>(); // Register for a specific data item type
 
 builder.Services.AddBlazoredLocalStorage();
 

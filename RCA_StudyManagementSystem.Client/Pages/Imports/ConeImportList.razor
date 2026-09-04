@@ -1,5 +1,5 @@
 ﻿@attribute [Authorize]
-@page "/app/atriumimport/list"
+@page "/app/coneimport/list"
 
 @using Blazored.LocalStorage
 @using Microsoft.AspNetCore.Authorization
@@ -12,15 +12,15 @@
 
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
-@inject GridStateView<AtriumImportView> ImportGridStateView
+@inject GridStateView<ConeImportView> ImportGridStateView
 @inject ILocalStorageService LocalStorage
-@inject AtriumPdfStore PdfStore
+@inject ConePdfStore PdfStore
 @inject ISnackbar Snackbar
 
 @rendermode InteractiveAuto
 
 
-<MudDataGrid T="AtriumImportView" @ref="importGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
+<MudDataGrid T="ConeImportView" @ref="importGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
              QuickFilter="@_quickFilter" Dense
              FilterDefinitions="@ImportGridStateView.FilterDefinitions"
              SortDefinitions="@ImportGridStateView.SortDefinitions"
@@ -28,7 +28,7 @@
              CurrentPageChanged=@((currentPage) => OnCurrentPageChanged(currentPage))
              FilterMode="DataGridFilterMode.ColumnFilterRow" AllowUnsorted="false" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Atrium Health Imports</MudText>
+        <MudText Typo="Typo.h6">Cone Health Imports</MudText>
         <div style="width: 200px;" class="ml-6">
             <MudSelect T="string"
                        Value="SelectedHospital"
@@ -36,10 +36,9 @@
                        Label=""
                        Dense="true"
                        ValueChanged="NameChanged">
-                <MudSelectItem T="string" Value="@("AtriumHealth")">Atrium Health</MudSelectItem>
-                <MudSelectItem T="string" Value="@("AHWFB")">AH WFB</MudSelectItem>
-                <MudSelectItem T="string" Value="@("AHWFBHighPoint")">AH WFB High Point</MudSelectItem>
-                <MudSelectItem T="string" Value="@("AHWFBLexington")">AH WFB Lexington</MudSelectItem>
+                <MudSelectItem T="string" Value="@("ConeHealth")">Cone Health</MudSelectItem>
+                <MudSelectItem T="string" Value="@("CHAlamance")">CH Alamance</MudSelectItem>
+ 
             </MudSelect>
         </div>
         <MudSpacer />
@@ -57,9 +56,9 @@
     <Columns>
 
         <PropertyColumn Property="x => x.MRN" Title="ID" Filterable="false" />
-        <PropertyColumn Property="x => x.Last_Name" Title="Last Name" Filterable="false" />
-        <PropertyColumn Property="x => x.First_Name" Title="First Name" Filterable="false" />
-        <PropertyColumn Property="x => x.City" Title="City" Filterable="false" />
+        <PropertyColumn Property="x => x.LAST_NAME" Title="Last Name" Filterable="false" />
+        <PropertyColumn Property="x => x.FIRST_NAME" Title="First Name" Filterable="false" />
+        <PropertyColumn Property="x => x.CITY" Title="City" Filterable="false" />
         <PropertyColumn Property="x => x.Study" Title="Study" Filterable="false" />
 
         <TemplateColumn HeaderText="Actions">
@@ -68,13 +67,13 @@
                @if (!string.IsNullOrWhiteSpace(context.Item.MRN) &&
      PdfTokens.TryGetValue(context.Item.MRN, out var pdfToken))
 {
-                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.PictureAsPdf" Href="@($"/app/atriumimports/importpdf/{pdfToken}")" Target="_blank" Variant="Variant.Text" Color="Color.Primary">PDF</MudIconButton>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.PictureAsPdf" Href="@($"/app/coneimports/importpdf/{pdfToken}")" Target="_blank" Variant="Variant.Text" Color="Color.Primary">PDF</MudIconButton>
 }
             </CellTemplate>
         </TemplateColumn>
     </Columns>
     <PagerContent>
-        <MudDataGridPager T="AtriumImportView" />
+        <MudDataGridPager T="ConeImportView" />
     </PagerContent>
 </MudDataGrid>
 @* <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"  OnClick="OnImport">Import Hospitals</MudButton>

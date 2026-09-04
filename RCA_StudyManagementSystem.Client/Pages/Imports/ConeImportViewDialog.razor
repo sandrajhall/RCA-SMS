@@ -1,0 +1,326 @@
+﻿@using MudBlazor
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Pages.Cases
+@using RCA_StudyManagementSystem.Client.Interfaces
+
+@rendermode InteractiveAuto
+
+@inject IDialogService DialogService
+@inject IStudyData StudyData
+@inject IHospitalData HospitalData
+
+<MudDialog>
+    <DialogContent>
+
+        <MudPagination Color="Color.Primary" ShowFirstButton="true" ShowLastButton="true"
+                       Count="@totalPages"
+                       Selected="@currPage"
+                       SelectedChanged="OnPageChanged"
+                       Class="mt-4 d-flex justify-end" Style="position: fixed; top: 20px; right: 40px; z-index: 1500" />
+
+        <div style=" height:900px; ">
+
+            <PageTitle>@Model.HospitalName</PageTitle>
+
+            <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
+
+                <MudStack Row="true"
+                          Justify="Justify.SpaceBetween"
+                          AlignItems="AlignItems.Center"
+                          Class="mb-4">
+
+                    <MudText Typo="Typo.h5">
+                        @Model.HospitalName
+                    </MudText>
+
+            
+                    <MudText Typo="Typo.subtitle1">
+                        Study: @Display(Model.Study)
+                    </MudText>
+
+                </MudStack>
+
+                <MudPaper Class="pa-4">
+
+                    <MudText Typo="Typo.h6" Class="section-title">
+                        Patient Information
+                    </MudText>
+
+                    <MudGrid Spacing="2">
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="Facility"
+                                          Value="@Display(Model.FACILITY)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="MRN"
+                                          Value="@Display(Model.MRN)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="SSN"
+                                          Value="@Display(Model.SSN)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="Last Name"
+                                          Value="@Display(Model.LAST_NAME)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="First Name"
+                                          Value="@Display(Model.FIRST_NAME)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="Middle Initial"
+                                          Value="@Display(Model.MIDDLE_INITIAL)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudTextField Label="Address"
+                                          Value="@Display(Model.ADDRESS)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="3">
+                            <MudTextField Label="City"
+                                          Value="@Display(Model.CITY)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="1">
+                            <MudTextField Label="State"
+                                          Value="@Display(Model.STATE)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="2">
+                            <MudTextField Label="ZIP"
+                                          Value="@Display(Model.ZIP)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="Home Phone"
+                                          Value="@Display(Model.HOME_PHONE)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="Birth Date"
+                                          Value="@FormatDate(Model.BIRTH_DATE)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="Language"
+                                          Value="@Display(Model.Language)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="3">
+                            <MudTextField Label="Race"
+                                          Value="@Display(Model.RACE)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="3">
+                            <MudTextField Label="Sex"
+                                          Value="@Display(Model.SEX)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="3">
+                            <MudTextField Label="Marital Status"
+                                          Value="@Display(Model.MARITAL_STATUS)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="3">
+                            <MudTextField Label="Discharge Disposition"
+                                          Value="@Display(Model.DISCHARGE_DISPOSITION)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                    </MudGrid>
+
+                    <MudDivider Class="my-5" />
+
+                    <MudText Typo="Typo.h6" Class="section-title">
+                        Specimen Information
+                    </MudText>
+
+                    <MudGrid Spacing="2">
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="Specimen Number"
+                                          Value="@Display(Model.C_Specimen_Specnum_Formatted)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="Accession Date"
+                                          Value="@FormatDate(Model.C_Specimen_Accession_Date)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="Accession Time"
+                                          Value="@Display(Model.C_Specimen_Accession_Time)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                    </MudGrid>
+
+                    <MudDivider Class="my-5" />
+
+                    <MudText Typo="Typo.h6" Class="section-title">
+                        Authorizing Physician
+                    </MudText>
+
+                    <MudGrid Spacing="2">
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="Last Name"
+                                          Value="@Display(Model.AUTHRZING_Last_Name)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="First Name"
+                                          Value="@Display(Model.AUTHRZING_First_Name)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudTextField Label="Middle Name"
+                                          Value="@Display(Model.AUTHRZING_Middle_Name)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudTextField Label="Street"
+                                          Value="@Display(Model.C_D_Person_Phy_Street)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="2">
+                            <MudTextField Label="City"
+                                          Value="@Display(Model.C_D_Person_Phy_City)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="2">
+                            <MudTextField Label="State"
+                                          Value="@Display(Model.C_D_Person_Phy_State)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="2">
+                            <MudTextField Label="ZIP"
+                                          Value="@Display(Model.C_D_Person_Phy_Zip)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                    </MudGrid>
+
+                    <MudDivider Class="my-5" />
+
+                    <MudText Typo="Typo.h6" Class="section-title">
+                        Pathology Information
+                    </MudText>
+
+                    <MudGrid Spacing="2">
+
+                        <MudItem xs="12">
+                            <MudTextField Label="Clinical History"
+                                          Value="@Display(Model.Clinical_History)"
+                                          ReadOnly="true"
+                                          Lines="6"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="Gross Description"
+                                          Value="@Display(Model.Gross_Description)"
+                                          ReadOnly="true"
+                                          Lines="8"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="Final Microscopic Diagnosis"
+                                          Value="@Display(Model.Final_Microscopic_Diagnosis)"
+                                          ReadOnly="true"
+                                          Lines="8"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="Addendum"
+                                          Value="@Display(Model.Addendum)"
+                                          ReadOnly="true"
+                                          Lines="5"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="Comments"
+                                          Value="@Display(Model.Comments)"
+                                          ReadOnly="true"
+                                          Lines="5"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudTextField Label="Pathologist"
+                                          Value="@Display(Model.Pathologist)"
+                                          ReadOnly="true"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                    </MudGrid>
+
+                </MudPaper>
+
+            </MudContainer>
+        </div>
+    </DialogContent>
+
+</MudDialog>
