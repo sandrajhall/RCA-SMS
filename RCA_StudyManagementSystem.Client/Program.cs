@@ -86,6 +86,7 @@ builder.Services.AddScoped<GridStateView<UNCAffiliatesImportView>>(); // Registe
 builder.Services.AddScoped<GridStateView<UNCRandolphImportView>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<AtriumImportView>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<ConeImportView>>(); // Register for a specific data item type
+builder.Services.AddScoped<GridStateView<DukeImportView>>(); // Register for a specific data item type
 
 
 builder.Services.AddBlazoredLocalStorage();

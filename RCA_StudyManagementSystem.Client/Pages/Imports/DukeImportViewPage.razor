@@ -1,0 +1,201 @@
+﻿@attribute [Authorize]
+
+@page "/app/dukeimports/view/{Token}"
+
+@using Microsoft.AspNetCore.Authorization
+@using RCA_StudyManagementSystem.Shared.Layout
+@using RCA_StudyManagementSystem.Client.Stores
+@using RCA_StudyManagementSystem.Shared.Domain
+@using MudBlazor
+
+@layout NullLayout
+
+@inject DukePdfStore PdfStore
+
+<PageTitle>Duke Import</PageTitle>
+
+@if (_loading)
+{
+    <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
+        <MudProgressCircular Indeterminate="true"
+        Color="Color.Primary" />
+    </MudContainer>
+}
+else if (Model is null)
+{
+    <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
+        <MudAlert Severity="Severity.Error">
+            The requested Duke record could not be found.
+        </MudAlert>
+    </MudContainer>
+}
+else
+{
+    <main class="pdf-page">
+
+        <header class="pdf-header">
+            <div>
+                <MudText Typo="Typo.h4">
+                    Duke Pathology Report
+                </MudText>
+
+                <MudText Typo="Typo.subtitle1">
+                    Study:
+                    @Display(Model.Study)
+                </MudText>
+            </div>
+
+            <div class="header-information">
+                <div>
+                    <strong>MRN:</strong>
+                    @Display(Model.MedicalRecordNumber)
+                </div>
+
+                <div>
+                    <strong>Path Report:</strong>
+                    @Display(Model.PathReportNumberId)
+                </div>
+
+                <div>
+                    <strong>Collected:</strong>
+                    @FormatDate(Model.PathReportCollectedDate)
+                </div>
+            </div>
+        </header>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Patient Information
+            </MudText>
+
+            <div class="field-grid">
+
+                <DisplayField Label="Medical Record Number"
+                Value="@Display(Model.MedicalRecordNumber)" />
+
+                <DisplayField Label="Last Name"
+                Value="@Display(Model.LastName)" />
+
+                <DisplayField Label="First Name"
+                Value="@Display(Model.FirstName)" />
+
+                <DisplayField Label="Middle Name"
+                Value="@Display(Model.MiddleName)" />
+
+                <DisplayField Label="Date of Birth"
+                Value="@FormatDate(Model.DateOfBirth)" />
+
+                <DisplayField Label="Sex"
+                Value="@Display(Model.Sex)" />
+
+                <DisplayField Label="Social Security Number"
+                Value="@Display(Model.SocialSecurityNumber)" />
+
+                <DisplayField Label="Race"
+                Value="@Display(Model.Race1)" />
+
+                <DisplayField Label="Marital Status at Diagnosis"
+                Value="@Display(Model.MaritalStatusAtDiagnosis)" />
+
+                <DisplayField Label="Telephone"
+                Value="@Display(Model.Telephone)" />
+
+                <DisplayField Label="Address"
+                Value="@Display(Model.CurrentAddress)"
+                FullWidth="true" />
+
+                <DisplayField Label="City"
+                Value="@Display(Model.CurrentCity)" />
+
+                <DisplayField Label="State"
+                Value="@Display(Model.DiagnosisState)" />
+
+                <DisplayField Label="Postal Code"
+                Value="@Display(Model.CurrentPostalCode)" />
+
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Pathology Information
+            </MudText>
+
+            <div class="field-grid">
+
+                <DisplayField Label="Path Report Number / ID"
+                Value="@Display(Model.PathReportNumberId)" />
+
+                <DisplayField Label="Collected Date"
+                Value="@FormatDate(Model.PathReportCollectedDate)" />
+
+                <DisplayField Label="Ordering Location"
+                Value="@Display(Model.PathReportOrderingLocation)" />
+
+                <DisplayField Label="Authorizing Provider"
+                Value="@Display(Model.PathReportAuthorizingProvider)" />
+
+                <DisplayField Label="Pathologist"
+                Value="@Display(Model.PathReportPathologist)" />
+
+                <DisplayField Label="Final Diagnosis"
+                Value="@Display(Model.PathReportFinalDiagnosis)"
+                FullWidth="true" />
+
+                <DisplayField Label="Comment"
+                Value="@Display(Model.PathReportComment)"
+                FullWidth="true" />
+
+                <DisplayField Label="Clinical History"
+                Value="@Display(Model.PathReportClinicalHistory)"
+                FullWidth="true" />
+
+                <DisplayField Label="Microscopic Description"
+                Value="@Display(Model.PathReportMicroscopicDescription)"
+                FullWidth="true" />
+
+            </div>
+        </section>
+
+        <section class="pdf-section">
+            <MudText Typo="Typo.h6" Class="section-title">
+                Addenda
+            </MudText>
+
+            <div class="field-grid">
+
+                <DisplayField Label="Addendum 1"
+                Value="@Display(Model.Addendum1)"
+                FullWidth="true" />
+
+                <DisplayField Label="Addendum 2"
+                Value="@Display(Model.Addendum2)"
+                FullWidth="true" />
+
+                <DisplayField Label="Addendum 3"
+                Value="@Display(Model.Addendum3)"
+                FullWidth="true" />
+
+                <DisplayField Label="Addendum 4"
+                Value="@Display(Model.Addendum4)"
+                FullWidth="true" />
+
+                <DisplayField Label="Addendum 5"
+                Value="@Display(Model.Addendum5)"
+                FullWidth="true" />
+
+            </div>
+        </section>
+
+        <footer class="report-footer">
+            <div>
+                Duke Pathology Report
+            </div>
+
+            <div>
+                MRN: @Display(Model.MedicalRecordNumber)
+            </div>
+        </footer>
+
+    </main>
+}

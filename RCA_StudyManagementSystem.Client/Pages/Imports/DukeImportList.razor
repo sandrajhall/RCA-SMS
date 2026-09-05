@@ -1,0 +1,69 @@
+﻿@attribute [Authorize]
+@page "/app/dukeimport/list"
+
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Authorization
+@using RCA_StudyManagementSystem.Shared.Domain
+@using RCA_StudyManagementSystem.Client.Services
+@using RCA_StudyManagementSystem.Shared.ViewModels
+@using RCA_StudyManagementSystem.Shared.ImportViews
+@using RCA_StudyManagementSystem.Client.Stores
+@using MudBlazor
+
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject GridStateView<DukeImportView> ImportGridStateView
+@inject ILocalStorageService LocalStorage
+@inject DukePdfStore PdfStore
+@inject ISnackbar Snackbar
+
+@rendermode InteractiveAuto
+
+
+<MudDataGrid T="DukeImportView" @ref="importGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
+             QuickFilter="@_quickFilter" Dense
+             FilterDefinitions="@ImportGridStateView.FilterDefinitions"
+             SortDefinitions="@ImportGridStateView.SortDefinitions"
+             CurrentPage="@ImportGridStateView.CurrentPage"
+             CurrentPageChanged=@((currentPage) => OnCurrentPageChanged(currentPage))
+             FilterMode="DataGridFilterMode.ColumnFilterRow" AllowUnsorted="false" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Duke Imports</MudText>
+        
+        <MudSpacer />
+        <InputFile id="fileInput" OnChange="Import" hidden />
+
+        <label for="fileInput"
+               class="mud-button-root mud-button mud-button-filled mud-button-filled-primary mud-button-filled-size-small mud-ripple ml-2"
+               style="display: inline-flex; align-items: center; cursor: pointer;">
+            Upload File
+        </label> @*        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" TextUpdateSuppression="false"
+                                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable="true"></MudTextField> *@
+    </ToolBarContent>
+    <ColGroup>
+    </ColGroup>
+    <Columns>
+
+        <PropertyColumn Property="x => x.MedicalRecordNumber" Title="ID" Filterable="false" />
+        <PropertyColumn Property="x => x.LastName" Title="Last Name" Filterable="false" />
+        <PropertyColumn Property="x => x.FirstName" Title="First Name" Filterable="false" />
+        <PropertyColumn Property="x => x.CurrentCity" Title="City" Filterable="false" />
+        <PropertyColumn Property="x => x.Study" Title="Study" Filterable="false" />
+
+        <TemplateColumn HeaderText="Actions">
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.ContactPage" OnClick=@(() => ViewItem(context.Item, context.Item)) Variant="Variant.Text" Color="Color.Primary">View</MudIconButton>
+               @if (!string.IsNullOrWhiteSpace(context.Item.MedicalRecordNumber) &&
+     PdfTokens.TryGetValue(context.Item.MedicalRecordNumber, out var pdfToken))
+{
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.PictureAsPdf" Href="@($"/app/dukeimports/importpdf/{pdfToken}")" Target="_blank" Variant="Variant.Text" Color="Color.Primary">PDF</MudIconButton>
+}
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="DukeImportView" />
+    </PagerContent>
+</MudDataGrid>
+@* <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"  OnClick="OnImport">Import Hospitals</MudButton>
+ *@
