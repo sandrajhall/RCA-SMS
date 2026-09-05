@@ -1,5 +1,5 @@
 ﻿@using RCA_StudyManagementSystem.Shared.Layout
-@page "/app/uncreximports/importpdf/{Token}"
+@page "/app/uncaffiliatesimports/importpdf/{Token}"
 
 @layout NullLayout
 <style>
@@ -28,7 +28,7 @@
 </style>
 
 <div class="pdf-frame-wrapper">
-    <iframe src="@($"/app/uncreximports/view/{Uri.EscapeDataString(Token)}")"
+    <iframe src="@($"/app/uncaffiliatesimports/view/{Uri.EscapeDataString(Token)}")"
             class="pdf-frame"
             title="UNC Affiliates Import PDF View">
     </iframe>

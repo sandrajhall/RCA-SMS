@@ -185,7 +185,7 @@ builder.Services.AddScoped<GenerateCaseNumber>();
 builder.Services.AddScoped<GenerateBatchNumber>();
 builder.Services.AddScoped<UserContext>();
 builder.Services.AddMemoryCache();
-builder.Services.AddSingleton<UNCRexPdfStore>();
+builder.Services.AddSingleton<UNCAffiliatesPdfStore>();
 builder.Services.AddSingleton<UNCRandolphPdfStore>();
 builder.Services.AddSingleton<AtriumPdfStore>();
 builder.Services.AddSingleton<ConePdfStore>();
@@ -200,7 +200,7 @@ builder.Services.AddScoped<GridStateView<DoNotContact>>(); // Register for a spe
 builder.Services.AddScoped<GridStateView<RCAContact>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<ReimbursementEntity>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<Invoice>>(); // Register for a specific data item type
-builder.Services.AddScoped<GridStateView<UNCRexImportView>>(); // Register for a specific data item type
+builder.Services.AddScoped<GridStateView<UNCAffiliatesImportView>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<UNCRandolphImportView>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<AtriumImportView>>(); // Register for a specific data item type
 builder.Services.AddScoped<GridStateView<ConeImportView>>(); // Register for a specific data item type

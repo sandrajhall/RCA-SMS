@@ -10,7 +10,7 @@ using RCA_StudyManagementSystem.Client.Services;
 
 namespace RCA_StudyManagementSystem.Client.Pages.Imports
 {
-    public partial class UNCRexImportViewDialog : ComponentBase
+    public partial class UNCAffiliatesImportViewDialog : ComponentBase
     {
         [CascadingParameter]
         private IMudDialogInstance MudDialog { get; set; }
@@ -18,14 +18,14 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
         private void Cancel() => MudDialog.Cancel();
 
         [Parameter]
-        public UNCRexImportView Model { get; set; } = new UNCRexImportView();
+        public UNCAffiliatesImportView Model { get; set; } = new UNCAffiliatesImportView();
         private MudForm? _form;
 
         private string? StatusMessage { get; set; }
 
 
         [Parameter]
-        public List<UNCRexImportView> CarouselRecords { get; set; } = new List<UNCRexImportView>(); // Receives the filtered items
+        public List<UNCAffiliatesImportView> CarouselRecords { get; set; } = new List<UNCAffiliatesImportView>(); // Receives the filtered items
         [Parameter]
         public int InitialSelectedIndex { get; set; }
 
@@ -44,7 +44,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
         private int Index = 0;
 
 
-        private List<UNCRexImportView> displayedRecords = new List<UNCRexImportView>();
+        private List<UNCAffiliatesImportView> displayedRecords = new List<UNCAffiliatesImportView>();
         private int currPage = 1; // Current page number
         private int pageSize = 1; // Number of records per page
         private int totalPages => (int)Math.Ceiling((double)CarouselRecords.Count / pageSize);
@@ -63,7 +63,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
         {
             int skip = (currPage -1) * pageSize;
             displayedRecords = CarouselRecords.Skip(skip).Take(pageSize).ToList();
-            Model = displayedRecords.FirstOrDefault() ?? new UNCRexImportView();
+            Model = displayedRecords.FirstOrDefault() ?? new UNCAffiliatesImportView();
 
 
 

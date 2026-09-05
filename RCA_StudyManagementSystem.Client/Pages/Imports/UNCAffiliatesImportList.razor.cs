@@ -17,18 +17,18 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RCA_StudyManagementSystem.Client.Pages.Imports
 {
-    public partial class UNCRexImportList : Microsoft.AspNetCore.Components.ComponentBase
+    public partial class UNCAffiliatesImportList : Microsoft.AspNetCore.Components.ComponentBase
     {
         private readonly DialogOptions _options = new() { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
         private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-        MudDataGrid<UNCRexImportView>? importGrid { get; set; }
+        MudDataGrid<UNCAffiliatesImportView>? importGrid { get; set; }
 
         public CancellationToken CancellationToken { get; set; } = new CancellationToken();
 
-        public IEnumerable<UNCRexImportView>? UNCRexImports { get; set; } = new List<UNCRexImportView>();
+        public IEnumerable<UNCAffiliatesImportView>? UNCRexImports { get; set; } = new List<UNCAffiliatesImportView>();
 
-        private IEnumerable<UNCRexImportView>? _displayItems { get; set; } = new List<UNCRexImportView>();
+        private IEnumerable<UNCAffiliatesImportView>? _displayItems { get; set; } = new List<UNCAffiliatesImportView>();
 
         private int Index = 0;
 
@@ -47,7 +47,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
 
 
         // quick filter - filter globally across multiple columns with the same input
-        private Func<UNCRexImportView, bool> _quickFilter => x =>
+        private Func<UNCAffiliatesImportView, bool> _quickFilter => x =>
         {
             if (string.IsNullOrWhiteSpace(_searchString))
                 return true;
@@ -69,7 +69,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
 
             Console.WriteLine("OnInitializedAsync method called!");
 
-            UNCRexImports = new List<UNCRexImportView>();
+            UNCRexImports = new List<UNCAffiliatesImportView>();
 
             _displayItems = UNCRexImports;
 
@@ -79,7 +79,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
 
         private async Task LoadGrid()
         {
-            _displayItems = new List<UNCRexImportView>();
+            _displayItems = new List<UNCAffiliatesImportView>();
 
             _displayItems = UNCRexImports.ToList();
 
@@ -127,7 +127,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
 
 
                     var newSortDefs = storedStateDto.Sorts
-                        .ToDictionary(dto => dto.SortBy, dto => new SortDefinition<UNCRexImportView>(
+                        .ToDictionary(dto => dto.SortBy, dto => new SortDefinition<UNCAffiliatesImportView>(
                             dto.SortBy,
                             dto.Descending,
                             0,
@@ -229,7 +229,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
                 }
             });
 
-            var importedRecords = new List<UNCRexImportView>();
+            var importedRecords = new List<UNCAffiliatesImportView>();
 
             foreach (DataTable table in result.Tables)
             {
@@ -240,7 +240,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
                     if (IsBlankRow(row))
                         continue;
 
-                    var record = new UNCRexImportView
+                    var record = new UNCAffiliatesImportView
                     {
                         Study = studyName,
                         HospitalName = SelectedHospital,
@@ -351,10 +351,10 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
 
 
 
-        async Task<IDialogReference> ViewItem(UNCRexImportView args, UNCRexImportView pArgs)
+        async Task<IDialogReference> ViewItem(UNCAffiliatesImportView args, UNCAffiliatesImportView pArgs)
         {
 
-            var newUNCRexImports = new List<UNCRexImportView>();
+            var newUNCRexImports = new List<UNCAffiliatesImportView>();
 
             foreach (var import in importGrid.FilteredItems)
             {
@@ -365,14 +365,14 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
 
             //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
 
-            var parameters = new DialogParameters<UNCRexImportViewDialog>();
+            var parameters = new DialogParameters<UNCAffiliatesImportViewDialog>();
             // Pass the filtered items and the index of the clicked item
             parameters.Add(p => p.CarouselRecords, newUNCRexImports); // Pass filtered items
             parameters.Add(p => p.InitialSelectedIndex, importGrid.FilteredItems.ToList().IndexOf(pArgs)); // Set initial position
 
             var options = _options;
 
-            return await DialogService.ShowAsync<UNCRexImportViewDialog>($"{SelectedHospital} Import View", parameters, options);
+            return await DialogService.ShowAsync<UNCAffiliatesImportViewDialog>($"{SelectedHospital} Import View", parameters, options);
 
         }
 
@@ -523,11 +523,11 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
                 await LocalStorage.SetItemAsync(GridStateStorageKey, stateDto);
 
                 ImportGridStateView.SortDefinitions = stateDto.Sorts
-                    .ToDictionary(s => s.SortBy, s => new SortDefinition<UNCRexImportView>(
+                    .ToDictionary(s => s.SortBy, s => new SortDefinition<UNCAffiliatesImportView>(
                         s.SortBy,
                         s.Descending,
                         s.Index,
-                        (Func<UNCRexImportView, object>)s.SortFunc
+                        (Func<UNCAffiliatesImportView, object>)s.SortFunc
                     ));
 
 

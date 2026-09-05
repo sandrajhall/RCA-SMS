@@ -1,5 +1,5 @@
 ﻿@attribute [Authorize]
-@page "/app/uncreximport/list"
+@page "/app/uncaffiliatesimport/list"
 
 @using Blazored.LocalStorage
 @using Microsoft.AspNetCore.Authorization
@@ -12,15 +12,15 @@
 
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
-@inject GridStateView<UNCRexImportView> ImportGridStateView
+@inject GridStateView<UNCAffiliatesImportView> ImportGridStateView
 @inject ILocalStorageService LocalStorage
-@inject UNCRexPdfStore PdfStore
+@inject UNCAffiliatesPdfStore PdfStore
 @inject ISnackbar Snackbar
 
 @rendermode InteractiveAuto
 
 
-<MudDataGrid T="UNCRexImportView" @ref="importGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
+<MudDataGrid T="UNCAffiliatesImportView" @ref="importGrid" Items="@_displayItems" SortMode="SortMode.Single" Filterable="true"
              QuickFilter="@_quickFilter" Dense
              FilterDefinitions="@ImportGridStateView.FilterDefinitions"
              SortDefinitions="@ImportGridStateView.SortDefinitions"
@@ -69,13 +69,13 @@
                @if (!string.IsNullOrWhiteSpace(context.Item.PAT_ID) &&
      PdfTokens.TryGetValue(context.Item.PAT_ID, out var pdfToken))
 {
-                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.PictureAsPdf" Href="@($"/app/uncreximports/importpdf/{pdfToken}")" Target="_blank" Variant="Variant.Text" Color="Color.Primary">PDF</MudIconButton>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.PictureAsPdf" Href="@($"/app/uncaffiliatesimports/importpdf/{pdfToken}")" Target="_blank" Variant="Variant.Text" Color="Color.Primary">PDF</MudIconButton>
 }
             </CellTemplate>
         </TemplateColumn>
     </Columns>
     <PagerContent>
-        <MudDataGridPager T="UNCRexImportView" />
+        <MudDataGridPager T="UNCAffiliatesImportView" />
     </PagerContent>
 </MudDataGrid>
 @* <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"  OnClick="OnImport">Import Hospitals</MudButton>

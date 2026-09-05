@@ -4,16 +4,16 @@ using System.Security.Cryptography;
 
 namespace RCA_StudyManagementSystem.Client.Stores
 {
-    public sealed class UNCRexPdfStore
+    public sealed class UNCAffiliatesPdfStore
     {
         private readonly IMemoryCache _cache;
 
-        public UNCRexPdfStore(IMemoryCache cache)
+        public UNCAffiliatesPdfStore(IMemoryCache cache)
         {
             _cache = cache;
         }
 
-        public string Store(UNCRexImportView record)
+        public string Store(UNCAffiliatesImportView record)
         {
             var token = "UNC" + record.HospitalName + record.PAT_MRN_ID;
 
@@ -25,9 +25,9 @@ namespace RCA_StudyManagementSystem.Client.Stores
             return token;
         }
 
-        public UNCRexImportView? Get(string token)
+        public UNCAffiliatesImportView? Get(string token)
         {
-            return _cache.Get<UNCRexImportView>(GetKey(token));
+            return _cache.Get<UNCAffiliatesImportView>(GetKey(token));
         }
 
         private static string GetKey(string token)

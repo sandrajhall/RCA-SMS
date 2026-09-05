@@ -10,7 +10,7 @@ using RCA_StudyManagementSystem.Client.Services;
 
 namespace RCA_StudyManagementSystem.Client.Pages.Imports
 {
-    public partial class UNCRexImportViewPage : ComponentBase
+    public partial class UNCAffiliatesImportViewPage : ComponentBase
     {
         [CascadingParameter]
         private IMudDialogInstance MudDialog { get; set; }
@@ -18,7 +18,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
         private void Cancel() => MudDialog.Cancel();
 
         [Parameter]
-        public UNCRexImportView Model { get; set; } = new UNCRexImportView();
+        public UNCAffiliatesImportView Model { get; set; } = new UNCAffiliatesImportView();
         private MudForm? _form;
 
         private string? StatusMessage { get; set; }
@@ -31,7 +31,7 @@ namespace RCA_StudyManagementSystem.Client.Pages.Imports
         private bool _loading = true;
 
 
-        private List<UNCRexImportView> displayedRecords = new List<UNCRexImportView>();
+        private List<UNCAffiliatesImportView> displayedRecords = new List<UNCAffiliatesImportView>();
 
 
 

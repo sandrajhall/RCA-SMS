@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RCA_StudyManagementSystem.Shared.ImportViews
 {
-    public class UNCRexImportView
+    public class UNCAffiliatesImportView
     {
         public string? PAT_MRN_ID { get; set; }
         public string? PAT_ID { get; set; }
